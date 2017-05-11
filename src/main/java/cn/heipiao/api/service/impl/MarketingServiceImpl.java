@@ -43,7 +43,7 @@ public class MarketingServiceImpl implements MarketingService{
 	}
 	
 	public List<Marketing> getList(int start, int size) {
-		return marketingMapper.getMarketing(start, size);
+		return marketingMapper.getMarketingList(start, size);
 	}
 	
 	@Override

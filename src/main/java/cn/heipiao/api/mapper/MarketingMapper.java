@@ -80,7 +80,7 @@ public interface MarketingMapper {
 	 * @param mid 活动id
 	 * @return
 	 */
-	Integer isJoin(Long uid, Integer mid);
+	Integer isJoin(@Param("uid") Long uid, @Param("mid") Integer mid);
 	
 	/**
 	 * 获取营销活动列表
@@ -88,6 +88,6 @@ public interface MarketingMapper {
 	 * @param size 
 	 * @return
 	 */
-	List<Marketing> getMarketing(int start, int size);
+	List<Marketing> getMarketingList(@Param("start") int start, @Param("size") int size);
 	
 }
