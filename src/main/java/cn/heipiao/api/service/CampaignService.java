@@ -1,7 +1,6 @@
 package cn.heipiao.api.service;
 
 import java.util.List;
-import java.util.Map;
 
 import cn.heipiao.api.pojo.Campaign;
 import cn.heipiao.api.pojo.CampaignActor;
@@ -42,7 +41,7 @@ public interface CampaignService {
 	 * 获取活动列表
 	 * @return
 	 */
-	public Map<String, Object> getCampaignList(int start, int size);
+	public List<Campaign> getCampaignList(int start, int size);
 	
 	/**
 	 * 获取所有活动参与人
@@ -179,5 +178,7 @@ public interface CampaignService {
 	 * @return
 	 */
 //	public boolean enter(Integer uid, Integer cid, Timestamp entryTime, Float payAmount);
+	
+	public int getCampaignCount();
 
 }

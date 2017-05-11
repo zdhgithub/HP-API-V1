@@ -42,6 +42,10 @@ public class MarketingServiceImpl implements MarketingService{
 		return marketingMapper.getMarketing(map);
 	}
 	
+	public List<Marketing> getList(int start, int size) {
+		return marketingMapper.getMarketing(start, size);
+	}
+	
 	@Override
 	public Integer getMarketingCount(Map<String,Object> map){
 		return marketingMapper.getMarketingCount(map);
@@ -105,6 +109,16 @@ public class MarketingServiceImpl implements MarketingService{
 	public void updateMarketingPicture(Map<String, Object> map) {
 		marketingMapper.updatePicture(map);
 		
+	}
+
+	@Override
+	public Integer isJoin(Long uid, Integer mid) {
+		return marketingMapper.isJoin(uid, mid);
+	}
+
+	@Override
+	public void updatePictures(Map<String, Object> map) {
+		marketingMapper.updatePicture(map);
 	}
 
 }

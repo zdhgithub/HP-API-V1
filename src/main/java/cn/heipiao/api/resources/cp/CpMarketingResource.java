@@ -57,7 +57,7 @@ public class CpMarketingResource {
 			if(pojo == null || pojo.getName()==null || pojo.getDetail() == null
 					||pojo.getEndTime() == null 
 					|| pojo.getBanner() == null ){
-				return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error,RespMessage.getRespMsg(Status.value_is_null_or_error))); 
+				return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error,RespMessage.getRespMsg(Status.value_is_null_or_error)));
 			}
 			if(pojo.getEndTime().getTime()<ExDateUtils.getDate().getTime()){
 				return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error,"重新设置活动时间"));

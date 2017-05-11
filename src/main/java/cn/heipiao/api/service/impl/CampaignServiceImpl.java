@@ -4,9 +4,7 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -126,11 +124,8 @@ public class CampaignServiceImpl implements CampaignService {
 
 	
 	@Override
-	public Map<String,Object> getCampaignList(int start, int size) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("data", campaignMapper.getCampaignList(start, size));
-		map.put("total", campaignMapper.getCampaignCount());
-		return map;
+	public List<Campaign> getCampaignList(int start, int size) {
+		return campaignMapper.getCampaignList(start, size);
 	}
 	
 	
@@ -413,4 +408,9 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignMapper.updateCampaign(camp);
 	}
 
+	@Override
+	public int getCampaignCount() {
+		return campaignMapper.getCampaignCount();
+	}
+	
 }

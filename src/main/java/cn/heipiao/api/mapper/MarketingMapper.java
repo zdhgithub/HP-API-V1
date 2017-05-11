@@ -73,4 +73,21 @@ public interface MarketingMapper {
 	 * @return
 	 */
 	LikeUser getOneLikeUser(Map<String ,Object> map);
+	
+	/**
+	 * 查询指定用户有没有参加指定的活动
+	 * @param uid 用户id
+	 * @param mid 活动id
+	 * @return
+	 */
+	Integer isJoin(Long uid, Integer mid);
+	
+	/**
+	 * 获取营销活动列表
+	 * @param start
+	 * @param size 
+	 * @return
+	 */
+	List<Marketing> getMarketing(int start, int size);
+	
 }

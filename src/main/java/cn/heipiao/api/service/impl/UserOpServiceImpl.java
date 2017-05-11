@@ -294,7 +294,7 @@ public class UserOpServiceImpl implements UserOpService {
 //		this.moduleService.initData(user.getId().intValue());
 		
 		//送券
-		this.presentRegisterTicket(user.getId());
+//		this.presentRegisterTicket(user.getId());
 		
 		user.setPassword(null);
 		user.setLastLoginTime(null);

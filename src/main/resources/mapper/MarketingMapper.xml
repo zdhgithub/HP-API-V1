@@ -64,24 +64,24 @@
 	<update id="updateMarketing" parameterType="Marketing">
 		update t_marketing_activity
 		<set>
-		<if test="name != null">
-			f_name = #{name}, 
-		</if>
-		<if test="banner != null">
-			f_banner = #{banner}, 
-		</if>		
-		<if test="detail != null">
-			f_detail = #{detail}, 
-		</if>		
-		<if test="beginTime != null">
-			f_begin_time = #{beginTime},
-		</if>		
-		<if test="endTime != null">
-			f_end_time = #{endTime},
-		</if>		
-		<if test="status != null">
-		   	f_status = #{status}
-		</if>		
+			<if test="name != null">
+				f_name = #{name}, 
+			</if>
+			<if test="banner != null">
+				f_banner = #{banner}, 
+			</if>
+			<if test="detail != null">
+				f_detail = #{detail}, 
+			</if>
+			<if test="beginTime != null">
+				f_begin_time = #{beginTime},
+			</if>
+			<if test="endTime != null">
+				f_end_time = #{endTime},
+			</if>
+			<if test="status != null">
+			   	f_status = #{status}
+			</if>
 		</set>
 		where f_id = #{id}
 	</update>
@@ -90,27 +90,27 @@
 	<update id="updatePicture" parameterType="java.util.Map">
 		update t_marketing_upload_picture
 		<set>
-		<if test="picture != null">
-			f_picture = #{picture}, 
-		</if>
-		<if test="pictureDesc != null">
-			f_picture_desc = #{pictureDesc}, 
-		</if>		
-		<if test="likeCount != null">
-			f_like_count = #{likeCount}, 
-		</if>		
-		<if test="status != null">
-			f_status = #{status},
-		</if>		
-		<if test="uploadTime != null">
-			f_upload_time = #{uploadTime},
-		</if>		
-		<if test="refundReason != null">
-		   	f_refund_reason = #{refundReason},
-		</if>	
-		<if test="refundTime != null">
-		   	f_refund_time = #{refundTime}
-		</if>	
+			<if test="picture != null">
+				f_picture = #{picture}, 
+			</if>
+			<if test="pictureDesc != null">
+				f_picture_desc = #{pictureDesc}, 
+			</if>
+			<if test="likeCount != null">
+				f_like_count = #{likeCount}, 
+			</if>
+			<if test="status != null">
+				f_status = #{status},
+			</if>
+			<if test="uploadTime != null">
+				f_upload_time = #{uploadTime},
+			</if>
+			<if test="refundReason != null">
+			   	f_refund_reason = #{refundReason},
+			</if>
+			<if test="refundTime != null">
+			   	f_refund_time = #{refundTime}
+			</if>
 		</set>
 		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{uid}
 	</update>
@@ -182,4 +182,10 @@
 		select * from t_marketing_picture_like 
 		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{marketUid} and f_like_uid = #{likeUid}
 	</select>
+	
+	<select id="isJoin" resultType="Integer">
+		select count(0) from t_marketing_upload_picture
+		where f_marketing_activity_id = #{mid} and #{uid}
+	</select>
+	
 </mapper>

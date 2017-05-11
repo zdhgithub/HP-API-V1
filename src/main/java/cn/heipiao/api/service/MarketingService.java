@@ -26,6 +26,8 @@ public interface MarketingService {
 	 * @return
 	 */
 	List<Marketing> getList(Map<String,Object> map);
+	
+	List<Marketing> getList(int start, int size);
 	/**
 	 * 获取总数
 	 * @param map
@@ -71,4 +73,18 @@ public interface MarketingService {
 	 * @param map
 	 */
 	void updateMarketingPicture(Map<String,Object> map);
+	
+	/**
+	 * 查询用户有没有参加活动
+	 * @param uid 用户id
+	 * @param mid 活动id
+	 * @return
+	 */
+	Integer isJoin(Long uid, Integer mid);
+	
+	/**
+	 * 修改发布图片内容
+	 * @param marketingPicture
+	 */
+	void updatePictures(Map<String, Object> map);
 }

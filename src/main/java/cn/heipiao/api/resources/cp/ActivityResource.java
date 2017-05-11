@@ -375,7 +375,12 @@ public class ActivityResource {
 			if(start == null || size == null){
 				return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error, RespMessage.getRespMsg(Status.value_is_null_or_error)));
 			}
-			Map<String, Object> map = campaignService.getCampaignList(start, size);
+			List<Campaign> list = campaignService.getCampaignList(start, size);
+			
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("data", list);
+			map.put("total", campaignService.getCampaignCount());
+			
 			return JSONObject.toJSONString(new RespMsg<>(map));
 		} catch (Exception e) {
 			logger.error("获取活动列表失败", e);

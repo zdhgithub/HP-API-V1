@@ -195,7 +195,7 @@ public class CampaignResource {
 			if(start == null || size == null){
 				return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error, RespMessage.getRespMsg(Status.value_is_null_or_error)));
 			}
-			List<Campaign> campaignList = campaignService.getCampaignListByNormal(start - 1 <= 0 ? 0 : (start - 1) * size , size);
+			List<Campaign> campaignList = campaignService.getCampaignList(start - 1 <= 0 ? 0 : (start - 1) * size , size);
 			return JSONObject.toJSONString(new RespMsg<>(campaignList));
 		} catch (Exception e) {
 			logger.error("获取活动列表失败", e);

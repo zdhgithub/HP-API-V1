@@ -68,98 +68,102 @@ public class JPushServiceImpl implements JPushService {
     
 	@Override
 	public boolean sendPush(Integer uid,String type,String title,String alert) throws APIConnectionException, APIRequestException,Exception  {
-		User user = userOpService.queryUserById(uid.longValue());
-		PushUser pu = this.registMapper.selectPojo(user.getPhone(), type);
-		if(pu == null) {
-			log.debug("{} rid is null",uid);
-			return false;
-		}
-		if(pu.getOs().equals("ios")) {//ios推送
-			PushPayload payload_ios = buildPushObject_ios(alert, pu.getRegistration_id(), CC_WAV, null);
-			PushResult result_ios = JClient.getJpushClient(type).sendPush(payload_ios);
-			log.debug("sendPush ios result:{}", result_ios.isResultOK());
-			return result_ios.isResultOK();
-		}else {//android 推送
-			Map<String,String> extras_android = new HashMap<String, String>();
-			extras_android.put("sound", CC_WAV);
-			PushPayload payload_android = buildPushObject_android_withMessage(title, alert, pu.getRegistration_id(), extras_android);
-			PushResult result_android = JClient.getJpushClient(type).sendPush(payload_android);
-			log.debug("sendPush android result:{}", result_android.isResultOK());
-			return result_android.isResultOK();
-		}
+//		User user = userOpService.queryUserById(uid.longValue());
+//		PushUser pu = this.registMapper.selectPojo(user.getPhone(), type);
+//		if(pu == null) {
+//			log.debug("{} rid is null",uid);
+//			return false;
+//		}
+//		if(pu.getOs().equals("ios")) {//ios推送
+//			PushPayload payload_ios = buildPushObject_ios(alert, pu.getRegistration_id(), CC_WAV, null);
+//			PushResult result_ios = JClient.getJpushClient(type).sendPush(payload_ios);
+//			log.debug("sendPush ios result:{}", result_ios.isResultOK());
+//			return result_ios.isResultOK();
+//		}else {//android 推送
+//			Map<String,String> extras_android = new HashMap<String, String>();
+//			extras_android.put("sound", CC_WAV);
+//			PushPayload payload_android = buildPushObject_android_withMessage(title, alert, pu.getRegistration_id(), extras_android);
+//			PushResult result_android = JClient.getJpushClient(type).sendPush(payload_android);
+//			log.debug("sendPush android result:{}", result_android.isResultOK());
+//			return result_android.isResultOK();
+//		}
+		return true;
 	}
 	
 	@Override
 	public boolean sendPush(Integer uid,String type,String alert) throws APIConnectionException, APIRequestException,Exception  {
-		User user = userOpService.queryUserById(uid.longValue());
-		PushUser pu = this.registMapper.selectPojo(user.getPhone(), type);
-		if(pu == null) {
-			log.debug("{} rid is null",uid);
-			return false;
-		}
-		if(pu.getOs().equals("ios")) {//ios推送
-			PushPayload payload_ios = buildPushObject_ios(alert, pu.getRegistration_id(), BC_WAV, null);
-			PushResult result_ios = JClient.getJpushClient(type).sendPush(payload_ios);
-			log.debug("sendPush ios result:{}", result_ios.isResultOK());
-			return result_ios.isResultOK();
-		}else {//android 推送
-			Map<String,String> extras_android = new HashMap<String, String>();
-			extras_android.put("sound", BC_WAV);
-			PushPayload payload_android = buildPushObject_android_withMessage(null, alert, pu.getRegistration_id(), extras_android);
-			PushResult result_android = JClient.getJpushClient(type).sendPush(payload_android);
-			log.debug("sendPush android result:{}", result_android.isResultOK());
-			return result_android.isResultOK();
-		}
+//		User user = userOpService.queryUserById(uid.longValue());
+//		PushUser pu = this.registMapper.selectPojo(user.getPhone(), type);
+//		if(pu == null) {
+//			log.debug("{} rid is null",uid);
+//			return false;
+//		}
+//		if(pu.getOs().equals("ios")) {//ios推送
+//			PushPayload payload_ios = buildPushObject_ios(alert, pu.getRegistration_id(), BC_WAV, null);
+//			PushResult result_ios = JClient.getJpushClient(type).sendPush(payload_ios);
+//			log.debug("sendPush ios result:{}", result_ios.isResultOK());
+//			return result_ios.isResultOK();
+//		}else {//android 推送
+//			Map<String,String> extras_android = new HashMap<String, String>();
+//			extras_android.put("sound", BC_WAV);
+//			PushPayload payload_android = buildPushObject_android_withMessage(null, alert, pu.getRegistration_id(), extras_android);
+//			PushResult result_android = JClient.getJpushClient(type).sendPush(payload_android);
+//			log.debug("sendPush android result:{}", result_android.isResultOK());
+//			return result_android.isResultOK();
+//		}
+		return true;
 	}
 	@Override
 	public boolean sendPush(Integer uid, String type, String title,
 			String alert, Map<String, String> businessParams)
 			throws APIConnectionException, APIRequestException, Exception {
-		if(uid==null) {
-			log.debug("uid is null");
-			return false;
-		}
-		User user = userOpService.queryUserById(uid.longValue());
-		if(user==null) {
-			log.debug("user is null");
-			return false;
-		}
-		String rid = this.registMapper.selectOne(user.getPhone(), type);
-		if(StringUtils.isEmpty(rid)) {
-			log.debug("{} rid is null",uid);
-			return false;
-		}
-		PushPayload payload = this.buildPushObject_with_extra(rid, alert, title, businessParams);
-		PushResult result = JClient.getJpushClient(type).sendPush(payload);
-		log.debug("sendPush result:{}", result.isResultOK());
-		return result.isResultOK();
+//		if(uid==null) {
+//			log.debug("uid is null");
+//			return false;
+//		}
+//		User user = userOpService.queryUserById(uid.longValue());
+//		if(user==null) {
+//			log.debug("user is null");
+//			return false;
+//		}
+//		String rid = this.registMapper.selectOne(user.getPhone(), type);
+//		if(StringUtils.isEmpty(rid)) {
+//			log.debug("{} rid is null",uid);
+//			return false;
+//		}
+//		PushPayload payload = this.buildPushObject_with_extra(rid, alert, title, businessParams);
+//		PushResult result = JClient.getJpushClient(type).sendPush(payload);
+//		log.debug("sendPush result:{}", result.isResultOK());
+//		return result.isResultOK();
+		return true;
 	}
 	
 	@Override
 	public boolean sendPushForPay(Integer uid, String type, String title,
 			String alert, Map<String, String> businessParams)
 			throws APIConnectionException, APIRequestException, Exception {
-		User user = userOpService.queryUserById(uid.longValue());
-		PushUser pu = this.registMapper.selectPojo(user.getPhone(), type);
-		if(pu == null) {
-			log.debug("{} rid is null",uid);
-			return false;
-		}
-		if(pu.getOs().equals("ios")) {//ios 推送
-			PushPayload payload_ios = buildPushObject_ios(alert, pu.getRegistration_id(), BP_WAV, businessParams);
-			PushResult result_ios = JClient.getJpushClient(type).sendPush(payload_ios);
-			log.debug("sendPush ios result:{}", result_ios.isResultOK());
-			return result_ios.isResultOK();
-		}else {//android 推送
-			if(businessParams==null) {
-				businessParams = new HashMap<String, String>();
-			}
-			businessParams.put("sound", BP_WAV);
-			PushPayload payload_android = buildPushObject_android_withMessage(title, alert, pu.getRegistration_id(), businessParams);
-			PushResult result_android = JClient.getJpushClient(type).sendPush(payload_android);
-			log.debug("sendPush android result:{}", result_android.isResultOK());
-			return result_android.isResultOK();
-		}
+//		User user = userOpService.queryUserById(uid.longValue());
+//		PushUser pu = this.registMapper.selectPojo(user.getPhone(), type);
+//		if(pu == null) {
+//			log.debug("{} rid is null",uid);
+//			return false;
+//		}
+//		if(pu.getOs().equals("ios")) {//ios 推送
+//			PushPayload payload_ios = buildPushObject_ios(alert, pu.getRegistration_id(), BP_WAV, businessParams);
+//			PushResult result_ios = JClient.getJpushClient(type).sendPush(payload_ios);
+//			log.debug("sendPush ios result:{}", result_ios.isResultOK());
+//			return result_ios.isResultOK();
+//		}else {//android 推送
+//			if(businessParams==null) {
+//				businessParams = new HashMap<String, String>();
+//			}
+//			businessParams.put("sound", BP_WAV);
+//			PushPayload payload_android = buildPushObject_android_withMessage(title, alert, pu.getRegistration_id(), businessParams);
+//			PushResult result_android = JClient.getJpushClient(type).sendPush(payload_android);
+//			log.debug("sendPush android result:{}", result_android.isResultOK());
+//			return result_android.isResultOK();
+//		}
+		return true;
 	}
 	
 	/**
@@ -168,9 +172,10 @@ public class JPushServiceImpl implements JPushService {
 	@Override
 	public boolean sendPushToAll(String alert, String type)
 			throws APIConnectionException, APIRequestException, Exception {
-		PushPayload payLoad = buildPushObject_all_all_alert(alert);
-		PushResult result = JClient.getJpushClient(type).sendPush(payLoad);
-		return result.isResultOK();
+//		PushPayload payLoad = buildPushObject_all_all_alert(alert);
+//		PushResult result = JClient.getJpushClient(type).sendPush(payLoad);
+//		return result.isResultOK();
+		return true;
 	}
 	/**
 	 * test
@@ -178,17 +183,18 @@ public class JPushServiceImpl implements JPushService {
 	@Override
 	public boolean sendPushMessage(Integer uid,String alert, String type)
 			throws APIConnectionException, APIRequestException, Exception {
-		User user = userOpService.queryUserById(uid.longValue());
-		String rid = this.registMapper.selectOne(user.getPhone(), type);
-		if(StringUtils.isEmpty(rid)) {
-			log.debug("{} rid is null",uid);
-			return false;
-		}
-		Map<String,String> extras = new HashMap<String, String>();
-		extras.put("sound", CC_WAV);
-		PushPayload payLoad = buildPushObject_android_withMessage(null, alert, rid, extras);
-		PushResult result = JClient.getJpushClient(type).sendPush(payLoad);
-		return result.isResultOK();
+//		User user = userOpService.queryUserById(uid.longValue());
+//		String rid = this.registMapper.selectOne(user.getPhone(), type);
+//		if(StringUtils.isEmpty(rid)) {
+//			log.debug("{} rid is null",uid);
+//			return false;
+//		}
+//		Map<String,String> extras = new HashMap<String, String>();
+//		extras.put("sound", CC_WAV);
+//		PushPayload payLoad = buildPushObject_android_withMessage(null, alert, rid, extras);
+//		PushResult result = JClient.getJpushClient(type).sendPush(payLoad);
+//		return result.isResultOK();
+		return true;
 	}
 	@Override
 	public boolean UpdateDeviceTagAlias_add_remove_tags(String registration_id,String alias,Set<String> tagsToAdd,Set<String> tagsToRemove,String type)
@@ -401,10 +407,11 @@ public class JPushServiceImpl implements JPushService {
 
 	@Override
 	public boolean sendPushWithTags(String tag, String alert, String title,String type) throws APIConnectionException, APIRequestException {
-		PushPayload push = buildPushObject_with_tag(tag, alert, title);
-		PushResult result_ios = JClient.getJpushClient(type).sendPush(push);
-		log.debug("sendPush ios result:{}", result_ios.isResultOK());
-		return result_ios.isResultOK();
+//		PushPayload push = buildPushObject_with_tag(tag, alert, title);
+//		PushResult result_ios = JClient.getJpushClient(type).sendPush(push);
+//		log.debug("sendPush ios result:{}", result_ios.isResultOK());
+//		return result_ios.isResultOK();
+		return true;
 	}
 
 }

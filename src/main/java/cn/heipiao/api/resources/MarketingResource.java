@@ -112,6 +112,35 @@ public class MarketingResource {
 		}
 	}
 	
+	@ApiOperation(value="修改发布的图片内容",notes="参数说明 :(Y) 必须字段，(N) 可选字段"
+			+ "\n\r修改内容：\n\rmarketingId(Y):营销活动id ,\n\ruid(Y) :发布用户id,\n\rpicture(Y):图片,\n\rpictureDesc(Y):图片描述")
+	@RequestMapping(value="pictures",method=RequestMethod.PUT,consumes = "application/json")
+	public String updatePictures(@RequestBody JSONObject json) {
+		logger.debug("json；{}",json);
+		
+		MarketingPicture pojo = json == null ? null : JSONObject.toJavaObject(json, MarketingPicture.class);
+		if(pojo==null || pojo.getMarketingId()==null || pojo.getUid()==null
+				|| pojo.getPicture()==null || pojo.getPictureDesc() == null){
+			return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error,
+					RespMessage.getRespMsg(Status.value_is_null_or_error)));
+		}
+		
+		try {
+			Map<String ,Object> map = new HashMap<>();
+			map.put("uid", pojo.getUid());
+			map.put("marketingId", pojo.getMarketingId());
+			map.put("picture", pojo.getPicture());
+			map.put("pictureDesc", pojo.getPictureDesc());
+			map.put("uploadTime", ExDateUtils.getDate());
+			
+			marketingService.updatePictures(map);
+			return JSONObject.toJSONString(new RespMsg<>());
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			return JSONObject.toJSONString(new RespMsg<>(Status.error,
+					RespMessage.getRespMsg(Status.error)));
+		}
+	}
 
 	@ApiOperation(value="获取发布图片内容",response = MarketingPicture.class)
 	@RequestMapping(value="picture/{marketingId}/{uid}",method = RequestMethod.GET)
@@ -213,6 +242,42 @@ public class MarketingResource {
 			logger.error(e.getMessage(),e);
 			return JSONObject.toJSONString(new RespMsg<>(Status.error,
 					RespMessage.getRespMsg(Status.error)));
+		}
+	}
+	
+	@ApiOperation(value = "用户是否参加活动", notes = "1：表示已参加， 0：表示未参加")
+	@RequestMapping(value = "{uid}/{mid}", method = RequestMethod.GET)
+	public String isJoin(@ApiParam("用户id") @PathVariable("uid") Long uid,
+			@ApiParam("活动id") @PathVariable("mid") Integer mid) {
+		logger.debug("uid:{}, mid:{}", uid, mid);
+		
+		if(uid == null || mid == null){
+			return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error,
+					RespMessage.getRespMsg(Status.value_is_null_or_error)));
+		}
+		
+		try {
+			Integer result = marketingService.isJoin(uid, mid);
+			return JSONObject.toJSONString(new RespMsg<>(result));
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			return JSONObject.toJSONString(new RespMsg<>(Status.error,
+					RespMessage.getRespMsg(Status.error)));
+		}
+	}
+	
+	@ApiOperation(value = "营销活动列表",response = Marketing.class)
+	@RequestMapping(value = "list/{start}/{size}",method = RequestMethod.GET)
+	public String getList(@ApiParam(value="开始页,首页为1",required=true)@PathVariable("start")Integer start,
+			@ApiParam(value="每页大小",required=true)@PathVariable("size")Integer size){
+		logger.debug("start:{}，size:{}",start,size);
+		
+		try {
+			List<Marketing> data = marketingService.getList(start - 1 <= 0 ? 0 : (start - 1) * size , size);
+			return JSONObject.toJSONString(new RespMsg<>(data));
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			return JSONObject.toJSONString(new RespMsg<>(Status.error,RespMessage.getRespMsg(Status.error)));
 		}
 	}
 	
