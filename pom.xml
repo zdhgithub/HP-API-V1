@@ -33,8 +33,6 @@
 	</properties>
 
 	<dependencies>
-
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -59,7 +57,6 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${io.springfox.swagger.ui.version}</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -153,8 +150,6 @@
 			<version>${poi.version}</version>
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>cn.jpush.api</groupId>
 			<artifactId>jpush-client</artifactId>
@@ -174,31 +169,29 @@
 	</dependencies>
 
 	<profiles>
-        <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-            	<finalName>v1</finalName>
-            </properties>
-        </profile>
-        <profile>
-            <id>pro</id>
-            <properties>
-                <package.environment>
-                	WEB-INF/lib/springfox-swagger-ui-*.jar, 
-                	WEB-INF/classes/cn/heipiao/api/start/SwaggerConfig.*,
-                	WEB-INF/classes/heipiaoConfig.properties
-                </package.environment>
-                <finalName>ROOT</finalName>
-            </properties>
-        </profile>
-    </profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<finalName>v1</finalName>
+			</properties>
+		</profile>
+		<profile>
+			<id>pro</id>
+			<properties>
+				<package.environment>
+					WEB-INF/lib/springfox-swagger-ui-*.jar,
+					WEB-INF/classes/cn/heipiao/api/start/SwaggerConfig.*,
+					WEB-INF/classes/heipiaoConfig.properties
+				</package.environment>
+				<finalName>ROOT</finalName>
+			</properties>
+		</profile>
+	</profiles>
 
 	<build>
-		
-		
 		<finalName>${finalName}</finalName>
 		<plugins>
 			<plugin>
@@ -211,24 +204,17 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>  
-                <artifactId>maven-war-plugin</artifactId>  
-                <configuration>
-              		<packagingExcludes>  
-                        ${package.environment}
-                    </packagingExcludes>  
-                </configuration>  
-            </plugin> 
-             
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<packagingExcludes>
+						${package.environment}
+					</packagingExcludes>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<url>http://192.168.1.222:8080/nexus/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
