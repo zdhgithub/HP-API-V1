@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.DepositFishMapper">
+	<resultMap type="DepositFish" id="depositFishRsultMap">
+		<result column="f_uid" property="userId" />
+		<result column="f_fish_site_id" property="siteId" />
+		<result column="f_balance" property="balance" />
+		<result column="f_update_time" property="updateTime" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_user_portriat" property="portriat" />
+	</resultMap>
+	<resultMap type="DepositFishExtend" id="depositFishRsultMap2">
+		<result column="f_uid" property="userId" />
+		<result column="f_fish_site_id" property="siteId" />
+		<result column="f_balance" property="balance" />
+		<result column="f_update_time" property="updateTime" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_main_img" property="mainImg" />
+		<result column="f_fish_site_name" property="fishSiteName" />
+		<result column="addr" property="addr" />
+	</resultMap>
+
+	<sql id="depositFishsql">
+		f_uid,f_fish_site_id,f_balance,f_update_time,f_create_time
+	</sql>
+	
+	<select id="countDepositFishTotalByUserID" parameterType="int" resultType="double">
+		SELECT SUM(f_balance) FROM t_deposit_fish WHERE f_uid = #{uid}
+	</select>
+
+	<select id="selectByUidAndFishSiteIdAsLock" resultMap="depositFishRsultMap">
+		select
+		<include refid="depositFishsql" />
+		from
+		t_deposit_fish
+		where f_uid = #{uid} and f_fish_site_id =
+		#{fishSiteId} for update
+	</select>
+
+	<select id="selectByUidAndFishSiteId" resultMap="depositFishRsultMap">
+		select
+		<include refid="depositFishsql" />
+		from
+		t_deposit_fish
+		where f_uid = #{uid} and f_fish_site_id =
+		#{fishSiteId}
+	</select>
+
+	<select id="countDepositFishBySite" resultType="double"
+		parameterType="int">
+		SELECT (
+		CASE
+		WHEN SUM(f_balance) IS NULL THEN
+		'0'
+		ELSE
+		SUM(f_balance)
+		END
+		) FROM t_deposit_fish WHERE
+		f_fish_site_id = #{siteId}
+	</select>
+
+	<select id="selectExList" resultMap="depositFishRsultMap2"
+		parameterType="map">
+		SELECT
+		d.f_uid,
+		d.f_fish_site_id,
+		d.f_balance,
+		d.f_update_time,
+		d.f_create_time,
+		f.f_fish_site_name,
+		f.f_main_img,
+		CONCAT_WS((SELECT r.f_region_name FROM t_sys_cfg_region r WHERE
+		r.f_region_num =
+		f.f_province_id),(SELECT r.f_region_name FROM
+		t_sys_cfg_region r WHERE
+		r.f_region_num = f.f_city_id),(SELECT
+		r.f_region_name FROM
+		t_sys_cfg_region r WHERE r.f_region_num =
+		f.f_region_id),f.f_addr) AS
+		addr
+		FROM
+		t_deposit_fish d,
+		t_fish_site f
+		WHERE
+		d.f_fish_site_id = f.f_fish_site_id
+		AND d.f_uid = #{userId}
+		ORDER
+		BY d.f_update_time DESC
+		LIMIT #{start},#{size}
+	</select>
+	<select id="selectListNew" resultMap="depositFishRsultMap">
+		SELECT
+		d.f_uid,d.f_fish_site_id,d.f_balance,d.f_update_time,d.f_create_time,u.f_user_nickname,u.f_user_portriat
+		FROM
+		t_deposit_fish d ,t_user u
+		WHERE
+		d.f_uid = u.f_uid
+		AND
+		d.f_fish_site_id = #{siteId}
+		ORDER BY
+		d.f_balance DESC
+		LIMIT
+		#{start},#{size}
+	</select>
+	<select id="selectList" resultMap="depositFishRsultMap">
+		SELECT
+		<include refid="depositFishsql"></include>
+		FROM t_deposit_fish
+		<where>
+			<if test="userId != null">
+				and f_uid = #{userId}
+			</if>
+			<if test="siteId != null">
+				and f_fish_site_id = #{siteId}
+			</if>
+		</where>
+		<choose>
+			<when test="asc != null and order!=null">
+				ORDER BY ${order} asc
+			</when>
+			<when test="desc != null and order!=null">
+				ORDER BY ${order} desc
+			</when>
+		</choose>
+		<if test="start!=null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+
+	<insert id="insert" parameterType="DepositFish">
+		insert into t_deposit_fish
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				f_uid,
+			</if>
+			<if test="siteId != null">
+				f_fish_site_id,
+			</if>
+			<if test="balance != null">
+				f_balance,
+			</if>
+			<if test="updateTime != null">
+				f_update_time,
+			</if>
+			<if test="createTime != null">
+				f_create_time,
+			</if>
+		</trim>
+		<trim prefix=" values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="siteId != null">
+				#{siteId},
+			</if>
+			<if test="balance != null">
+				#{balance},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+		</trim>
+	</insert>
+
+
+	<update id="updateByUidAndFishSiteId" parameterType="java.util.Map">
+		update
+		t_deposit_fish
+		set f_balance = #{balance}
+		where f_uid = #{uid} and
+		f_fish_site_id = #{fishSiteId}
+	</update>
+
+	<update id="updateById" parameterType="DepositFish">
+		update t_deposit_fish
+		<set>
+			<!-- <if test="userId != null"> -->
+			<!-- f_uid = #{userId}, -->
+			<!-- </if> -->
+			<!-- <if test="siteId != null"> -->
+			<!-- f_fish_site_id = #{siteId}, -->
+			<!-- </if> -->
+			<if test="balance != null">
+				f_balance = #{balance},
+			</if>
+			<if test="updateTime != null">
+				f_update_time = #{updateTime},
+			</if>
+			<!-- <if test="createTime != null"> -->
+			<!-- f_create_time = #{createTime}, -->
+			<!-- </if> -->
+		</set>
+		where f_uid = #{userId} and f_fish_site_id = #{siteId}
+	</update>
+</mapper>

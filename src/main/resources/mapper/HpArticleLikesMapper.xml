@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.HpArticleLikesMapper">
+
+	<resultMap type="hpArticleLikes" id="baseResultMap">
+		<result column="f_like_article_id" property="articleId" />
+		<result column="f_like_uid" property="likeUid" />
+		<result column="f_like_time" property="likeTime" />
+		
+		<result column="f_like_nickname" property="likeNickname" />
+		<result column="f_like_portrait" property="likePortrait" />
+	</resultMap>
+	
+	
+	<sql id="baseColumn">
+		f_article_id,f_like_uid,f_like_time
+	</sql>
+	
+	<select id="selectUnique" resultMap="baseResultMap">
+		select *
+		from t_hp_article_likes
+		where f_article_id = #{articleId} and f_like_uid = #{likeUid}
+	</select>
+	
+	<select id="selectByArticleId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t1.*,t2.f_user_nickname as f_like_nickname , t2.f_user_portriat as f_like_portrait
+		from
+		(
+			select *
+			from t_hp_article_likes
+			where f_article_id = #{articleId}
+		)t1 left join t_user t2 on t1.f_like_uid = t2.f_uid
+	</select>
+	
+	<select id="selectLikeListByArticleId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t1.*,t2.f_user_nickname as f_like_nickname , t2.f_user_portriat as f_like_portrait
+		from
+		(
+			select *
+			from 
+			(
+				select *
+				from t_hp_article_likes
+				where f_article_id = #{articleId}
+				order by f_like_time desc
+			)t where 1 = 1
+			<if test="likeTime &gt; 0">
+				and f_like_time <![CDATA[<]]> #{likeTime}
+			</if>
+		)t1 left join t_user t2 on t1.f_like_uid = t2.f_uid
+	</select>
+	
+	<insert id="insertPojo">
+		insert into  t_hp_article_likes (
+			<include refid="baseColumn" />
+		)values(
+			#{articleId},
+			#{likeUid},
+			#{likeTime}
+		)
+	</insert>
+	
+	<delete id="deletePojo">
+		delete 
+		from t_hp_article_likes
+		where f_article_id = #{articleId} and f_like_uid = #{likeUid}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RewardAmountMapper">
+	<resultMap type="RewardAmount" id="baseResultMap">
+		<result column="f_platform_account_id" property="id"/>
+		<result column="f_platform_account_b_id" property="bid"/>
+		<result column="f_platform_account_b_type" property="type"/>
+		<result column="f_platform_account_balance" property="balance"/>
+		<result column="f_platform_account_total" property="total"/>
+		<result column="f_platform_account_remain" property="remain"/>
+		<result column="f_withdraw_time" property="withdrawTime"/>
+	</resultMap>
+	<sql id="base_column">
+		f_platform_account_id,f_platform_account_b_id,f_platform_account_b_type,
+		f_platform_account_balance,f_platform_account_total,f_platform_account_remain,f_withdraw_time
+	</sql>
+	<select id="selectByBid" parameterType="java.util.Map" resultMap="baseResultMap">
+		SELECT * FROM t_platform_amount
+		<where>
+			<if test="bid!=null">
+				f_platform_account_b_id = #{bid}
+			</if>
+			<if test="type!=null">
+				and f_platform_account_b_type = #{type}
+			</if>
+		</where>
+	</select>
+	<select id="selectByBidAsLock" parameterType="java.util.Map" resultMap="baseResultMap">
+		SELECT * FROM t_platform_amount where  f_platform_account_b_id = #{bid} 
+		and f_platform_account_b_type = #{type} for update
+	</select>
+	<update id="updateByBid" parameterType="java.util.Map">
+		UPDATE t_platform_amount
+		<set>
+			<if test="balance!=null">
+				f_platform_account_balance = #{balance},
+			</if>
+			<if test="total!=null">
+				f_platform_account_total = #{total},
+			</if>
+			<if test="remain!=null">
+				f_platform_account_remain = #{remain}
+			</if>
+		</set>
+		<where>
+			<if test="bid!=null">
+				f_platform_account_b_id = #{bid}
+			</if>
+			<if test="type!=null">
+				and f_platform_account_b_type = #{type}
+			</if>
+		</where>
+	</update>
+	<insert id="insertRewardPlatformAmount">
+		INSERT INTO t_platform_amount(
+			f_platform_account_b_id,
+			f_platform_account_b_type,
+			f_platform_account_balance,
+			f_platform_account_total,
+			f_platform_account_remain,
+			f_withdraw_time
+		
+		) VALUES (
+			#{bid},
+			#{type},
+			#{balance},
+			#{total},
+			#{remain},
+			#{withdrawTime}
+		)
+	</insert>
+	<update id="updatePojo">
+		update t_platform_amount
+		<set>
+			<if test="balance != null">
+				f_platform_account_balance = #{balance},
+			</if>
+			<if test="withdrawTime != null">
+				f_withdraw_time = #{withdrawTime},
+			</if>
+			<if test="total != null">
+				f_platform_account_total = #{total},
+			</if>
+			<if test="remain != null">
+				f_platform_account_remain = #{remain},
+			</if>
+		</set> 
+		where f_platform_account_b_id = #{bid}
+		and f_platform_account_b_type = #{type}
+	</update>
+</mapper>

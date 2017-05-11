@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ArticleCommentMapper">
+	<resultMap type="Comment" id="BaseResultMap">
+		<id column="f_comment_id" property="id"/>
+		<result column="f_comment_content" property="content" />
+		<result column="f_comment_createtime" property="createTime" />
+		<result column="f_comment_flag" property="flag" />
+		<result column="f_comment_author" property="userId" />
+		<result column="f_comment_article_id" property="sid" />
+		<result column="f_user_portriat" property="portriat" />
+		<result column="f_user_nickname" property="nickname" />
+	</resultMap>
+	
+	<sql id="BaseSql">
+	f_comment_id,f_comment_content,f_comment_createtime,f_comment_flag,f_comment_author,f_comment_article_id
+	</sql>
+	
+	<select id="countArticleComents" parameterType="long" resultType="int">
+		SELECT COUNT(*) FROM t_article_comment WHERE f_comment_article_id = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+			f_comment_id,
+			f_comment_content,
+			f_comment_createtime,
+			f_comment_flag,
+			f_comment_author,
+			f_comment_article_id,
+			f_user_nickname,
+			f_user_portriat
+		FROM
+			t_article_comment
+		LEFT JOIN t_user ON f_comment_author = f_uid
+		<where>
+			f_comment_article_id = #{id} and f_comment_flag = 1
+			<if test="start>0">
+				and f_article_id &lt;#{start}
+			</if>
+		</where>
+		ORDER BY
+			f_comment_id DESC
+		LIMIT #{size}
+	</select>
+	
+	<insert id="insert" parameterType="Comment">
+		INSERT INTO t_article_comment (
+			f_comment_content,
+			f_comment_createtime,
+			f_comment_flag,
+			f_comment_author,
+			f_comment_article_id
+		)
+		VALUES
+			(#{content}, #{createTime}, 1, #{userId}, #{sid})
+	</insert>
+	
+	<update id="update" parameterType="long">
+		UPDATE t_article_comment SET f_comment_flag = 0 WHERE f_comment_id = #{id}
+	</update>
+</mapper>

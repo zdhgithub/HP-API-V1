@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RewardPlatformWithdrawOrderMapper">
+	
+	<resultMap type="rewardPlatformWithdrawOrder" id="baseResultMap">
+		<result column="f_trade_no" property="tradeNo" />
+		<result column="f_uid" property="uid" />
+		<result column="f_business_id" property="bid" />
+		<result column="f_business_type" property="type"/>
+		<result column="f_platform_trade_no" property="platformTradeNo" />
+		<result column="f_platform" property="platform" />
+		<result column="f_trade_account" property="tradeAccount" />
+		<result column="f_realname" property="realname" />
+		<result column="f_trade_fee" property="tradeFee" />
+		<result column="f_tctual_fee" property="actualFee" />
+		<result column="f_status" property="status" />
+		<result column="f_pay_time" property="payTime" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_desc" property="desc" />
+		<result column="f_platform_desc" property="platformDesc" />
+	</resultMap>
+	
+	<sql id="base_column">
+	id,f_trade_no,f_uid ,f_business_id,f_business_type,f_platform_trade_no,  f_platform , f_trade_account, f_realname ,
+	f_trade_fee,f_tctual_fee,f_status , f_pay_time, f_create_time,f_desc,
+	f_platform_desc
+	</sql>
+	
+	<select id="selectByTradeNoAsLock" parameterType="java.lang.String" resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />	 
+		from t_reward_withdraw_orders
+		where f_trade_no = #{tradeNo} for update	
+	</select>
+	
+	<select id="selectByTradeNo" parameterType="java.lang.String" resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />	 
+		from t_reward_withdraw_orders
+		where f_trade_no = #{tradeNo}			 	
+	</select>
+	
+	<select id="selectListByLimit" parameterType="java.util.Map" resultMap="baseResultMap">
+		select
+		<include refid="base_column" />	 
+		from t_reward_withdraw_orders
+		where f_business_id = #{bid} and f_business_type = #{type}
+		<if test="start &gt; 0">
+			and id &lt; #{start}
+		</if>	
+		order by f_trade_no desc
+		limit #{size}
+	</select>
+	
+	<select id="selectByStatus" parameterType="java.util.Map" resultMap="baseResultMap" >
+		
+		select <include refid="base_column" />
+    	from (
+	        select 
+	        <include refid="base_column" /> 	
+	        , if(date_add(f_create_time ,interval f_delay_for_day day) <![CDATA[<]]> #{date},1,0) as f_flag
+			from t_reward_withdraw_orders
+			where f_status = 0 or f_status = 1
+	        ) t where f_flag = 1
+		limit #{size}	
+	</select>
+	<insert id="insert">
+		insert into t_reward_withdraw_orders(
+		f_trade_no,f_uid ,f_business_id,f_business_type,f_platform_trade_no,  f_platform , f_trade_account, f_realname ,
+	f_trade_fee,f_tctual_fee,f_status , f_pay_time, f_create_time,f_desc,
+	f_platform_desc
+		)
+		values (
+			#{tradeNo},
+			#{uid},
+			#{bid},
+			#{type},
+			#{platformTradeNo},
+			#{platform},
+			#{tradeAccount},
+			#{realname},
+			#{tradeFee},
+			#{actualFee},
+			#{status},
+			#{payTime},
+			#{createTime},
+			#{desc},
+			#{platformDesc}
+		)
+	</insert>
+	
+	<update id="update">
+		update t_reward_withdraw_orders
+		<set>
+			<if test="status != null">
+				f_status = #{status}, 
+			
+			</if>
+			
+			<if test="payTime != null">
+				f_pay_time = #{payTime},
+			</if>
+			
+			<if test="platformTradeNo != null">
+				f_platform_trade_no = #{platformTradeNo},
+			</if>
+			
+			<if test="desc != null">
+				f_desc = #{desc},
+			</if>
+			
+			<if test="platformDesc != null">
+				f_platform_desc = #{platformDesc},
+			</if>
+		</set>
+		where f_trade_no = #{tradeNo}
+	</update>
+</mapper>

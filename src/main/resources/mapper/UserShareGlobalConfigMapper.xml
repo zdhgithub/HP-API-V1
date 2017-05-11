@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserShareGlobalConfigMapper">
+	
+	<select id="selectStatus" resultType="java.lang.Boolean">
+		select f_status
+		from  t_user_share_global_config
+		limit 1
+	</select>
+	
+	<update id="updatePojo" parameterType="java.lang.Boolean">
+		update t_user_share_global_config
+		set f_status = #{status}
+	</update>
+	
+	<insert id="insertPojo" parameterType="java.lang.Boolean">
+		insert into t_user_share_global_config (f_status)
+		values (#{status})
+	</insert>
+	
+</mapper>

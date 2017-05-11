@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserShareRewardMapper">
+	
+	<resultMap type="userShareReward" id="baseResultMap">
+		<result column="f_uid" property="uid"/>
+		<result column="f_amount" property="amount"/>
+		<result column="f_times" property="times"/>
+		<result column="f_update_time" property="updateTime"/>
+		<result column="f_create_time" property="createTime"/>
+	</resultMap>
+
+	<sql id="base_column">
+		f_uid,f_amount,f_times,f_update_time,f_create_time
+	</sql>
+
+
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_user_share_reward
+		where f_uid = #{uid}
+	</select>
+	
+	<select id="selectAsLockByUid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_user_share_reward
+		where f_uid = #{uid} for update
+	</select>
+	
+	<update id="updatePojo" >
+		update t_user_share_reward
+		set f_amount = #{amount},
+			f_times = #{times},
+			f_update_time = #{updateTime}
+		where f_uid = #{uid}
+	</update>
+	
+	<insert id="insertPojo">
+		insert into t_user_share_reward(
+			<include refid="base_column" />
+		)
+		values(
+			#{uid},
+			#{amount},
+			#{times},
+			#{updateTime},
+			#{createTime}
+		)
+	
+	</insert>
+
+</mapper>

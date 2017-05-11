@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.TicketCodeMapper">
+	<resultMap type="TicketCode" id="ticketCodeResultMap">
+		<id column="f_tc_id" property="code" />
+		<result column="f_tid" property="ticketId" />
+	</resultMap>
+	
+	<sql id="ticketCodeSql">
+		f_tc_id,
+		f_tid
+	</sql>
+	
+	<select id="selectList" resultMap="ticketCodeResultMap">
+		SELECT
+			<include refid="ticketCodeSql"></include>
+		FROM
+			t_user_tickets_code
+		<where>
+			<if test="code!=null">
+				and f_tc_id = #{code}
+			</if>
+			<if test="ticketId!=null">
+				and f_tid = #{ticketId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectById" parameterType="int" resultMap="ticketCodeResultMap">
+		SELECT
+			<include refid="ticketCodeSql"></include>
+		FROM
+			t_user_tickets_code
+		WHERE
+			f_tc_id = #{id}
+	</select>
+	
+	<select id="selectByTicketId" parameterType="long" resultMap="ticketCodeResultMap">
+		SELECT
+			<include refid="ticketCodeSql"></include>
+		FROM
+			t_user_tickets_code
+		WHERE
+			f_tid = #{tid}
+	</select>
+	
+	<insert id="insert" parameterType="TicketCode">
+		INSERT INTO t_user_tickets_code
+		VALUES
+			(#{code}, #{ticketId})
+	</insert>
+	
+	<delete id="deleteById" parameterType="int">
+		DELETE
+		FROM
+			t_user_tickets_code
+		WHERE
+			f_tc_id = #{id}
+	</delete>
+	
+	<delete id="deleteByTid" parameterType="java.lang.Long">
+		DELETE
+		FROM
+			t_user_tickets_code
+		WHERE
+			f_tid = #{tid}
+	</delete>
+</mapper>

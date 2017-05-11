@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RegionMapper">
+	
+	<resultMap type="region" id="baseResultMap">
+		<id column="f_id" property="id"/>
+		<result column="f_region_num" property="regionNum" />
+		<result column="f_region_name" property="regionName" />
+		<result column="f_pid" property="pid" />
+		<result column="f_count" property="count"/>
+		<result column="f_initial" property="initial"/>
+		<result column="f_region_recruit" property="regionRecruit"/>
+		<result column="f_open_flag" property="openFlag"/>
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_id,f_region_num,f_region_name,f_pid,f_initial,f_region_recruit,f_open_flag
+	</sql>
+	
+	<select id="selectAll" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_sys_cfg_region
+	</select>
+	
+	<select id="selectRecruitAll" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_sys_cfg_region 
+		WHERE f_open_flag in (1,2,3) and f_region_recruit=#{regionRecruit}
+	</select>
+	
+	<select id="selectOutsideRegion" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_sys_cfg_region 
+		WHERE f_open_flag in (1,2,3)
+	</select>
+	
+	<select id="selectByRegionId" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_sys_cfg_region 
+		WHERE f_region_num=#{regionNum}
+	</select>
+	
+	<update id="updateRecruit" parameterType="java.util.Map">
+		UPDATE t_sys_cfg_region
+		SET f_region_recruit = #{status}
+		WHERE
+			f_region_num = #{regionId}
+	</update>
+	
+	<update id="updateOutsideRecruit" parameterType="java.lang.Integer">
+		UPDATE t_sys_cfg_region
+		SET f_region_recruit = 0,f_open_flag = 0
+		WHERE
+			f_region_num = #{regionId}
+	</update>
+	
+	<select id="selectByPid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		 from t_sys_cfg_region
+		 where f_pid = #{pid}
+	</select>
+	
+	<select id="selectAllAndFishSiteCount" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select t2.f_region_num,t1.count ,t2.f_region_name,t2.f_pid,f_initial
+		from 
+			(select 
+			<choose>
+				<when test="category == 1">
+					 f_province_id
+				</when>
+				<when test="category == 2">
+					 f_city_id
+				</when>
+				<when test="category == 3">
+					 f_region_id
+				</when>
+			</choose>
+			,count(*) as count FROM t_fish_site where f_status = 1  
+			<choose>
+				<when test="category == 1">
+					group by f_province_id
+				</when>
+				<when test="category == 2">
+					group by f_city_id
+				</when>
+				<when test="category == 3">
+					group by f_region_id
+				</when>
+			</choose>
+			
+			) t1
+		right join t_sys_cfg_region t2 on 
+		
+		<choose>
+				<when test="category == 1">
+					 t1.f_province_id
+				</when>
+				<when test="category == 2">
+					 t1.f_city_id
+				</when>
+				<when test="category == 3">
+					 t1.f_region_id
+				</when>
+			</choose>
+		
+		 = t2.f_region_num
+	</select>
+	
+	<select id="selectCitys" resultMap="baseResultMap">
+		select 
+		f_id,t2.f_region_num,f_region_name,f_pid,f_initial
+		from 
+		(select f_region_num
+		from t_sys_cfg_region where f_pid = 0) t1
+		join t_sys_cfg_region t2 on t1.f_region_num = t2.f_pid
+		order by f_initial asc
+	</select>
+	
+	<select id="selectAllAndFishShopCount" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select t2.f_region_num,t1.count ,t2.f_region_name,t2.f_pid,f_initial
+		from 
+			(select 
+			<choose>
+				<when test="category == 1">
+					 f_fish_shop_province_id
+				</when>
+				<when test="category == 2">
+					 f_fish_shop_city_id
+				</when>
+				<when test="category == 3">
+					 f_fish_shop_region_id
+				</when>
+			</choose>
+			,count(*) as count FROM t_fish_shop where f_fish_shop_status = 1  
+			<choose>
+				<when test="category == 1">
+					group by f_fish_shop_province_id
+				</when>
+				<when test="category == 2">
+					group by f_fish_shop_city_id
+				</when>
+				<when test="category == 3">
+					group by f_fish_shop_region_id
+				</when>
+			</choose>
+			
+			) t1
+		right join t_sys_cfg_region t2 on 
+		
+		<choose>
+				<when test="category == 1">
+					 t1.f_fish_shop_province_id
+				</when>
+				<when test="category == 2">
+					 t1.f_fish_shop_city_id
+				</when>
+				<when test="category == 3">
+					 t1.f_fish_shop_region_id
+				</when>
+			</choose>
+		
+		 = t2.f_region_num
+	</select>
+	<select id="allRegion" resultMap="baseResultMap">
+		(SELECT f_region_num as f_pid FROM t_sys_cfg_region WHERE f_region_num IN (select DISTINCT f_partner_region_id from t_partner ) and f_pid=0)
+			UNION 
+		(SELECT  f_pid FROM t_sys_cfg_region WHERE f_region_num IN (select DISTINCT f_partner_region_id from t_partner ) and f_pid>0)
+	</select>
+	
+</mapper>

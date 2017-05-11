@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.DataMapper">
+
+	<select id="select" resultType="int" parameterType="int">
+		SELECT COUNT(f_order_id) FROM t_orders WHERE month(f_create_time) = #{month} AND f_status = 1
+	</select>
+</mapper>

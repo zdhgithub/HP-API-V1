@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.HpArticleMsgMapper">
+
+	<resultMap type="hpArticleMsg" id="baseResultMap">
+		<result column="f_article_id" property="articleId" />
+		<result column="f_uid" property="uid" />
+		<result column="f_msg_uid" property="msgUid" />
+		<result column="f_msg_type" property="msgType" />
+		<result column="f_msg_content" property="msgContent" />
+		<result column="f_msg_article_type" property="msgArticleType" />
+		<result column="f_msg_article" property="msgArticle" />
+		<result column="f_msg_time" property="msgTime" />
+		<result column="f_msg_is_delete" property="msgIsDelete" />
+
+		<result column="f_msg_nickname" property="msgNickname" />
+		<result column="f_msg_portrait" property="msgPortrait" />
+		
+	</resultMap>
+	
+	
+	<sql id="baseColumn">
+		f_article_id,f_uid,f_msg_uid,f_msg_type,f_msg_content,f_msg_article_type,f_msg_article,f_msg_time
+	</sql>
+	
+	<select id="selectUnique" resultMap="baseResultMap">
+		select *
+		from t_hp_article_msg
+		where f_article_id = #{articleId} and f_msg_uid = #{msgUid} and f_msg_type = #{msgType}
+	</select>
+	
+	<select id="selectListByUid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t1.*,t2.f_user_nickname as f_msg_nickname , t2.f_user_portriat as f_msg_portrait
+		from
+		(
+			select t.* 
+			from 
+			(
+				select *
+				from t_hp_article_msg
+				where f_uid = #{uid} and f_msg_is_delete = false
+				order by f_msg_time desc
+			)t where 1 = 1
+			<if test="msgTime != null">
+				and f_msg_time <![CDATA[ < ]]> #{msgTime}
+			</if>
+			limit #{size}
+		)t1 left join t_user t2 on t1.f_msg_uid = t2.f_uid
+	</select>
+	
+	<update id="updateMsgContentIsNull">
+		update t_hp_article_msg
+		set f_msg_content = null
+		where f_article_id = #{articleId} and f_msg_uid = #{msgUid} and f_msg_time = #{msgTime}
+	</update>
+	
+	<insert id="insertPojo">
+		insert into  t_hp_article_msg (
+			<include refid="baseColumn" />
+		)values(
+			#{articleId},
+			#{uid},
+			#{msgUid},
+			#{msgType},
+			#{msgContent},
+			#{msgArticleType},
+			#{msgArticle},
+			#{msgTime}
+		)
+	</insert>
+	
+	<delete id="deletePojo">
+		update t_hp_article_msg
+		set f_msg_is_delete = true
+		where f_article_id = #{articleId} and f_msg_uid = #{msgUid} and f_msg_time = #{msgTime}
+	</delete>
+	
+	<delete id="deleteAllByUid">
+		update t_hp_article_msg
+		set f_msg_is_delete = true
+		where f_uid = #{uid} 
+	</delete>
+	
+</mapper>

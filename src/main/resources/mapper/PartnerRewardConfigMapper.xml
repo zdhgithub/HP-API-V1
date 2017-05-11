@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.heipiao.api.mapper.PartnerRewardConfigMapper" >
+  <resultMap id="BaseResultMap" type="cn.heipiao.api.pojo.PartnerRewardConfig" >
+    <id column="f_id" property="id" />
+    <result column="f_type" property="type" />
+    <result column="f_region_num" property="regionId" />
+    <result column="f_scale" property="scale" />
+    <result column="f_grounding_sum" property="groundingSum" />
+    <result column="f_transaction_sum" property="transactionSum" />
+    <result column="f_interpellation" property="interpellation" />
+  </resultMap>
+  <sql id="baseColumnList" >
+    f_id, f_type, f_region_num, f_scale,f_grounding_sum,f_transaction_sum,f_interpellation
+  </sql>
+  
+  <select id="selectList" resultMap="BaseResultMap">
+  	select
+  	<include refid="baseColumnList"/>
+  	from t_sys_config_rebate_partner_policy
+  </select>  
+  
+  <select id="selectListByType"  parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	select
+  	<include refid="baseColumnList"/>
+  	from t_sys_config_rebate_partner_policy where f_type = #{type}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_sys_config_rebate_partner_policy
+    where f_id = #{id}
+  </delete>
+  
+  <insert id="insert" parameterType="cn.heipiao.api.pojo.PartnerRewardConfig" >
+    insert into t_sys_config_rebate_partner_policy (f_type, f_region_num, f_scale,f_grounding_sum,
+    f_transaction_sum,f_interpellation)
+    values (#{type}, #{regionId}, 
+      #{scale},#{groundingSum},#{transactionSum},#{interpellation})
+  </insert>
+   
+  <select id="selectByRegion" parameterType="java.util.Map" resultMap="BaseResultMap" >
+  		select
+  	<include refid="baseColumnList"/>
+  	from t_sys_config_rebate_partner_policy
+  	<where>
+  		<if test="type!=null">
+  			f_type = #{type}
+  		</if>
+  		<if test="regionId!=null">
+  		 and f_region_num = #{regionId}
+  		</if>
+  		<if test="scale!=null">
+  		and f_scale = #{scale}
+  		</if>
+  	</where> 
+  </select>
+ 
+  <update id="updateById" parameterType="cn.heipiao.api.pojo.PartnerRewardConfig" >
+    update t_sys_config_rebate_partner_policy
+    <set >
+      <if test="type != null" >
+        f_type = #{type},
+      </if>
+      <if test="regionId != null" >
+        f_region_num = #{regionId},
+      </if>     
+	 <if test="scale != null" >
+        f_scale = #{scale},
+     </if>
+     <if test="groundingSum != null" >
+       f_grounding_sum = #{groundingSum},
+     </if>
+     <if test="transactionSum != null" >
+       f_transaction_sum = #{transactionSum},
+     </if>
+     <if test="interpellation != null" >
+       f_interpellation = #{interpellation}
+     </if>
+    </set>
+    where f_id = #{id}
+  </update>
+</mapper>

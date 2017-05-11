@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CampaignMapper">
+	<resultMap type="Campaign" id="campaignResultMap">
+		<id column="f_id" property="id" />
+		<result column="f_name" property="name" />
+		<result column="f_type" property="type" />
+		<result column="f_type_name" property="typeName" />
+		<result column="f_quota" property="quota" />
+		<result column="f_count" property="count" />
+		<result column="f_begin_time" property="beginTime" />
+		<result column="f_end_time" property="endTime" />
+		<result column="f_entry_terminal_time" property="entryTerminalTime" />
+		<result column="f_bill" property="bill" />
+		<result column="f_background" property="background" />
+		<result column="f_province" property="province" />
+		<result column="f_province_name" property="provinceName" />
+		<result column="f_city" property="city" />
+		<result column="f_city_name" property="cityName" />
+		<result column="f_addr" property="addr" />
+		<result column="f_note" property="note" />
+		<result column="f_detail" property="detail" />
+		<result column="f_call" property="call" />
+		<result column="f_cost" property="cost" />
+		<result column="f_cost_explain" property="costExplain" />
+		<result column="f_status" property="status" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_video" property="video" />
+	</resultMap>
+	
+	<resultMap type="CampaignActor" id="campaignActorResultMap">
+		<id column="f_order_id" property="orderId" />
+		<result column="f_uid" property="uid" />
+		<result column="f_name" property="name" />
+		<result column="f_portriat" property="portriat" />
+		<result column="f_cid" property="cid" />
+		<result column="f_entry_time" property="entryTime" />
+		<result column="f_pay_type" property="payType" />
+		<result column="f_pay_amount" property="payAmount" />
+		<result column="f_lucky_number" property="luckyNumber" />
+		<result column="f_remark" property="remark" />
+		<result column="f_pay_status" property="payStatus" />
+		<result column="f_refund_status" property="refundStatus" />
+	</resultMap>
+	
+	<resultMap type="campaignType" id="campaignTypeResultMap">
+		<id column="f_id" property="id" />
+		<result column="f_name" property="name" />
+	</resultMap>
+	
+	<!-- 添加活动 -->
+	<insert id="addCampaign" keyProperty="id" useGeneratedKeys="true">
+		insert into t_campaign
+		(f_name,f_type,f_quota,f_begin_time,f_end_time,f_entry_terminal_time,f_bill,f_background,f_province,f_city,f_addr,f_note,f_detail,f_call,f_cost,f_cost_explain,f_status,f_create_time)
+		values (#{name}, #{type}, #{quota}, #{beginTime}, #{endTime}, #{entryTerminalTime}, #{bill}, #{background}, #{province}, #{city}, #{addr}, #{note}, #{detail}, #{call}, #{cost}, #{costExplain}, 0, #{createTime})
+	</insert>
+	
+	<!-- 更新活动 -->
+	<update id="updateCampaign">
+		update t_campaign
+		<set>
+		<if test="name != null">
+			f_name = #{name}, 
+		</if>
+		<if test="type != null">
+			f_type = #{type}, 
+		</if>		
+		<if test="quota != null">
+			f_quota = #{quota}, 
+		</if>		
+		<if test="beginTime != null">
+			f_begin_time = #{beginTime},
+		</if>		
+		<if test="endTime != null">
+			f_end_time = #{endTime},
+		</if>		
+		<if test="entryTerminalTime != null">
+			f_entry_terminal_time = #{entryTerminalTime}, 
+		</if>		
+		<if test="bill != null">
+			f_bill = #{bill},
+		</if>		
+		<if test="background != null">
+		 	f_background = #{background}, 
+		</if>		
+		<if test=" province != null">
+			f_province = #{province},
+		</if>		
+		<if test="city != null">
+		  	f_city = #{city},
+		</if>		
+		<if test="addr != null">
+			f_addr = #{addr}, 
+		</if>		
+		<if test=" note != null">
+			f_note = #{note},
+		</if>		
+		<if test="detail != null">
+			f_detail = #{detail},
+		</if>		
+		<if test="call != null">
+			f_call = #{call}, 
+		</if>		
+		<if test="cost != null">
+		  	f_cost = #{cost},
+		</if>		
+		<if test="costExplain != null">
+		   	f_cost_explain = #{costExplain},
+		</if>		
+		<if test="count != null">
+		   	 f_count = #{count},
+		</if>		
+		<if test="video != null">
+		   	f_video = #{video},
+		</if>		
+		<if test="status != null">
+		   	f_status = #{status},
+		</if>		
+		</set>
+		where f_id = #{id}
+	</update>
+	
+	<!-- 获取活动 -->
+	<select id="getCampaign" parameterType="java.lang.Integer" resultMap="campaignResultMap">
+		select c.f_id,c.f_name,f_type,cct.f_name as f_type_name,f_quota,f_begin_time,f_end_time,f_entry_terminal_time,f_bill,f_background
+			,f_province,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_province) as f_province_name
+			,f_city,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_city) as f_city_name
+			,f_addr,f_note,f_detail,f_call,f_cost,f_cost_explain,f_status,f_create_time,f_video,f_count
+		from t_campaign c left join t_campaign_cfg_type cct on c.f_type=cct.f_id
+		where c.f_id = #{id}
+	</select>
+	
+	<!-- 获取活动 -->
+	<select id="getCampaignById" parameterType="java.lang.Integer" resultMap="campaignResultMap">
+		select *
+		from t_campaign 
+		where f_id = #{id}
+	</select>
+	
+	<select id="getCampaignAsLock" resultMap="campaignResultMap">
+		select *
+		from t_campaign
+		where f_id = #{id} for update
+	</select>
+	
+	<!-- 获取活动列表 -->
+	<select id="getCampaignList" resultMap="campaignResultMap">
+		select c.f_id,c.f_name,f_type,cct.f_name as f_type_name,f_quota,f_begin_time,f_end_time,f_entry_terminal_time,f_bill,f_background
+		,f_province,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_province) as f_province_name
+		,f_city,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_city) as f_city_name
+		,f_addr,f_note,f_detail,f_call,f_cost,f_cost_explain,f_status,f_create_time,f_video
+		from t_campaign c left join t_campaign_cfg_type cct on c.f_type=cct.f_id
+		order by f_id desc
+		limit #{start}, #{size}
+	</select>
+	
+	<select id="getCampaignCount" resultType="java.lang.Integer">
+		select count(f_id)
+		from t_campaign
+	</select>
+	
+	<!-- 获取活动列表 （除未发布的）-->
+	<!-- <select id="getCampaignListByNormal" resultMap="campaignResultMap">
+		select c.f_id,c.f_name,f_type,cct.f_name as f_type_name,f_quota,f_begin_time,f_end_time,f_entry_terminal_time,f_bill,f_background
+		,f_province,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_province) as f_province_name
+		,f_city,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_city) as f_city_name
+		,f_addr,f_note,f_detail,f_call,f_cost,f_cost_explain,f_status,f_create_time,f_video
+		from t_campaign c left join t_campaign_cfg_type cct on c.f_type=cct.f_id
+		where f_status <![CDATA[>]]> 0
+		order by f_id desc
+		limit #{start}, #{size}
+	</select> -->
+	
+	<select id="getCampaignListByNormal" resultMap="campaignResultMap">
+		(select 1 as style,c.f_id,c.f_name,f_type,cct.f_name as f_type_name,f_quota,f_begin_time,f_end_time,f_entry_terminal_time,f_bill,f_background
+		,f_province,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_province) as f_province_name
+		,f_city,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_city) as f_city_name
+		,f_addr,f_note,f_detail,f_call,f_cost,f_cost_explain,f_status,f_create_time,f_video
+		from t_campaign c left join t_campaign_cfg_type cct on c.f_type=cct.f_id
+		where f_status <![CDATA[>]]> 0)
+		UNION (select 2 as style,f_id,f_name,null as f_type, null as f_type_name, null as f_quota,f_begin_time,f_end_time,null as f_entry_terminal_time,
+		f_banner as f_bill,null as f_background,null as f_province,null as f_province_name,null as f_city,null as f_city_name,null as f_addr,null as f_note,f_detail,null as f_call,
+		null as f_cost,null as f_cost_explain,f_status ,f_create_time, null as f_video from t_marketing_activity where f_status <![CDATA[>]]> 0)
+		ORDER BY f_begin_time DESC
+		limit #{start}, #{size}
+	</select>
+	
+	<!-- 获取指定活动参与人 -->
+	<select id="getCampaignActor" resultMap="campaignActorResultMap">
+		select *
+		from t_campaign_actor
+		where f_cid = #{cid} and f_uid = #{uid}
+	</select>
+	
+	<select id="getCampaignActorAsLock" resultMap="campaignActorResultMap">
+		select *
+		from t_campaign_actor
+		where f_order_id = #{orderId} for update
+	</select>
+	
+	<!-- 获取所有活动参与人 -->
+	<select id="getCampaignActorList" resultMap="campaignActorResultMap">
+		select ca.f_order_id,ca.f_uid,u.f_user_nickname as f_name,u.f_user_portriat as f_portriat,ca.f_cid,
+				ca.f_entry_time,ca.f_pay_type,ca.f_pay_amount,ca.f_lucky_number,ca.f_remark,ca.f_refund_status,
+				ca.f_pay_status
+		from t_campaign_actor ca LEFT JOIN t_user u ON ca.f_uid = u.f_uid
+		where ca.f_cid = #{id} and f_pay_status <![CDATA[>]]> 0 and f_pay_status <![CDATA[<]]> 3 
+		order by ca.f_entry_time asc
+		<!-- top参数为小程序取前n位参与人所用 -->
+		<if test="top > 0">
+			limit 0, #{top}
+		</if>
+	</select>
+
+	<!-- 获取所有活动参与人 不包含个人信息 -->
+	<select id="getCampaignActorLists" resultMap="campaignActorResultMap">
+		select ca.f_order_id,ca.f_uid,ca.f_cid,ca.f_entry_time,ca.f_pay_type,ca.f_pay_amount,ca.f_lucky_number,ca.f_remark,ca.f_refund_status,
+				ca.f_pay_status
+		from t_campaign_actor ca 
+		where ca.f_cid = #{id} and f_pay_status <![CDATA[>]]> 0 and f_pay_status <![CDATA[<]]> 3 
+	</select>
+	
+	<!-- 设置活动状态
+		设置状态为1已发布或2待抽签，需要状态为0未发布、5已暂停
+		设置状态为5暂停，需要状态为1
+		设置状态为6取消，需要状态为0未发布、1已发布、2待抽签
+	 -->
+	<update id="setCampaignStatus">
+		update t_campaign
+		set f_status = #{status}
+		where f_id = #{id}
+		<if test="status == 1">
+			and (f_status = 0 or f_status = 5)
+		</if>
+		<if test="status == 4">
+			and f_status = 3
+		</if>
+		<if test="status == 5">
+			and f_status = 1
+		</if>
+		<if test="status == 6">
+			and (f_status = 0 or f_status = 1 or f_status = 2)
+		</if>
+	</update>
+	
+	<!-- 删除活动（仅能删除未发布活动） -->
+	<delete id="delCampaign" parameterType="java.lang.Integer">
+		delete from t_campaign
+		where f_id = #{id} and f_status = 0
+	</delete>
+	
+	<!-- 设置签号 -->
+	<update id="setLuckyNumber">
+		update t_campaign_actor
+		set f_lucky_number=#{luckyNumber}
+		where f_order_id = #{id}
+	</update>
+	
+	<!-- 获取活动详情之总人数 -->
+	<select id="getCampaignActorCount" resultType="java.lang.Integer">
+		select count(f_order_id) as ActorCount
+		from t_campaign_actor
+		where f_cid=#{id}
+	</select>
+	
+	<!-- 获取活动详情之总费用 -->
+	<select id="getCampaignActorPayAmount" resultType="java.lang.Float">
+		select sum(f_pay_amount) PayAmount
+		from t_campaign_actor
+		where f_cid=#{id}
+		and f_pay_type=1
+	</select>
+	
+	<!-- 获取活动备注 -->
+	<select id="getCampaignRemark" resultType="java.lang.String">
+		select f_remark from t_campaign
+		where f_id = #{id}
+	</select>
+	
+	<!-- 设置活动备注 -->
+	<update id="setCampaignRemark">
+		update t_campaign
+		set f_remark=#{remark}
+		where f_id=#{id}
+	</update>
+	
+	<!-- 报名 -->
+	<insert id="addActor">
+		insert into t_campaign_actor(f_order_id,f_uid,f_cid,f_entry_time,f_pay_type,f_pay_amount,f_pay_status,f_refund_status)
+		values(#{orderId},#{uid},#{cid},#{entryTime},#{payType},#{payAmount},#{payStatus},#{refundStatus})
+	</insert>
+	
+	
+	<update id="updateCampaignActor">
+		update t_campaign_actor
+		set f_pay_status = #{payStatus},
+			f_refund_status = #{refundStatus},
+			f_entry_time = #{entryTime},
+			f_pay_type = #{payType}
+		where f_order_id = #{orderId}
+	</update>
+	
+	<update id="updateCampaignActorByCidAndUid">
+		update t_campaign_actor
+		set f_pay_status = #{payStatus},
+			f_refund_status = #{refundStatus},
+			f_entry_time = #{entryTime},
+			f_pay_type = #{payType},
+			f_order_id = #{orderId}
+		where f_cid = #{cid} and f_uid = #{uid}
+	</update>
+	
+	<update id="updateCampaignActorRefundStatus">
+		update t_campaign_actor
+		set f_refund_status = #{refundStatus}
+		where f_order_id = #{orderId}
+	</update>
+	
+	<select id="getCampaignActorAll" resultMap="campaignActorResultMap">
+		select * 
+		from t_campaign_actor
+		where f_cid = #{cid}
+	</select>
+	
+	<update id="updateBatchCampaignActor" parameterType="java.util.List">
+		 <foreach collection="list" item="item" separator=";">  
+                update t_campaign_actor   
+                <set>  
+                    f_lucky_number = #{item.luckyNumber}
+                </set>  
+                where f_order_id = ${item.orderId}  
+         </foreach>  
+	</update>
+	
+	<!-- 获取所有类型 -->
+	<select id="getCampaignTypesAll" resultMap="campaignTypeResultMap">
+		select * 
+		from t_campaign_cfg_type
+	</select>
+</mapper>

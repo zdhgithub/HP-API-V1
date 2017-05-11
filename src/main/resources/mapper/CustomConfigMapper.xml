@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CustomConfigMapper">
+	
+	<select id="selectOne" resultType="java.lang.Integer">
+		SELECT f_config FROM t_custom_config WHERE f_site_id = #{id} AND f_type = #{type}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_custom_config VALUES(#{id},#{type},#{config})
+	</insert>
+	
+	<update id="update">
+		UPDATE t_custom_config SET f_config = #{config} WHERE f_site_id = #{id} AND f_type =#{type}
+	</update>
+</mapper>

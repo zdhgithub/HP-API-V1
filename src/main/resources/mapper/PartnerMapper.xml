@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PartnerMapper">
+	<resultMap type="Partner" id="partnerResultMap">
+		<id column="f_partner_id" property="pId" />
+		<result column="f_partner_flag" property="pFlag" />
+		<result column="f_partner_remarks" property="pRemark" />
+		<result column="f_partner_region_id" property="pRegionId" />
+		<result column="f_create_time" property="pCreateTime" />
+		<result column="f_giving_out_coupon_count" property="givingOutCouponCount" />
+		<result column="f_giving_out_coupon_sum" property="givingOutCouponSum" />
+		<result column="f_giving_out_coupon_Fee" property="givingOutCouponFee" />
+		<result column="f_is_exists" property="isExists" />
+		
+		<!-- user -->
+		<result column="f_uid" property="id" />
+		<result column="f_username" property="username" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_user_password" property="password" />
+		<result column="f_user_realname" property="realname" />
+		<result column="f_user_birthday" property="birthday" />
+		<result column="f_user_sex" property="sex" />
+		<result column="f_user_phonenum" property="phone" />
+		<result column="f_user_email" property="email" />
+		<result column="f_user_openid" property="openId" />
+		<result column="f_user_source" property="source" />
+		<result column="f_user_register_time" property="regisTime" />
+		<result column="f_user_portriat" property="portriat" />
+		<result column="f_user_remarks" property="remark" />
+		<result column="f_user_last_logintime" property="lastLoginTime" />
+		<result column="f_user_status" property="status" />
+	</resultMap>
+	<sql id="partnerSql">
+		f_partner_id,f_partner_flag,f_partner_remarks,f_partner_region_id,f_uid,f_create_time,f_giving_out_coupon_count,f_giving_out_coupon_sum
+		,f_giving_out_coupon_Fee,f_is_exists
+	</sql>
+	
+	<sql id="partnerSqlExt">
+		<!-- partner -->
+		f_partner_id,f_partner_flag,f_partner_remarks,f_partner_region_id,f_create_time,f_giving_out_coupon_count,f_giving_out_coupon_sum,
+		<!-- user -->
+		u.f_uid,f_username,f_user_nickname,f_user_password,f_user_realname,f_user_birthday,f_user_sex,f_user_phonenum,
+		f_user_email,f_user_openid,f_user_source,f_user_register_time,f_user_region_id,f_user_portriat,f_user_remarks,
+		f_user_last_logintime,f_user_status
+	</sql>
+	
+	<select id="getPartnerUIDs" resultType="int">
+		SELECT f_uid FROM t_partner
+	</select>
+	
+	<select id="selectListByOneCondition" parameterType="java.util.Map" resultMap="partnerResultMap">
+		select * 
+		from 
+		(select
+		 u.f_uid,
+			u.f_username,
+			u.f_user_nickname,
+			u.f_user_password,
+			u.f_user_realname,
+			u.f_user_birthday,
+			u.f_user_sex,
+			u.f_user_phonenum,
+			u.f_user_email,
+			u.f_user_openid,
+			u.f_user_source,
+			u.f_user_register_time,
+			u.f_user_portriat,
+			u.f_user_remarks,
+			u.f_user_last_logintime,
+			u.f_user_status,
+			p.f_partner_id,
+			p.f_partner_flag,
+			p.f_partner_remarks,
+			p.f_partner_region_id,
+			p.f_create_time
+			
+		from (
+        		select * 
+				from t_partner where f_is_exists = true)
+		 p left join t_user u on p.f_uid = u.f_uid and f_is_exists = true) t1
+		where 1 = 1 
+		
+			<if test="region != null">
+				and (f_partner_region_id in(
+					SELECT f_region_num from t_sys_cfg_region WHERE f_pid = #{region})
+					or f_partner_region_id = #{region}
+				) 
+			</if>
+			<if test="likeName != null">
+				and (f_username  LIKE CONCAT('%',#{likeName},'%')
+		 or f_user_nickname like CONCAT('%',#{likeName},'%')
+		 or f_user_phonenum like CONCAT('%',#{likeName},'%')
+		 or f_user_realname like CONCAT('%',#{likeName},'%'))
+			</if>
+	
+		order by f_create_time
+		<if test="start !=null and size != null">
+			limit #{start},#{size}	
+		</if>
+	</select> 
+		
+	<select id="getPartnerById" parameterType="int" resultMap="partnerResultMap">
+		SELECT
+		<include refid="partnerSqlExt"></include>
+		FROM
+			t_partner p
+		LEFT JOIN t_user u ON p.f_uid = u.f_uid
+		WHERE u.f_uid=#{id} and p.f_is_exists = true
+	</select>
+	
+	<select id="getByPartnerId" parameterType="int" resultMap="partnerResultMap">
+		SELECT
+		<include refid="partnerSqlExt"></include>
+		FROM
+			t_partner p
+		LEFT JOIN t_user u ON p.f_uid = u.f_uid
+		WHERE u.f_uid=#{id}
+	</select>
+	
+	<insert id="savePartner" keyProperty="pId" useGeneratedKeys="true" parameterType="Partner">
+		INSERT INTO t_partner
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="pFlag!=null">
+				f_partner_flag,
+			</if>
+			<if test="pRemark!=null">
+				f_partner_remarks,
+			</if>
+			<if test="pRegionId!=null">
+				f_partner_region_id,
+			</if>
+			<if test="id!=null">
+				f_uid,
+			</if>
+			<if test="pCreateTime!=null">
+				f_create_time,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="pFlag!=null">
+				#{pFlag},
+			</if>
+			<if test="pRemark!=null">
+				#{pRemark},
+			</if>
+			<if test="pRegionId!=null">
+				#{pRegionId},
+			</if>
+			<if test="id!=null">
+				#{id},
+			</if>
+			<if test="pCreateTime!=null">
+				#{pCreateTime},
+			</if>
+		</trim>
+	</insert>
+	
+	<resultMap type="cn.heipiao.api.pojo.Region" id="regionResultMap">
+		<id column="f_id" property="id"/>
+		<result column="f_region_num" property="regionNum" />
+		<result column="f_region_name" property="regionName" />
+		<result column="f_pid" property="pid" />
+		<result column="f_count" property="count"/>
+		<result column="f_initial" property="initial"/>
+	</resultMap>
+	
+	<select id="getPartnerRegion" resultMap="regionResultMap" >
+		 select 
+			f_id,f_region_num,f_region_name,f_pid,f_initial
+		 from 
+		 	t_sys_cfg_region 
+		 where 
+		 	f_region_num in
+		(
+			select DISTINCT f_partner_region_id from t_partner where f_is_exists = true
+		)
+	</select>
+	
+	<update id="updatePartner" parameterType="Partner">
+		UPDATE t_partner
+		<set>
+			<if test="pFlag!=null">
+				f_partner_flag=#{pFlag},
+			</if>
+			<if test="pRemark!=null">
+				f_partner_remarks=#{pRemark},
+			</if>
+			<if test="pRegionId!=null">
+				f_partner_region_id=#{pRegionId},
+			</if>
+		</set>
+		<where>
+			f_uid=#{id}
+		</where>
+	</update>
+	
+	<select id="selectByPartnerIdAsLock" parameterType="java.lang.Integer" resultMap="partnerResultMap">
+		select 
+		<include refid="partnerSql" />
+		from t_partner
+		where f_partner_id = #{partnerId} for update
+	</select>
+	
+	<select id="selectByUidAsLock" parameterType="java.lang.Long" resultMap="partnerResultMap">
+		select 
+		<include refid="partnerSql" />
+		from t_partner
+		where f_uid=#{uid} for update
+	</select>
+	
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="partnerResultMap">
+		select 
+		<include refid="partnerSql" />
+		from t_partner
+		where f_uid=#{uid} and f_is_exists = true
+	</select>
+	
+	<select id="selectPartnerByUid" parameterType="java.lang.Long" resultMap="partnerResultMap">
+		select 
+		<include refid="partnerSql" />
+		from t_partner
+		where f_uid=#{uid}
+	</select>
+	
+	<select id="selectByPartnerId" parameterType="java.lang.Integer" resultMap="partnerResultMap">
+		select 
+		<include refid="partnerSql" />
+		from t_partner
+		where f_partner_id = #{partnerId} and  f_is_exists = true
+	</select>
+	
+	<update id="updateCouponCount">
+		update t_partner
+		set f_giving_out_coupon_count = #{givingOutCouponCount},
+		    f_giving_out_coupon_sum = #{givingOutCouponSum}
+		where f_partner_id = #{pId}
+	</update>
+	
+	<update id="updateCouponFeeAndSum">
+		update t_partner
+		set f_giving_out_coupon_fee = #{givingOutCouponFee},
+		f_giving_out_coupon_sum = #{givingOutCouponSum}
+		where f_partner_id = #{pId}
+	</update>
+	
+	<update id="updateWithdrawDate">
+		update t_partner
+		set f_withdraw_date = #{withdrawDate}
+		where f_partner_id = #{pId}
+	</update>
+	
+	<update id="updateIsExists" parameterType="java.util.Map">
+		update t_partner
+		set f_is_exists = #{isExists}
+		where f_partner_id = #{partnerId}
+	</update>
+	
+</mapper>

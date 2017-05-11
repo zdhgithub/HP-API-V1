@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ArticleUserBehaviorMapper">
+	
+	<resultMap type="ArticleUserBehavior" id="baseResultMap">
+		<result column="f_article_user_behavior_id" property="id"/>
+		<result column="f_article_id" property="articleId"/>
+		<result column="f_article_user_behavior_type" property="type"/>
+		<result column="f_article_user_behavior_count" property="count"/>
+		<result column="f_update_time" property="updateTime"/>
+		<result column="f_create_time" property="createTime"/>
+	</resultMap>
+
+	<sql id="base_column">
+		f_article_user_behavior_id, f_article_id, f_article_user_behavior_type, f_article_user_behavior_count, 
+		f_update_time, f_create_time
+	</sql>
+
+	<select id="selectBehavior" parameterType="ArticleUserBehavior" resultMap="baseResultMap">
+		SELECT <include refid="base_column" />
+		FROM `t_article_user_behavior` 
+		WHERE f_article_id=#{articleId} AND f_article_user_behavior_type=#{type}
+	</select>
+
+	<insert id="add" parameterType="ArticleUserBehavior">
+		insert into `t_article_user_behavior` (
+			f_article_id, f_article_user_behavior_type, f_article_user_behavior_count, 
+			f_update_time, f_create_time
+		)
+		values(
+			#{articleId},
+			#{type},
+			1,
+			CURRENT_TIMESTAMP,
+			CURRENT_TIMESTAMP
+		)
+	</insert>
+	
+	<update id="updateCount" parameterType="ArticleUserBehavior">
+		UPDATE `t_article_user_behavior` AS taub 
+			INNER JOIN  (
+				SELECT f_article_user_behavior_id, f_article_user_behavior_count+1 f_count1 
+				FROM `t_article_user_behavior` WHERE f_article_id=#{articleId} AND f_article_user_behavior_type=#{type}
+			)AS taubr ON taub.f_article_user_behavior_id = taubr.f_article_user_behavior_id
+		SET f_article_user_behavior_count = taubr.f_count1
+		WHERE f_article_id=#{articleId} AND f_article_user_behavior_type=#{type}
+	</update>
+
+</mapper>

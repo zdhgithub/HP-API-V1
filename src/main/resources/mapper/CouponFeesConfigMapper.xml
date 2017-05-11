@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CouponFeesConfigMapper">
+
+	<resultMap type="couponFeesConfig" id="baseResultMap">
+		<result column="f_service_id" property="serviceId" />
+		<result column="f_category_id" property="categoryId" />
+		<result column="f_max" property="max" />
+		<result column="f_min" property="min" />
+		<result column="f_fee" property="fee" />
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_service_id,f_category_id,f_max,f_min,f_fee
+	</sql>
+
+	<!-- <select id="selectUnique" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_coupon_fees_config
+		where f_service_id = #{serviceId} and f_category_id = #{categoryId}
+	</select> -->
+
+	<select id="selectById" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_coupon_fees_config
+		where f_service_id = #{serviceId} and f_category_id = #{categoryId}
+	</select>
+
+</mapper>

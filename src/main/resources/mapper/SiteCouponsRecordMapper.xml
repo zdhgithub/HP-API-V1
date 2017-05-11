@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.SiteCouponsRecordMapper">
+
+	<resultMap type="siteCouponsRecord" id="baseResultMap">
+		<id column="f_id" property="id" />
+		<result  column="f_site_id" property="siteId" />
+		<result  column="f_uid" property="uid" />
+		<result  column="f_cid" property="cid" />
+		
+		<result  column="f_user_nickname" property="nickname" />
+		<result  column="f_user_portriat" property="portriat" />
+		<result  column="f_status" property="status" />
+		<result  column="f_get_time" property="getTime" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_id,f_site_id,f_uid,f_cid
+	</sql>
+
+	<select id="selectByCid" parameterType="java.lang.Long" resultMap="baseResultMap"> 
+		select * 
+		from t_site_coupons_record
+		where f_cid = #{cid}
+	</select>
+
+	<select id="selectList" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t3.f_uid,t3.f_status,t3.f_get_time,t4.f_user_nickname
+		from
+			(select t1.f_uid,t2.f_status,t2.f_get_time
+			from
+				(select * from t_site_coupons_record where f_id = #{id})
+				 t1 join t_coupons t2 on t1.f_cid = t2.f_cid
+				 <if test="status &lt; 2">
+				 	and t2.f_status = #{status}
+				 </if>
+				 <if test="index != null">
+				 	and t2.f_get_time <![CDATA[<]]> #{index}
+				 </if>
+				 order by t2.f_get_time desc
+				 limit #{size}
+			) t3 left join t_user t4 on t3.f_uid = t4.f_uid
+		
+	</select>
+
+	<select id="selectConsumeUserBySiteId" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select t2.f_uid,t2.f_user_nickname,t2.f_user_portriat
+		from(
+			select distinct f_uid
+			from t_user_tickets
+			where f_fish_site_id = #{siteId} and f_status = 1
+		) t1 join t_user t2 on t1.f_uid = t2.f_uid
+	</select>
+
+	<select id="selectFocusSiteBySiteId" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select t2.f_uid,t2.f_user_nickname,t2.f_user_portriat
+		from(
+			select f_uid 
+			from t_focus
+			where f_fid = #{siteId}
+		) t1 join t_user t2 on t1.f_uid = t2.f_uid
+	</select>
+	
+	<select id="isGet" parameterType="java.util.Map" resultType="boolean">
+		select if(count(*) > 0,true,false)
+		from t_site_coupons_record
+		where f_id = #{id} and f_uid = #{uid}
+		limit 1
+	</select>
+	
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into t_site_coupons_record(
+			<include refid="base_column" />
+		)
+		values
+		<foreach collection="list" item="item" separator="," >
+			(
+				#{item.id},
+				#{item.siteId},
+				#{item.uid},
+				#{item.cid}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insertPojo" >
+		insert into t_site_coupons_record(
+			<include refid="base_column" />
+		)
+		values
+			(
+				#{id},
+				#{siteId},
+				#{uid},
+				#{cid}
+			)
+	</insert>
+
+</mapper>

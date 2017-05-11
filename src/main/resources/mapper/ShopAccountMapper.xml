@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ShopAccountMapper">
+	
+	<resultMap type="shopAccount" id="baseResultMap">
+		<result column="f_uid" property="uid" />
+		<result column="f_shop_id" property="shopId" />
+		<result column="f_balance" property="balance" />
+		<result column="f_withdraw_time" property="withdrawTime" />
+		<result column="f_withdraw_rule_id" property="withdrawRuleId" />
+		<result column="f_pay_code" property="payCode" />
+		
+		<!-- 附加字段 -->
+		<result column="f_fish_shop_name" property="shopName" />
+		
+	</resultMap>
+	
+	<resultMap type="shopFinance" id="financeMap">
+		<result column="f_shop_id" property="shopId" />
+		<result column="f_uid" property="uid" />
+		<result column="f_shop_realname" property="shopRealname" />
+		<result column="f_shop_phone_num" property="shopPhoneNum" />
+		<result column="f_shop_name" property="shopName" />
+		<result column="f_shop_img" property="shopImg" />
+		<result column="f_balance" property="balance" />
+		<result column="f_trade_fee" property="tradeFee" />
+	</resultMap>
+	
+	
+	<sql id="base_column">
+		f_uid,f_shop_id,f_balance,f_withdraw_time,f_withdraw_rule_id,f_pay_code
+	</sql>
+	
+	<select id="shopAccountList" parameterType="java.util.Map" resultMap="financeMap">
+		select t5.*, if(t6.f_trade_fee is null ,0,t6.f_trade_fee / 100) as f_trade_fee
+		from
+		(
+			select t3.*,if(t4.f_balance is null ,0,t4.f_balance) f_balance
+			from 
+			(
+				select t1.* ,t2.f_user_realname as f_shop_realname,t2.f_user_phonenum as f_shop_phone_num
+				from 
+				(
+					select f_fish_shop_name as f_shop_name,f_fish_shop_id as f_shop_id ,f_uid ,f_fish_shop_main_img as f_shop_img
+		            from t_fish_shop 
+		            where f_uid is not null
+		            <if test="region != null">
+		            	and f_fish_shop_city_id in (#{region})
+		            </if>
+		            <if test="shopName != null">
+		            	and f_fish_shop_name like #{shopName}
+		            </if>
+				) t1 left join t_user t2 on t1.f_uid = t2.f_uid
+			)t3 left join t_shop_account t4 on t3.f_shop_id = t4.f_shop_id
+		)t5 left join 
+		(
+		select max(f_shop_id) f_shop_id , sum(f_trade_fee) as f_trade_fee from t_shop_withdraw_orders where f_status <![CDATA[<]]> 3 group by f_shop_id
+		)t6 on t5.f_shop_id = t6.f_shop_id
+		<if test="sort &gt; 0">
+		order by
+		 <choose>
+		 	<when test="sort == 1">
+				f_balance desc
+		 	</when>
+		 	<otherwise>
+		 		f_trade_fee desc
+		 	</otherwise>
+		 </choose>
+		
+		</if>
+		limit #{page},#{size}
+	</select>
+	
+	
+	<select id="shopAccountListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*)
+		from
+		(
+			select t3.*,if(t4.f_balance is null ,0,t4.f_balance) f_balance
+			from 
+			(
+				select t1.* ,t2.f_user_realname as f_shop_realname,t2.f_user_phonenum as f_shop_phone_num
+				from 
+				(
+					select f_fish_shop_name as f_shop_name,f_fish_shop_id as f_shop_id ,f_uid ,f_fish_shop_main_img as f_shop_img
+		            from t_fish_shop 
+		            where f_uid is not null
+		            <if test="region != null">
+		            	and f_fish_shop_city_id in (#{region})
+		            </if>
+		            <if test="shopName != null">
+		            	and f_fish_shop_name like #{shopName}
+		            </if>
+				) t1 left join t_user t2 on t1.f_uid = t2.f_uid
+			)t3 left join t_shop_account t4 on t3.f_shop_id = t4.f_shop_id
+		)t5 left join 
+		(
+		select max(f_shop_id) f_shop_id , sum(f_trade_fee) as f_trade_fee from t_shop_withdraw_orders where f_status <![CDATA[<]]> 3 group by f_shop_id
+		)t6 on t5.f_shop_id = t6.f_shop_id
+	</select>
+	
+	
+	<select id="getShopByPayCode" parameterType="java.lang.String" resultMap="baseResultMap">
+		select t1.f_uid,t1.f_shop_id,t1.f_balance,t1.f_withdraw_time,t1.f_withdraw_rule_id,t1.f_pay_code,
+			t2.f_fish_shop_name
+		from
+		(select * 
+		from t_shop_account
+		where f_pay_code = #{payCode}) t1 left join t_fish_shop t2 on t1.f_shop_id = t2.f_fish_shop_id 
+	</select>
+	
+	<select id="selectUnique" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_shop_account
+		where f_shop_id = #{shopId} 
+	</select>
+	
+	<select id="selectUniqueAsLock" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_shop_account
+		where f_shop_id = #{shopId} for update
+	</select>
+	
+	<select id="selectPayCode" parameterType="java.util.Map" resultMap="baseResultMap">
+		select f_pay_code 
+		from t_shop_account
+		where f_shop_id = #{shopId} 
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_shop_account(
+		<include refid="base_column" />
+		)
+		values(
+			#{uid},		
+			#{shopId},		
+			#{balance},		
+			#{withdrawTime},		
+			#{withdrawRuleId},	
+			#{payCode}	
+		)
+	</insert>
+	
+	<update id="updateBalance" parameterType="java.util.Map">
+		update t_shop_account
+		set f_balance = #{balance}
+		where f_shop_id = #{shopId}
+	</update>
+	
+	<update id="updatePojo" >
+		<!-- update t_shop_account 
+		set
+			f_balance = #{balance},
+			f_withdraw_time = #{withdrawTime}
+		where f_shop_id = #{shopId} -->
+		
+		update t_shop_account
+		<set>
+			<if test="balance != null">
+				f_balance = #{balance},
+			</if>
+			<if test="withdrawTime != null">
+				f_withdraw_time = #{withdrawTime},
+			</if>
+			<if test="uid != null">
+				f_uid = #{uid},
+			</if>
+			<if test="payCode != null">
+				f_pay_code = #{payCode},
+			</if>
+			<if test="withdrawRuleId != null">
+				f_withdraw_rule_id = #{withdrawRuleId},
+			</if>
+		</set> 
+		where f_shop_id = #{shopId}
+	</update>
+	
+	<update id="updateRuleId" >
+		update t_shop_account 
+		set	f_withdraw_rule_id = #{withdrawRuleId}
+		where f_uid = #{uid} and f_shop_id = #{shopId}
+	</update>
+	
+</mapper>

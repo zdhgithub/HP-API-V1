@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RegistMapper">
+	<resultMap type="PushUser" id="BaseResultMap">
+		<id column="f_mobile" property="mobile"/>
+		<result column="f_registration_id" property="registration_id"/>
+		<result column="f_tags" property="tags"/>
+		<result column="f_alias" property="alias"/>
+		<result column="f_type" property="type"/>
+		<result column="f_create_time" property="createTime"/>
+		<result column="f_os" property="os"/>
+	</resultMap>
+	
+	<sql id="BaseSql">f_mobile,f_registration_id,f_tags,f_alias,f_create_time,f_type,f_os</sql>
+	
+	<select id="selectPojo" resultMap="BaseResultMap">
+		SELECT <include refid="BaseSql"></include> FROM t_regist 
+		WHERE f_mobile = #{mobile} and f_type = #{type}
+	</select>
+	
+	<select id="selectOne" resultType="java.lang.String">
+		SELECT f_registration_id FROM t_regist WHERE f_mobile = #{mobile} and f_type = #{type}
+	</select>
+	
+	<select id="selectList" resultType="java.lang.String">
+		SELECT f_registration_id FROM t_regist
+	</select>
+	
+	<insert id="insert" parameterType="PushUser">
+		INSERT INTO t_regist(f_mobile,f_registration_id,f_tags,f_alias,f_create_time,f_type,f_os) 
+		VALUES(#{mobile},#{registration_id},#{tags},#{alias},#{createTime},#{type},#{os})
+	</insert>
+	
+	<update id="update">
+		UPDATE t_regist SET f_registration_id = #{registration_id},f_alias = #{alias},f_tags = #{tags},f_os = #{os} 
+		WHERE f_mobile = #{mobile} and f_type = #{type}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM t_regist WHERE f_mobile = #{mobile} and f_type = #{type}
+	</delete>
+</mapper>

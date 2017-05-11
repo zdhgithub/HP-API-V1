@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.SysPicturesMapper">
+
+	<resultMap id="BaseResultMap" type="SysPictures">
+		<id column="f_id" jdbcType="VARCHAR" property="id" />
+		<result column="f_type" jdbcType="INTEGER" property="type" />
+		<result column="f_picture" jdbcType="VARCHAR" property="picture" />
+		<result column="f_update_time" jdbcType="INTEGER" property="updatetime" />
+		<result column="f_create_time" jdbcType="INTEGER" property="createtime" />
+	</resultMap>
+		
+	<sql id="base_column_list"> 
+		f_id, f_type, f_picture, f_update_time, f_create_time
+	</sql>
+	
+		
+	<insert id="insertNew" useGeneratedKeys="true" keyProperty="id" parameterType="SysPictures">
+		insert into t_sys_pictures (`f_id`,`f_type`,`f_picture`,`f_create_time`)
+		values (#{id}, #{type}, #{picture}, CURRENT_TIMESTAMP)
+	</insert>
+	
+	<select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="base_column_list" /> 
+		FROM t_sys_pictures
+		WHERE f_id = #{id}
+	</select>
+	
+	<update id="updateById" parameterType="SysPictures">
+ 		update t_sys_pictures
+ 		<set>
+ 			<if test="type != null">
+ 				f_type = #{type},
+ 			</if>
+ 			<if test="picture != null">
+ 				f_picture = #{picture},
+ 			</if>
+ 		</set>
+ 		where f_id = #{id}
+	</update>
+	
+	<delete id="deleteById" parameterType="SysPictures">
+ 		DELETE FROM t_sys_pictures
+ 		WHERE f_id = #{id}
+	</delete>	
+	
+	<select id="queryList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT f_id, f_type, f_update_time, f_create_time
+			<if test="data == 1">
+				, f_picture
+			</if>
+		<include refid="sql_queryList" /> 
+		ORDER BY f_create_time
+		LIMIT #{startItem},#{pagesize}
+	</select>
+	
+	<sql id="sql_queryList"> 
+		FROM t_sys_pictures 
+		WHERE 1=1
+			<if test="type != null">
+				AND f_type = #{type}
+			</if>
+	</sql>
+	
+	<select id="queryListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(0)
+		<include refid="sql_queryList" /> 
+	</select>
+	
+	<select id="selectMainIsNoneAll" parameterType="java.util.Map" resultMap="BaseResultMap">
+		<if test="type != null and type == 1">
+			SELECT `f_fish_site_id` AS id 
+			FROM `t_fish_site` 
+			WHERE (`f_main_img_none` IS NULL OR LENGTH(TRIM(`f_main_img_none`))=0)
+<!-- 			      AND (`f_main_img` IS NULL OR LENGTH(TRIM(`f_main_img`))=0)  -->
+		</if>
+		<if test="type != null and type == 3">
+			SELECT `f_fish_shop_id` as id 
+			FROM `t_fish_shop` 
+			WHERE (`f_fish_shop_main_img_none` IS NULL OR LENGTH(TRIM(`f_fish_shop_main_img_none`))=0)
+<!-- 				  AND (`f_fish_shop_main_img` IS NULL OR LENGTH(TRIM(`f_fish_shop_main_img`))=0)  -->
+		</if>
+	</select>
+
+</mapper>

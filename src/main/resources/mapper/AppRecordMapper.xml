@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.AppRecordMapper">
+	<resultMap type="AppRecord" id="BaseResultMap">
+		<id column="f_id" property="id"/>
+		<result column="f_version" property="version" />
+		<result column="f_datetime" property="createTime" />
+		<result column="f_longitude" property="lng" />
+		<result column="f_latitude" property="lat" />
+		<result column="f_city" property="city" />
+		<result column="f_district" property="district" />
+		<result column="f_addr" property="addr" />
+		<result column="f_uid" property="uid" />
+		<result column="f_ip" property="ip" />
+		<result column="f_telecom" property="telecom" />
+		<result column="f_net_type" property="netType" />
+		<result column="f_mb_vendor" property="vendor" />
+		<result column="f_mb_model" property="model" />
+		<result column="f_os" property="os" />
+	</resultMap>
+	
+	<sql id="BaseSql">
+		f_id,f_version,f_datetime,f_longitude,f_latitude,f_city,f_district,f_addr,f_uid,f_ip,f_telecom,f_net_type
+		,f_mb_vendor,f_mb_model,f_os
+	</sql>
+	
+	<select id="selectList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT <include refid="BaseSql"></include> FROM t_log_user_login
+	</select>
+	
+	<select id="selectOneLoseTime" resultType="java.util.Date">
+		SELECT f_lose_time FROM t_login_token WHERE f_uid = #{uid} AND f_app = #{app}
+	</select>
+	
+	<insert id="insert" parameterType="AppRecord">
+		INSERT INTO t_log_user_login
+		VALUES
+			(
+				NULL,
+				#{version},
+				#{createTime},
+				#{lng},
+				#{lat},
+				#{city},
+				#{district},
+				#{addr},
+				#{uid},
+				#{ip},
+				#{telecom},
+				#{netType},
+				#{vendor},
+				#{model},
+				#{os}
+			)
+	</insert>
+	
+	<insert id="insertOne">
+		INSERT INTO t_login_token VALUES(#{uid},#{time},#{app})
+	</insert>
+	<update id="updateOne">
+		UPDATE t_login_token SET f_lose_time = #{time} WHERE f_uid = #{uid} AND f_app = #{app}
+	</update>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RecommendOrdersMapper">
+	
+	<resultMap type="recommendOrders" id="baseResultMap">
+		<id column="f_order_id" property="orderId"/>
+		<result column="f_uid" property="uid" />
+		<result column="f_ruid" property="ruid" />
+		<result column="f_type" property="type" />
+		<result column="f_desc" property="desc" />
+		<result column="f_amount" property="amount" />
+		<result column="f_create_time" property="createTime" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_order_id,f_uid,f_ruid,f_type,f_desc,f_amount,f_create_time
+	</sql>
+	
+	
+	<select id="selectByOrderId" parameterType="java.lang.String" resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />
+		from t_recommend_orders 
+		where f_order_id = #{orderId}
+	</select>
+	
+	
+	<insert id="insertPojo" parameterType="orders" >
+		insert into t_recommend_orders(
+			<include refid="base_column"/>
+		)
+		values (
+			#{orderId},
+			#{uid},
+			#{ruid},
+			#{type},
+			#{desc},
+			#{amount},
+			#{createTime}
+		)
+	</insert>
+	
+</mapper>

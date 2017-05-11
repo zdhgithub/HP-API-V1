@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PartnerGivingOutCouponCountByMonthMapper">
+
+	<resultMap type="partnerGivingOutCouponCountByMonth" id="baseResultMap">
+		<result column="f_uid" property="uid" />
+		<result column="f_partner_id" property="partnerId" />
+		<result column="f_count" property="count" />
+		<result column="f_month" property="month" />
+		<result column="f_create_time" property="createTime" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_uid,f_partner_id,f_count,f_month,f_create_time
+	</sql>
+	
+	<select id="selectByUidAndPartnerIdAsLock" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_partner_giving_out_coupon_count_by_month
+		where f_uid = #{uid} and f_partner_id=#{partnerId} for update
+	</select>
+
+	<select id="selectByUidAndPartnerId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_partner_giving_out_coupon_count_by_month
+		where f_uid = #{uid} and f_partner_id=#{partnerId}
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_partner_giving_out_coupon_count_by_month(
+		<include refid="baseColumn" />
+		)
+		values(
+			#{uid},
+			#{partnerId},
+			#{count},
+			#{month},
+			#{createTime}
+		)
+	</insert>
+	
+	
+	<update id="updatePojo">
+		update t_partner_giving_out_coupon_count_by_month
+		set f_count=#{count},f_month=#{month}
+		where f_uid = #{uid} and f_partner_id=#{partnerId}
+	</update>
+	
+</mapper>

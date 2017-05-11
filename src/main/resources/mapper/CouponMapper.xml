@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CouponMapper">
+	<resultMap type="Coupon" id="couponResultMap">
+		<id column="f_coupon_cid" property="id" />
+		<result column="f_coupon_type" property="type" />
+		<result column="f_coupon_name" property="name" />
+		<result column="f_coupon_use_rule" property="useRule"/>
+		<result column="f_coupon_description" property="description" />
+		<result column="f_coupon_money" property="money" />
+		<result column="f_coupon_indate" property="indate" />
+		<result column="f_coupon_indate_time" property="indateTime" />
+		<result column="f_coupon_send_num" property="sendNum" />
+		<result column="f_coupon_send_date" property="sendTime" />
+		<result column="f_coupon_receive_way" property="receiveWay" />
+<!-- 		<result column="f_coupon_use_condition" property="useCondition" /> -->
+		<result column="f_coupon_flag" property="flag" />
+		<result column="f_coupon_status" property="status" />
+		<result column="f_coupon_fish_site_id" property="fishSiteId" />
+		<result column="f_coupon_create_time" property="createTime" />
+		<result column="f_fish_site_name" property="fishSiteName" />
+		<result column="f_phone_num" property="phoneNum" />
+	</resultMap>
+	<sql id="couponSql">
+		f_coupon_cid,
+		f_coupon_type,
+		f_coupon_name,
+		f_coupon_use_rule,
+		f_coupon_description,
+		f_coupon_money,
+		f_coupon_indate,
+		f_coupon_indate_time,
+		f_coupon_send_num,
+		f_coupon_send_date,
+		f_coupon_receive_way,
+<!-- 		f_coupon_use_condition, -->
+		f_coupon_flag,
+		f_coupon_status,
+		f_coupon_fish_site_id,
+		f_coupon_create_time
+	</sql>
+	
+	<select id="selectById" resultMap="couponResultMap" parameterType="int">
+		SELECT
+			<include refid="couponSql"></include>
+		FROM
+			t_coupon
+		WHERE
+			f_coupon_cid = #{id}
+		and
+			f_coupon_flag = 1
+ 		and  
+			f_coupon_status = 1
+		and 
+			f_coupon_send_num > 0
+	</select>
+	
+	<select id="selectList" resultMap="couponResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		f_coupon_cid,
+		f_coupon_type,
+		f_coupon_name,
+		f_coupon_use_rule,
+		f_coupon_description,
+		f_coupon_money,
+		f_coupon_indate,
+		f_coupon_indate_time,
+		f_coupon_send_num,
+		f_coupon_send_date,
+		f_coupon_receive_way,
+<!-- 		f_coupon_use_condition, -->
+		f_coupon_flag,
+		f_coupon_status,
+		f_coupon_fish_site_id,
+		f_coupon_create_time,
+		f.f_fish_site_name,
+		f.f_phone_num
+		FROM
+		t_coupon c
+		LEFT JOIN t_fish_site f ON c.f_coupon_fish_site_id =
+		f.f_fish_site_id
+		<where>
+			<if test="type!=null">
+				and f_coupon_type = #{type}
+			</if>
+			<if test="indate!=null">
+				and f_coupon_indate = #{indate}
+			</if>
+			<if test="status!=null">
+				and f_coupon_status = #{status}
+			</if>
+			<if test="flag!=null">
+				and f_coupon_flag = #{flag}
+			</if>
+			<if test="source==1">
+				and f_coupon_fish_site_id is not null
+			</if>
+			<if test="source==0">
+				and f_coupon_fish_site_id is null
+			</if>
+		</where>
+		ORDER BY f_coupon_create_time DESC
+		<if test="start!=null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true"
+		parameterType="Coupon">
+		INSERT INTO t_coupon
+		(
+		<include refid="couponSql"></include>
+		)
+		values (
+		null,
+		#{type},
+		#{name},
+		#{useRule},
+		#{description},
+		#{money},
+		#{indate},
+		#{indateTime},
+		#{sendNum},
+		#{sendTime},
+		#{receiveWay},
+<!-- 		#{useCondition}, -->
+		#{flag},
+		#{status},
+		#{fishSiteId},
+		#{createTime}
+		)
+	</insert>
+	<update id="updateById" parameterType="Coupon">
+		UPDATE t_coupon
+		<set>
+			f_coupon_flag = #{flag}
+		</set>
+		<where>
+			f_coupon_cid = #{id}
+		</where>
+	</update>
+
+<!-- 	<select id="selectByType" resultMap="couponResultMap"> -->
+<!-- 		select -->
+<!-- 		<include refid="couponSql"></include> -->
+<!-- 		from t_coupon  -->
+<!-- 		where  -->
+<!-- 		f_coupon_flag = 1  -->
+<!-- 		and  -->
+<!-- 		f_coupon_status = 1 -->
+<!-- 		and  -->
+<!-- 		f_coupon_send_num > 0 -->
+<!-- 		and  -->
+<!-- 		f_coupon_receive_way = #{receiveWay} -->
+<!-- 	</select> -->
+	
+	<update id="subtractOnes">
+		<foreach collection="list" item="coupon" separator=";">
+		update t_coupon set f_coupon_send_num = f_coupon_send_num - 1 where f_coupon_cid = #{coupon.id} 
+		</foreach>			
+	</update>
+
+</mapper>

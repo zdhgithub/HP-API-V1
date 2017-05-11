@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.AccountBillMapper">
+	
+	<resultMap type="accountBill" id="baseResultMap">
+		<result column="f_uid" property="uid"/>
+		<result column="f_order_id" property="orderId"/>
+		<result column="f_in_out" property="inOut"/>
+		<result column="f_type" property="type"/>
+		<result column="f_sub_type" property="subType"/>
+		<result column="f_desc" property="desc"/>
+		<result column="f_trade_fee" property="tradeFee"/>
+		<result column="f_create_time" property="createTime"/>
+	</resultMap>
+	
+	<resultMap type="AccountExtSite" id="accountExtSiteResultMap">
+		<result column="f_uid" property="uid" />
+		<result column="f_fish_site_id" property="fishSiteId" />
+		<result column="f_fish_site_name" property="fishSiteName" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_user_phonenum" property="phone" />
+		<result column="f_main_img" property="mainImg" />
+		<result column="f_balance" property="balance" />
+		<result column="deposits" property="depositFish" />
+		<result column="withdraw_total" property="withdrawTotal" />
+	</resultMap>
+	
+	<resultMap type="AccountExt" id="accountExtResultMap">
+		<result column="f_uid" property="uid" />
+		<result column="f_user_portriat" property="portriat" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_user_realname" property="realName" />
+		<result column="f_user_phonenum" property="phone" />
+		<result column="f_balance" property="balance" />
+		<result column="recharge_sum" property="rechargeTotal" />
+		<result column="withdraws_sum" property="withdrawTotal" />
+	</resultMap>
+
+	<sql id="base_column">
+		f_uid,f_order_id,f_in_out,f_type,f_sub_type,f_desc,f_trade_fee,f_create_time
+	</sql>
+
+	<select id="selectByUid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_account_bill
+		where f_uid = #{uid}
+		<if test="index != null ">
+			and f_create_time <![CDATA[<]]> #{index}
+		</if>
+		order by f_create_time desc
+		limit #{size}
+	</select>
+	
+	<select id="selectByOrderId" parameterType="java.lang.String" resultMap="baseResultMap">
+		select * 
+		from t_account_bill
+		where f_order_id = #{orderId}
+	</select>
+
+	<insert id="insertPojo">
+		insert into t_account_bill(
+			<include refid="base_column" />
+		)
+		values(
+			#{uid},
+			#{orderId},
+			#{inOut},
+			#{type},
+			#{subType},
+			#{desc},
+			#{tradeFee},
+			#{createTime}
+		)
+	
+	</insert>
+	
+	<select id="selectRecordBySite" resultMap="baseResultMap">
+		select *
+		from t_account_bill
+		where f_uid = #{uid}
+		<choose>
+			<when test="type != null">
+				and f_type = #{type}
+			</when>
+			<otherwise>
+				and f_type in(4,5,19)
+			</otherwise>
+		</choose>
+		<if test="status != null">
+			and f_in_out = #{status}
+		</if>
+		<if test="searchfor != null">
+			and (f_order_id LIKE CONCAT(CONCAT('%', #{searchfor}), '%') or f_desc LIKE CONCAT(CONCAT('%', #{searchfor}), '%'))
+		</if>
+		order by f_create_time
+		desc
+		<if test="start != null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="selectRecordByUid" resultMap="baseResultMap">
+		select *
+		from t_account_bill
+		where 
+		<if test="uid !=null">
+			f_uid = #{uid}
+		</if>
+		<if test="type != null">
+			and f_type = #{type}
+		</if>
+		<if test="status != null">
+			and f_in_out = #{status}
+		</if>
+		<if test="searchfor != null">
+			and (f_order_id LIKE CONCAT(CONCAT('%', #{searchfor}), '%') or f_desc LIKE CONCAT(CONCAT('%', #{searchfor}), '%'))
+		</if>
+		order by f_create_time desc
+		<if test="start != null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="selectListExt" resultMap="accountExtSiteResultMap">
+		SELECT
+		f.f_uid,
+		f.f_fish_site_id,
+		f.f_fish_site_name,
+		u.f_user_nickname,
+		u.f_user_phonenum,
+		f.f_main_img,
+		a.f_balance,
+		(
+		SELECT
+		(
+		CASE
+		WHEN SUM(d.f_balance) IS NULL THEN
+		'0'
+		ELSE
+		SUM(d.f_balance)
+		END
+		)
+		FROM
+		t_deposit_fish d
+		WHERE
+		f.f_fish_site_id = d.f_fish_site_id
+		) AS deposits,
+		(
+		SELECT
+		(
+		CASE
+		WHEN SUM(d.f_trade_fee) IS NULL THEN
+		'0'
+		ELSE
+		SUM(d.f_trade_fee)
+		END
+		)
+		FROM
+		t_account_bill d
+		WHERE
+		d.f_type in (5,19)
+		AND d.f_uid = u.f_uid
+		) AS withdraw_total,
+		(
+		SELECT
+		(
+		CASE
+		WHEN SUM(r.f_trade_money) IS NULL THEN
+		'0'
+		ELSE
+		SUM(r.f_trade_money)
+		END
+		)
+		FROM
+		t_deposit_fish_record r
+		WHERE
+		r.f_direction = '1'
+		AND r.f_fish_site_id = f.f_fish_site_id
+		) AS depositfish_total
+		FROM
+		t_fish_site f,
+		t_user u,
+		t_account a
+		WHERE
+		f.f_uid = u.f_uid
+		AND u.f_uid = a.f_uid
+		<!--AND f.f_city_id IN(
+		 <foreach item="arryList" index="index" collection="list"
+     			 open="(" separator="," close=")">
+       			 #{arryList}
+  		</foreach>
+		) -->
+		<if test="regionId!=null and regionId!=0">
+			AND f.f_city_id = #{regionId}
+		</if>
+		
+		<if test="searchfor != null">
+			and (f.f_fish_site_name like CONCAT(CONCAT('%', #{searchfor}), '%') or u.f_user_phonenum LIKE CONCAT(CONCAT('%', #{searchfor}), '%'))
+		</if>
+		<choose>
+			<when test="status ==1">
+				ORDER BY f.f_create_time desc
+			</when>
+			<otherwise >
+				ORDER BY f.f_create_time asc
+			</otherwise>
+		</choose>
+		<if test="start!=null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="selectList" resultMap="accountExtResultMap">
+		SELECT DISTINCT
+		u.f_uid,
+		u.f_user_portriat,
+		u.f_user_nickname,
+		u.f_user_realname,
+		u.f_user_phonenum,
+		a.f_gold_coin as f_balance,
+		(
+		SELECT
+		(
+		CASE
+		WHEN SUM(r.f_trade_fee) IS
+		NULL THEN
+		'0'
+		ELSE
+		SUM(r.f_trade_fee)
+		END
+		)
+		FROM
+		t_account_bill r
+		WHERE
+		r.f_type = 2
+		AND u.f_uid = r.f_uid
+		) AS recharge_sum,
+		(
+		SELECT
+		(
+		CASE
+		WHEN SUM(r.f_trade_fee) IS NULL THEN
+		'0'
+		ELSE
+		SUM(r.f_trade_fee)
+		END
+		)
+		FROM
+		t_account_bill r
+		WHERE
+		r.f_type in(5,6,12,17,19)
+		AND u.f_uid =
+		r.f_uid
+		) AS withdraws_sum
+		FROM
+		t_user u,
+		t_user_gold_coin a,
+		t_account_bill r
+		WHERE
+		u.f_uid = a.f_uid
+		AND u.f_uid = r.f_uid
+		<if test="searchfor != null">
+			and (u.f_user_realname like CONCAT(CONCAT('%', #{searchfor}), '%') or u.f_user_phonenum LIKE CONCAT(CONCAT('%', #{searchfor}), '%'))
+		</if>
+		ORDER BY
+		<choose>
+			<when test="status ==0">
+				u.f_user_register_time ASC
+			</when>
+			<otherwise>
+				u.f_user_register_time desc
+			</otherwise>
+		</choose>
+		<if test="start!=null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PartnerCityRateConfigMapper">
+
+	<resultMap type="partnerCityRateConfig" id="baseResultMap">
+		<id column="f_city_id" property="cityId" />
+		<result column="f_shop_rate" property="shopRate" />
+		<result column="f_site_rate" property="siteRate" />
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_city_id,f_shop_rate,f_site_rate
+	</sql>
+
+	<select id="selectById" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select * 
+		from t_partner_city_rate_config
+		where f_city_id = #{cityId}
+	</select>
+
+</mapper>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.heipiao.api.mapper.FishPondMapper" >
+  <resultMap id="BaseResultMap" type="cn.heipiao.api.pojo.FishPond" >
+    <id column="f_fish_pond_id" property="fishPondId" jdbcType="INTEGER" />
+    <result column="f_fish_site_id" property="fishSiteId" jdbcType="INTEGER" />
+    <result column="f_fish_pond_name" property="fishPondName" jdbcType="VARCHAR" />
+    <result column="f_area" property="area" jdbcType="INTEGER" />
+    <result column="f_area_unit" property="areaUnit" jdbcType="CHAR" />
+    <result column="f_depth" property="depth" jdbcType="VARCHAR" />
+    <result column="f_capacity" property="capacity" jdbcType="INTEGER" />
+    <result column="f_main_fish_type" property="mainFishType" jdbcType="VARCHAR" />
+    <result column="f_vice_fish_type" property="viceFishType" jdbcType="VARCHAR" />
+    <result column="f_fish_rod_limit" property="fishRodLimit" jdbcType="INTEGER" />
+    <result column="f_pond_remarks" property="pondRemarks" jdbcType="VARCHAR" />
+    <result column="f_pay_type" property="payType" jdbcType="CHAR" />
+    <result column="f_admission_ticket" property="admissionTicket" jdbcType="FLOAT" />
+    <result column="f_unit_price" property="unitPrice" jdbcType="FLOAT" />
+    <result column="f_get_fish_limit" property="getFishLimit" jdbcType="FLOAT" />
+    <result column="f_create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="f_status" property="status" />
+  </resultMap>
+ 
+  <sql id="tableName">
+  	t_fish_pond
+  </sql>
+  
+  <sql id="base_cloumn_list">
+  	f_fish_pond_id, f_fish_site_id, f_fish_pond_name, f_area, f_area_unit, f_depth, f_capacity, 
+    f_main_fish_type, f_vice_fish_type, f_fish_rod_limit, f_pond_remarks, f_pay_type, 
+    f_admission_ticket, f_unit_price, f_get_fish_limit, f_create_time,f_status
+  </sql>
+  
+  <select id="selectBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	select 
+  	<include refid="base_cloumn_list" />
+  	from 
+  	<include refid="tableName" />
+  	where  f_fish_site_id = #{fishSiteId}  and f_status = 1  
+  </select>
+  
+  <select id="selectByPondId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+	select 
+  	<include refid="base_cloumn_list" />
+  	from 
+  	<include refid="tableName" />
+  	where  f_fish_pond_id = #{pondId}  and f_status = 1  
+  </select>
+  
+  <select id="selectBySiteIdLimit" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select 
+  	<include refid="base_cloumn_list" />
+  	from 
+  	<include refid="tableName" />
+  	where f_fish_site_id = #{fishSiteId}  and f_status = 1  
+  	<if test="start > 0">
+  		and f_fish_pond_id = #{start}
+  	</if>
+  	order by f_fish_pond_id desc
+  	limit #{size}
+  </select>
+  
+  
+  <update id="updatePojo" parameterType="fishPond">
+  	update 
+  		<include refid="tableName" />
+  		<set>
+  			<if test="fishSiteId != null">
+  				f_fish_site_id = #{fishSiteId}, 
+  			</if>
+  			<if test="fishPondName != null">
+  				f_fish_pond_name = #{fishPondName}, 
+  			</if>
+  			<if test="area != null">
+  				f_area = #{area},
+  			</if>
+  			<if test="areaUnit != null">
+	  			f_area_unit = #{areaUnit},
+  			</if>
+  			<if test="depth != null">
+	  			f_depth = #{depth},
+  			</if>
+  			<if test="capacity != null">
+	  			f_capacity = #{capacity}, 
+  			</if>
+  			<if test="mainFishType != null">
+    			f_main_fish_type = #{mainFishType}, 
+  			</if>
+  			<if test="viceFishType != null">
+	    		f_vice_fish_type = #{viceFishType}, 
+  			</if>
+  			<if test="fishRodLimit != null">
+    			f_fish_rod_limit = #{fishRodLimit}, 
+  			</if>
+  			<if test="pondRemarks != null">
+    			f_pond_remarks = #{pondRemarks}, 
+  			</if>
+  			<if test="payType != null">
+	    		f_pay_type = #{payType}, 
+  			</if>
+  			<if test="admissionTicket != null">
+    			f_admission_ticket = #{admissionTicket}, 
+  			</if>
+  			<if test="unitPrice != null">
+    			f_unit_price = #{unitPrice}, 
+  			</if>
+  			<if test="getFishLimit != null">
+	    		f_get_fish_limit = #{getFishLimit}, 
+  			</if>
+  			<if test="createTime != null">
+	    		f_create_time = #{createTime},
+  			</if>
+  		</set>
+  		
+  		where  f_fish_pond_id = #{fishPondId} and f_status = 1   
+  </update>
+  
+  <update id="updateBatchPojo" parameterType="java.util.List">
+  	<foreach collection="list" item="item" separator=";">
+  		update 
+  		<include refid="tableName" />
+  		<set>
+  			<if test="item.fishSiteId != null">
+  				f_fish_site_id = #{item.fishSiteId}, 
+  			</if>
+  			<if test="item.fishPondName != null">
+  				f_fish_pond_name = #{item.fishPondName}, 
+  			</if>
+  			<if test="item.area != null">
+  				f_area = #{item.area},
+  			</if>
+  			<if test="item.areaUnit != null">
+	  			f_area_unit = #{item.areaUnit},
+  			</if>
+  			<if test="item.depth != null">
+	  			f_depth = #{item.depth},
+  			</if>
+  			<if test="item.capacity != null">
+	  			f_capacity = #{item.capacity}, 
+  			</if>
+  			<if test="item.mainFishType != null">
+    			f_main_fish_type = #{item.mainFishType}, 
+  			</if>
+  			<if test="item.viceFishType != null">
+	    		f_vice_fish_type = #{item.viceFishType}, 
+  			</if>
+  			<if test="item.fishRodLimit != null">
+    			f_fish_rod_limit = #{item.fishRodLimit}, 
+  			</if>
+  			<if test="item.pondRemarks != null">
+    			f_pond_remarks = #{item.pondRemarks}, 
+  			</if>
+  			<if test="item.payType != null">
+	    		f_pay_type = #{item.payType}, 
+  			</if>
+  			<if test="item.admissionTicket != null">
+    			f_admission_ticket = #{item.admissionTicket}, 
+  			</if>
+  			<if test="item.unitPrice != null">
+    			f_unit_price = #{item.unitPrice}, 
+  			</if>
+  			<if test="item.getFishLimit != null">
+	    		f_get_fish_limit = #{item.getFishLimit}, 
+  			</if>
+  			<if test="item.createTime != null">
+	    		f_create_time = #{item.createTime}
+  			</if>
+  		</set>
+  		where   f_fish_pond_id = #{item.fishPondId} and f_status = 1
+  	</foreach>
+  </update>
+  
+  <insert id="insertBatchPojo" parameterType="java.util.List">
+  		insert into  
+  		<include refid="tableName" />
+  		(f_fish_site_id, f_fish_pond_name, f_area, f_area_unit, f_depth, f_capacity, 
+    f_main_fish_type, f_vice_fish_type, f_fish_rod_limit, f_pond_remarks, f_pay_type, 
+    f_admission_ticket, f_unit_price, f_get_fish_limit, f_create_time,f_status)
+  		
+  		values
+  		<foreach collection="list" item="item" separator=",">
+	  		(
+	  		#{item.fishSiteId}, 
+	  		#{item.fishPondName}, 
+	  		#{item.area},
+	  		#{item.areaUnit},
+	  		#{item.depth},
+	  		#{item.capacity}, 
+    		#{item.mainFishType}, 
+    		#{item.viceFishType}, 
+    		#{item.fishRodLimit}, 
+    		#{item.pondRemarks}, 
+    		#{item.payType}, 
+    		#{item.admissionTicket}, 
+    		#{item.unitPrice}, 
+    		#{item.getFishLimit}, 
+    		#{item.createTime},
+    		#{item.status}
+	  		)
+  		</foreach>
+  </insert>
+  <insert id="insertBatchPojo2" parameterType="java.util.List">
+  		insert into  
+  		t_fish_pond_ext
+  		(f_fish_site_id, f_fish_pond_name, f_area, f_area_unit, f_depth, f_capacity, 
+    f_main_fish_type, f_vice_fish_type, f_fish_rod_limit, f_pond_remarks, f_pay_type, 
+    f_admission_ticket, f_unit_price, f_get_fish_limit, f_create_time,f_status)
+  		
+  		values
+  		<foreach collection="list" item="item" separator=",">
+	  		(
+	  		#{item.fishSiteId}, 
+	  		#{item.fishPondName}, 
+	  		#{item.area},
+	  		#{item.areaUnit},
+	  		#{item.depth},
+	  		#{item.capacity}, 
+    		#{item.mainFishType}, 
+    		#{item.viceFishType}, 
+    		#{item.fishRodLimit}, 
+    		#{item.pondRemarks}, 
+    		#{item.payType}, 
+    		#{item.admissionTicket}, 
+    		#{item.unitPrice}, 
+    		#{item.getFishLimit}, 
+    		#{item.createTime},
+    		#{item.status}
+	  		)
+  		</foreach>
+  </insert>
+  
+  <insert id="insertPojo" parameterType="fishPond" >
+  	insert into  
+  		<include refid="tableName" />
+  		(f_fish_site_id, f_fish_pond_name, f_area, f_area_unit, f_depth, f_capacity, 
+    f_main_fish_type, f_vice_fish_type, f_fish_rod_limit, f_pond_remarks, f_pay_type, 
+    f_admission_ticket, f_unit_price, f_get_fish_limit, f_create_time,f_status)
+  		
+  		values
+	  		(
+	  		#{fishSiteId}, 
+	  		#{fishPondName}, 
+	  		#{area},
+	  		#{areaUnit},
+	  		#{depth},
+	  		#{capacity}, 
+    		#{mainFishType}, 
+    		#{viceFishType}, 
+    		#{fishRodLimit}, 
+    		#{pondRemarks}, 
+    		#{payType}, 
+    		#{admissionTicket}, 
+    		#{unitPrice}, 
+    		#{getFishLimit}, 
+    		#{createTime},
+    		#{status}
+	  		)
+  </insert>
+ 
+ <delete id="deletePojo" parameterType="fishPond">
+ 	update
+ 	<include refid="tableName" />
+ 	set f_status = 0
+ 	where f_fish_pond_id = #{fishPondId} and f_status = 1
+ </delete>
+	 
+</mapper>

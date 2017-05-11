@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserOpLogMapper">
+	<resultMap type="UserOpLog" id="UserOpLogResultMap">
+		<result column="f_log_uid" property="uid"/>
+		<result column="f_log_phone" property="phone" />
+		<result column="f_log_op_type" property="type" />
+		<result column="f_log_time" property="opTime" />
+		<result column="f_log_ip" property="ip" />
+		<result column="f_log_longitude" property="lng" />
+		<result column="f_log_latitude" property="lat" />
+		<result column="f_log_location" property="location" />
+	</resultMap>
+	<sql id="UserOpLogSql">
+		f_log_uid,f_log_phone,f_log_op_type,f_log_time,f_log_ip,f_log_longitude,f_log_latitude,f_log_location
+	</sql>
+	<select id="selectList" resultMap="UserOpLogResultMap">
+		SELECT
+		<include refid="UserOpLogSql"></include>
+		FROM t_user_op_log
+		limit #{start},#{size}
+	</select>
+	<insert id="insert" parameterType="UserOpLog">
+		INSERT INTO t_user_op_log VALUES(#{uid},#{phone},#{type},#{opTime},#{ip},#{lng},#{lat},#{location})
+	</insert>
+</mapper>

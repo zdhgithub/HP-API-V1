@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CouponsMapper">
+	
+	<resultMap type="coupons" id="baseResultMap">
+		<id column="f_cid" property="cid" />
+		<result column="f_uid" property="uid" />
+		<result column="f_coupon_name" property="couponName" />
+		<result column="f_coupon_fee" property="couponFee" />
+		<result column="f_use_rule" property="useRule"/>
+		<result column="f_use_time" property="useTime" />
+		<result column="f_deadline" property="deadline" />
+		<result column="f_desc" property="desc" />
+		<result column="f_get_time" property="getTime" />
+		<result column="f_start_time" property="startTime" />
+		<result column="f_category" property="category" />
+		<result column="f_status" property="status" />
+		<result column="f_fee" property="fee" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_cid,f_uid ,f_coupon_name, f_coupon_fee, f_use_rule, f_use_time,
+		f_deadline, f_desc ,f_get_time,f_start_time, f_category, f_status
+	</sql>
+	
+	<select id="countCouponsNew" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_coupons WHERE f_status = 0 AND f_is_read = 0 AND f_uid = #{uid}
+	</select>
+	
+	<select id="selectByUid" parameterType="java.util.Map" resultMap="baseResultMap"> 
+		select *  
+		from t_coupons
+		where f_uid = #{uid} and f_status = #{status}
+		<if test="start &gt; 0">
+			and f_cid <![CDATA[<]]> #{start}
+		</if> 
+		order by f_cid desc
+		limit #{size}
+	</select>
+	
+	<select id="selectUnusedShopCoupons" parameterType="java.util.Map" resultMap="baseResultMap">
+	<!-- 	select *
+		from t_coupons
+		where f_uid = #{uid} and f_status = 0 and f_category BETWEEN 3 AND 5 -->
+		
+		select *
+		from t_coupons
+		where  f_status = 0 and f_uid = #{uid} and f_category BETWEEN 4 AND 5
+		union
+		select t2.*
+		from 
+		(
+		select f_cid from t_shop_coupons_record where f_shop_id = #{shopId}
+		) t1 join t_coupons t2 on t1.f_cid = t2.f_cid and t2.f_status = 0 and f_uid = #{uid}
+		
+		<!-- select t2.*
+		from 
+		(
+		select f_cid from t_shop_coupons_record where f_shop_id = #{shopId} and f_uid = #{uid}
+		) t1 join t_coupons t2 on t1.f_cid = t2.f_cid and t2.f_status = 0 and f_category BETWEEN 3 AND 5 -->
+	
+	</select>
+	
+	<select id="selectByCid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_coupons
+	    where f_cid = #{cid}
+	</select>
+	
+	<select id="selectByCidAsLock" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_coupons
+	    where f_cid = #{cid} for update
+	</select>
+	
+	<select id="selectListByUserAndStatus" resultMap="baseResultMap">
+		SELECT
+			<include refid="baseColumn"></include>
+		FROM
+			t_coupons
+		WHERE
+			f_uid = #{uid}
+		AND f_status = #{status}
+	</select>
+	
+	<insert id="insertPojo" keyProperty="cid" useGeneratedKeys="true">
+		insert into t_coupons(
+			f_uid ,f_coupon_name, f_coupon_fee, f_use_rule, 
+		f_deadline, f_desc ,f_get_time,f_start_time, f_category, f_status
+		)
+		values(
+			#{uid},
+			#{couponName},
+			#{couponFee},
+			#{useRule},
+			#{deadline},
+			#{desc},
+			#{getTime},
+			#{startTime},
+			#{category},
+			#{status}
+		)
+	</insert>
+	
+	<insert id="insertBatch" parameterType="java.util.List" keyProperty="cid"  useGeneratedKeys="true">
+		insert into t_coupons(
+			f_uid ,f_coupon_name, f_coupon_fee, f_use_rule, 
+		f_deadline, f_desc ,f_get_time,f_start_time, f_category, f_status
+		)
+		values
+		<foreach collection="list" item="item" separator="," index="index">
+			(
+				#{item.uid},
+				#{item.couponName},
+				#{item.couponFee},
+				#{item.useRule},
+				#{item.deadline},
+				#{item.desc},
+				#{item.getTime},
+				#{item.startTime},
+				#{item.category},
+				#{item.status}
+			)
+		</foreach>
+	</insert>
+	
+	<update id="updatePojo">
+		update t_coupons
+		set f_status = #{status}
+		<if test="useTime != null">
+			,f_use_time = #{useTime}
+		</if>
+		where f_cid = #{cid}
+	</update>
+	
+	<update id="updateCouponByUid">
+		update t_coupons
+		set f_deadline = #{deadline}
+		where f_uid = #{uid}
+	</update>
+	
+	<update id="updateCouponsTimeout" parameterType="java.util.Map">
+		update t_coupons
+		set f_status = 2,f_is_read = true
+		where date_format(f_deadline,'%Y%m%d') <![CDATA[<]]> #{date}
+	</update>
+	
+	<update id="updateIsRead">
+		update t_coupons
+		set f_is_read = true
+		where f_status = 0 
+	</update>
+	
+</mapper>

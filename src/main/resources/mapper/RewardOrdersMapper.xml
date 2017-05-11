@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RewardOrdersMapper">
+
+	<resultMap type="RewardOrders" id="baseResultMap">
+		<result column="f_trade_id" property="tradeId" />
+		<result column="f_uid" property="uid" />
+		<result column="f_service_id" property="serviceId" />
+		<result column="f_order_id" property="orderId" />
+		<result column="f_desc" property="desc" />
+		<result column="f_amount" property="amount" />
+		<result column="f_create_time" property="createTime" />
+	</resultMap>
+
+	<sql id="baseColumn">
+	f_trade_id, f_uid , f_service_id, f_order_id, f_desc ,f_amount, f_create_time
+	</sql>
+	
+	<insert id="insertPojo">
+		insert into t_reward_orders(
+			<include refid="baseColumn" />
+		)
+		values(
+			#{tradeId},
+			#{uid},
+			#{serviceId},
+			#{orderId},
+			#{desc},
+			#{amount},
+			#{createTime}
+		)
+	</insert>
+
+</mapper>

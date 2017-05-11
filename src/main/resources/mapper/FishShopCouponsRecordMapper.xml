@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FishShopCouponsRecordMapper">
+
+	<resultMap type="fishShopCouponsRecord" id="baseResultMap">
+		<result column="f_cid" property="cid" />
+		<result column="f_shop_id" property="shopId" />
+	</resultMap>
+	
+
+	<select id="selectByUnique" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_fish_shop_coupons_record
+	    where f_cid = #{cid}
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_fish_shop_coupons_record(
+			f_cid,f_shop_id
+		)
+		values(
+			#{cid},
+			#{shopId}
+		)
+	</insert>
+	
+</mapper>

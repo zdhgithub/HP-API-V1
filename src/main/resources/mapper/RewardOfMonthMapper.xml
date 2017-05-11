@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RewardOfMonthMapper">
+	<resultMap type="RewardOfMonth" id="baseResultMap">
+		<result column="f_reward_month_bill_id" property="id"/>
+		<result column="f_reward_month_b_id" property="bid"/>
+		<result column="f_reward_month_b_type" property="type"/>
+		<result column="f_reward_month_total" property="total"/>
+		<result column="f_reward_ticket_num" property="ticketNum"/>
+		<result column="f_reward_pay_num" property="payNum"/>
+		<result column="f_reward_rebate_total" property="rebateTotal"/>
+		<result column="f_reward_time" property="time"/>
+	</resultMap>
+	<sql id="base_column">
+		f_reward_month_bill_id,f_reward_month_b_id,f_reward_month_b_type,f_reward_month_total,
+		f_reward_ticket_num,f_reward_pay_num,f_reward_rebate_total,f_reward_time
+	</sql>
+	<select id="selectByBid" parameterType="java.util.Map" resultMap="baseResultMap">
+		SELECT * FROM t_reward_month_bills
+		<where>
+			<if test="bid!=null">
+				and f_reward_month_b_id = #{bid}
+			</if>
+			<if test="type!=null">
+				and f_reward_month_b_type = #{type}
+			</if>
+			<if test="start>0">
+				and f_reward_month_bill_id &lt;#{start}
+			</if>
+		</where>
+			ORDER BY f_reward_month_bill_id DESC
+			LIMIT #{size}
+	</select>
+	<insert id="insert" parameterType="RewardOfMonth">
+		INSERT INTO t_reward_month_bills(
+			f_reward_month_b_id,
+			f_reward_month_b_type,
+			f_reward_month_total,
+			f_reward_ticket_num,
+			f_reward_pay_num,
+			f_reward_rebate_total,
+			f_reward_time
+		)VALUES(
+			#{bid},
+			#{type},
+			#{total},
+			#{ticketNum},
+			#{payNum},
+			#{rebateTotal},
+			#{time}
+		)
+	</insert>
+</mapper>

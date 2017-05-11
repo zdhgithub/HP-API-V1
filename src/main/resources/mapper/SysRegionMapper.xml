@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.SysRegionMapper">
+	<resultMap type="Region" id="SysRegionResultMap">
+		<id column="f_id" property="id" />
+		<result column="f_region_num" property="regionNum" />
+		<result column="f_region_name" property="regionName" />
+		<result column="f_pid" property="pid" />
+		<result column="f_initial" property="Initial" />
+		<result column="f_open_flag" property="openFlag" />
+	</resultMap>
+	
+	<sql id="SysRegionSql">
+		f_id,
+		f_region_num,
+		f_region_name,
+		f_pid,
+		f_initial,
+		f_open_flag
+	</sql>
+	
+	<select id="selectOpenList" resultMap="SysRegionResultMap">
+		SELECT
+		<include refid="SysRegionSql"></include>
+		FROM
+			t_sys_cfg_region
+		WHERE
+			f_open_flag = 1 or f_open_flag = 3
+		ORDER BY f_initial DESC
+	</select>
+	<select id="selectOpenListForShop" resultMap="SysRegionResultMap">
+		SELECT
+		<include refid="SysRegionSql"></include>
+		FROM
+			t_sys_cfg_region
+		WHERE
+			f_open_flag = 2 or f_open_flag = 3
+		ORDER BY f_initial DESC
+	</select>
+	
+	<select id="selectListByPid" parameterType="int" resultMap="SysRegionResultMap">
+		SELECT
+			<include refid="SysRegionSql"></include>
+		FROM
+			t_sys_cfg_region
+		WHERE
+			f_pid = #{pid}
+	</select>
+	
+	<update id="appointOpenCity" parameterType="int">
+		UPDATE t_sys_cfg_region
+		SET f_open_flag = 1
+		WHERE
+			f_id = #{id}
+	</update>
+</mapper>

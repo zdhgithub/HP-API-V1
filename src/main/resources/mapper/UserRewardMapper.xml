@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserRewardMapper">
+
+	<resultMap type="userReward" id="baseResultMap">
+		<id column="f_uid" property="uid" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_platform_give" property="platformGive" />
+		<result column="f_business_give" property="businessGive" />
+		<result column="f_month_times" property="monthTimes" />
+		<result column="f_update_time" property="updateTime" />
+		<result column="f_times" property="times" />
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_uid,f_create_time,f_platform_give,f_business_give,f_month_times
+		,f_update_time,f_times
+	</sql>
+	
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select *
+		from t_user_reward
+		where f_uid = #{uid}
+	</select>
+	
+	<select id="selectAsLockByUid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select *
+		from t_user_reward
+		where f_uid = #{uid} for update
+	</select>
+
+	<insert id="insertPojo">
+		insert into t_user_reward(
+			<include refid="baseColumn" />
+		)
+		values(
+			#{uid},
+			#{createTime},
+			#{platformGive},
+			#{businessGive},
+			#{monthTimes},
+			#{updateTime},
+			#{times}
+		)
+	</insert>
+
+	<update id="updatePojo">
+		update t_user_reward
+		set f_platform_give = #{platformGive},
+			f_business_give = #{businessGive},
+			f_month_times = #{monthTimes},
+			f_update_time = #{updateTime},
+			f_times = #{times}
+		where f_uid = #{uid}
+	</update>
+	
+
+</mapper>

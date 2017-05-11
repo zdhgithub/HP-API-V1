@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.DictMapper">
+	<resultMap type="DictConfig" id="dictRsultMap">
+		<id column="f_id" property="id" />
+		<result column="f_type" property="type" />
+		<result column="f_code" property="code" />
+		<result column="f_value" property="value" />
+		<result column="f_sort_no" property="sortNo" />
+		<result column="f_remarks" property="remarks" />
+		<result column="f_valid" property="valid" />
+		<result column="f_logo" property="logo" />
+	</resultMap>
+	
+	<sql id="dictsql">
+		f_id,f_type,f_code,f_value,f_sort_no,f_remarks,f_valid, f_logo
+	</sql>
+	<sql id="dictsql2">
+		f_code,f_value
+	</sql>
+	
+	<select id="selectById" resultMap="dictRsultMap">
+		SELECT
+		<include refid="dictsql"></include>
+		FROM t_sys_cfg_dict WHERE f_id = #{id}
+	</select>
+
+	<select id="selectList" resultMap="dictRsultMap">
+		SELECT
+		<include refid="dictsql"></include>
+		FROM t_sys_cfg_dict
+		<where>
+			<if test="id != null">
+				and f_id = #{id}
+			</if>
+			<if test="type != null">
+				and f_type = #{type}
+			</if>
+			<if test="code != null">
+				and f_code = #{code}
+			</if>
+			<if test="value != null">
+				and f_value = #{value}
+			</if>
+			<if test="sortNo != null">
+				and f_sort_no = #{sortNo}
+			</if>
+			<if test="remarks != null">
+				and f_remarks = #{remarks}
+			</if>
+			<if test="valid != null">
+				and f_valid = #{valid}
+			</if>
+		</where>
+		ORDER BY f_sort_no asc
+	</select>
+
+	<select id="getDictByCode"
+		resultMap="dictRsultMap">
+		SELECT
+		<include refid="dictsql2"></include>
+		FROM t_sys_cfg_dict
+		<where> 
+				f_code = #{code}
+		</where>
+	</select>
+	
+	<select id="selectDictByCode"
+		resultMap="dictRsultMap">
+		SELECT
+		<include refid="dictsql"></include>
+		FROM t_sys_cfg_dict
+		<where> 
+				f_code = #{code}
+		</where>
+	</select>
+	
+	<insert id="insert" parameterType="DictConfig">
+		<!-- 待查此处是否有重大bug：LAST_INSERT_ID函数与表无关，返回的是该连接对象产生的自增长列最新语句第一个值，但我们用的是连接池。不过好像这个语句并没有应用 -->
+		<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into t_sys_cfg_dict
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				f_type,
+			</if>
+			<if test="code != null">
+				f_code,
+			</if>
+			<if test="value != null">
+				f_value,
+			</if>
+			<if test="sortNo != null">
+				f_sort_no,
+			</if>
+			<if test="remarks != null">
+				f_remarks,
+			</if>
+			<if test="valid != null">
+				f_valid,
+			</if>
+			<if test="logo != null">
+				f_logo,
+			</if>
+		</trim>
+		<trim prefix=" values (" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="code != null">
+				#{code},
+			</if>
+			<if test="value != null">
+				#{value},
+			</if>
+			<if test="sortNo != null">
+				#{sortNo},
+			</if>
+			<if test="remarks != null">
+				#{remarks},
+			</if>
+			<if test="valid != null">
+				#{valid},
+			</if>
+			<if test="logo != null">
+				#{logo},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="deleteById" parameterType="int">
+		DELETE FROM t_sys_cfg_dict WHERE f_id = #{id};
+	</delete>
+
+	<update id="updateById" parameterType="DictConfig">
+		update t_sys_cfg_dict
+		<set>
+			<if test="type != null">
+				f_type = #{type},
+			</if>
+			<if test="value != null">
+				f_value = #{value},
+			</if>
+			<if test="sortNo != null">
+				f_sort_no = #{sortNo},
+			</if>
+			<if test="remarks != null">
+				f_remarks = #{remarks},
+			</if>
+			<if test="valid != null">
+				f_valid = #{valid},
+			</if>
+			<if test="logo != null">
+				f_logo = #{logo},
+			</if>
+		</set>
+		where f_id = #{id}
+	</update>	
+	
+	<select id="selectConfigByTypeValue" resultMap="dictRsultMap">
+		SELECT
+		<include refid="dictsql"></include>
+		FROM t_sys_cfg_dict
+		WHERE f_type=#{type} AND f_value = #{value}
+		LIMIT 0,1
+	</select>
+	
+	<select id="selectByType" parameterType="java.lang.String" resultMap="dictRsultMap">
+		SELECT *
+		FROM t_sys_cfg_dict
+		WHERE f_type = #{type} 
+		LIMIT 1
+	</select>
+	
+	
+</mapper>

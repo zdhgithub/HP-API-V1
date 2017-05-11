@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.HpArticleMapper">
+	
+	<resultMap type="hpArticle" id="baseResultMap">
+		<id column="f_article_id" property="articleId" />
+		<result column="f_article_uid" property="articleUid" />
+		<result column="f_category" property="category" />
+		<result column="f_article_category" property="articleCategory" />
+		<result column="f_title" property="title" />
+		<result column="f_content" property="content" />
+		<result column="f_content_detail" property="contentDetail" />
+		<result column="f_banner" property="banner" />
+		<result column="f_url" property="url" />
+		<result column="f_article_type" property="articleType" />
+		<result column="f_like_count" property="likeCount" />
+		<result column="f_comment_count" property="commentCount" />
+		<result column="f_type" property="type" />
+		<result column="f_type_desc" property="typeDesc" />
+		<result column="f_position_name" property="positionName" />
+		<result column="f_business_id" property="businessId" />
+		<result column="f_business_name" property="businessName" />
+		<result column="f_longitude" property="longitude" />
+		<result column="f_latitude" property="latitude" />
+		<result column="f_city_id" property="cityId" />
+		<result column="f_other_article_id" property="otherArticleId" />
+		<result column="f_remark_name" property="remarkName" />
+		<result column="f_article_time" property="articleTime" />
+		<result column="f_is_delete" property="isDelete"/>
+		<result column="f_read_count" property="readCount"/>
+
+		<result column="f_business_portrait_site" property="businessPortrait" />
+		<result column="f_business_portrait_shop" property="businessPortrait" />
+		<result column="f_article_nickname" property="articleNickname" />
+		<result column="f_article_portrait" property="articlePortrait" />
+		
+		<collection property="comments" ofType="hpArticleComments" column="f_comment_article_id" 
+			resultMap="cn.heipiao.api.mapper.HpArticleCommentsMapper.baseResultMap">
+		</collection>
+		<collection property="likes" ofType="hpArticleLikes" column="f_like_article_id"
+		 resultMap="cn.heipiao.api.mapper.HpArticleLikesMapper.baseResultMap" >
+		 </collection>
+		 
+		 
+		 
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_article_id,f_article_uid,f_category,f_article_category,f_title,f_content,f_content_detail,f_banner,f_url,f_article_type,
+		f_like_count,f_comment_count,f_type	,f_type_desc,f_position_name,f_business_id,f_business_name,f_longitude,f_latitude,f_city_id,
+		f_other_article_id,f_remark_name,f_article_time
+	</sql>
+	
+	<!-- 除这个字段外f_content_detail -->
+	<sql id="baseColumn_1">
+		f_article_id,f_article_uid,f_category,f_article_category,f_title,f_content,f_banner,f_url,f_article_type,
+		f_like_count,f_comment_count,f_type	,f_type_desc,f_position_name,f_business_id,f_business_name,f_longitude,f_latitude,f_city_id,
+		f_other_article_id,f_remark_name,f_article_time,f_is_delete
+	</sql>
+	
+	<select id="selectProfile" parameterType="java.util.Map" resultMap="baseResultMap">
+		select f_url,f_article_type
+		from
+		(
+		select   if(f_article_type is not null and f_article_type = 2,f_banner,f_url ) as f_url
+					,f_article_category,f_article_type
+				from t_hp_article
+				where f_article_uid = #{uid} and f_article_time <![CDATA[>]]> #{time}
+				order by f_article_id desc
+		)t where f_url is not null  and f_article_category = 1 
+		limit 3
+	</select>
+	
+	<select id="selectListByRegionId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t16.*,t17.f_fish_shop_main_img as f_business_portrait_shop
+		from 
+		(
+			select t14.*,t15.f_main_img as f_business_portrait_site
+			from
+			(
+				select t12.*,t13.f_user_nickname as f_comment_r_nickname ,t13.f_user_portriat as f_comment_r_portrait
+				from 	
+				(
+					select t10.*,t11.f_user_nickname as f_comment_nickname ,t11.f_user_portriat as f_comment_portrait
+					from 
+					(
+						select t8.* ,t9.f_user_nickname as f_like_nickname ,t9.f_user_portriat as f_like_portrait
+						from
+						(
+							select t6.*,t7.f_user_nickname as f_article_nickname ,t7.f_user_portriat as f_article_portrait
+							from
+							(
+								select t4.*,t5.f_like_uid,t5.f_like_time,t5.f_article_id as f_like_article_id
+								from 
+								(
+									select t2.*,t3.f_article_id as f_comment_article_id,t3.f_comment_uid ,t3.f_comment_r_uid,t3.f_comment_content,t3.f_comment_time
+									from
+									(
+										select t1.*
+										from 
+										(
+											select <include refid="baseColumn_1" />
+											from t_hp_article
+											where f_is_delete = false and f_city_id = #{cityId} or f_city_id = 0
+											order by f_article_id desc
+										)t1
+										<if test="articleId &gt; 0">
+											where f_article_id <![CDATA[<]]> #{articleId}
+										</if>
+										limit #{size}
+									)t2 left join t_hp_article_comments t3 on t2.f_article_id = t3.f_article_id
+								)t4 left join t_hp_article_likes t5 on t4.f_article_id = t5.f_article_id 
+							)t6 left join t_user t7 on t6.f_article_uid = t7.f_uid
+						)t8 left join t_user t9 on t8.f_like_uid = t9.f_uid
+					)t10 left join t_user t11 on t10.f_comment_uid = t11.f_uid
+				)t12 left join t_user t13 on t12.f_comment_r_uid = t13.f_uid 
+			)t14 left join t_fish_site t15 on t14.f_business_id = t15.f_fish_site_id
+		)t16 left join t_fish_shop t17 on t16.f_business_id = t17.f_fish_shop_id
+		order by f_article_id desc, f_comment_time asc ,f_like_time asc
+	</select>
+	
+	
+	<select id="selectListByUid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t12.*,t13.f_user_nickname as f_comment_r_nickname ,t13.f_user_portriat as f_comment_r_portrait
+				from 	
+				(
+					select t10.*,t11.f_user_nickname as f_comment_nickname ,t11.f_user_portriat as f_comment_portrait
+					from 
+					(
+						select t8.* ,t9.f_user_nickname as f_like_nickname ,t9.f_user_portriat as f_like_portrait
+						from
+						(
+							select t6.*,t7.f_user_nickname as f_article_nickname ,t7.f_user_portriat as f_article_portrait
+							from
+							(
+								select t4.*,t5.f_like_uid,t5.f_like_time,t5.f_article_id as f_like_article_id
+								from 
+								(
+									select t2.*,t3.f_article_id as f_comment_article_id,t3.f_comment_uid ,t3.f_comment_r_uid,t3.f_comment_content,t3.f_comment_time
+									from
+									(
+										select t1.*
+										from
+										(
+											select <include refid="baseColumn_1" />
+											from t_hp_article
+											where f_is_delete = false and f_article_uid = #{articleUid}
+											order by f_article_id desc
+										)t1
+										<if test="articleId > 0">
+										 where f_article_id <![CDATA[<]]> #{articleId}
+										</if>
+										limit #{size}
+							)t2 left join t_hp_article_comments t3 on t2.f_article_id = t3.f_article_id
+						)t4 left join t_hp_article_likes t5 on t4.f_article_id = t5.f_article_id 
+					)t6 left join t_user t7 on t6.f_article_uid = t7.f_uid
+				)t8 left join t_user t9 on t8.f_like_uid = t9.f_uid
+			)t10 left join t_user t11 on t10.f_comment_uid = t11.f_uid
+		)t12 left join t_user t13 on t12.f_comment_r_uid = t13.f_uid
+	</select>
+	<select id="selectListCount" parameterType="java.util.Map" resultType="java.lang.Long">
+		select COUNT(*) from t_hp_article 
+		left join t_user on f_article_uid = f_uid
+		<where> 
+			<if test="cityId !=null">
+				f_city_id = #{cityId}
+			</if>
+			<if test="articleUid !=null">
+				and f_article_uid = #{articleUid}
+			</if>
+			<if test="keyword != null">
+				and (f_user_nickname LIKE #{keyword} or f_title LIKE #{keyword} OR f_business_name LIKE #{keyword})
+			</if>
+		</where>
+	</select>
+	<select id="selectList" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t1.*,t2.f_user_nickname as f_article_nickname ,t2.f_user_portriat as f_article_portrait
+			from
+			(
+				select *
+				from t_hp_article
+			<where> 
+				<if test="cityId !=null">
+					and f_city_id = #{cityId}
+				</if>
+				<if test="articleUid !=null">
+					and f_article_uid = #{articleUid}
+				</if>
+			</where>
+				order by f_article_id desc
+				limit #{start} ,#{size}
+			)t1 left join t_user t2 on t1.f_article_uid = t2.f_uid
+			<where>
+				<if test="keyword != null">
+					(t2.f_user_nickname LIKE #{keyword} or t1.f_title LIKE #{keyword} OR t1.f_business_name LIKE #{keyword})
+				</if>
+			</where>								
+	</select>
+	
+	<update id="update">
+		update t_hp_article
+		<set>
+			<if test="banner != null">
+				f_banner = #{banner},
+			</if>
+			<if test="title != null">
+				f_title = #{title},
+			</if>
+			<if test="contentDetail != null">
+				f_content_detail = #{contentDetail},
+			</if>
+			<if test="isDelete != null">
+				f_is_delete = #{isDelete},
+			</if>
+			<if test="cityId != null">
+				f_city_id = #{cityId}
+			</if>
+		</set>
+		where f_article_id = #{articleId}
+	</update>	
+	<select id="selectByIdAsLock" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select <include refid="baseColumn_1" />
+		from t_hp_article
+		where f_article_id = #{articleId} for update
+	</select>
+	
+	<select id="selectById" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select t1.*, t2.f_user_nickname as f_article_nickname ,t2.f_user_portriat as f_article_portrait
+		from 
+		(	select *
+			from t_hp_article
+			where f_article_id = #{articleId}
+		)t1 left join t_user t2 on t1.f_article_uid = t2.f_uid
+	</select>
+	
+	<select id="selectNormalById" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select t1.*, t2.f_user_nickname as f_article_nickname ,t2.f_user_portriat as f_article_portrait
+		from 
+		(	select *
+			from t_hp_article
+			where f_is_delete = false and f_article_id = #{articleId}
+		)t1 left join t_user t2 on t1.f_article_uid = t2.f_uid
+	</select>
+	
+	<select id="selectByOtherArticleId" resultMap="baseResultMap">
+		select f_article_id
+		from t_hp_article
+		where f_other_article_id = #{otherArticleId} and f_type = #{type} 
+	</select>
+	
+	<update id="updateByArticleId">
+		update t_hp_article
+		<set>
+			<if test="banner != null">
+				f_banner = #{banner},
+			</if>
+			<if test="title != null">
+				f_title = #{title},
+			</if>
+			<if test="contentDetail != null">
+				f_content_detail = #{contentDetail},
+			</if>
+		</set>
+		where f_article_id = #{articleId}
+	</update>
+	
+	<insert id="insertPojo" useGeneratedKeys="true" keyProperty="articleId">
+		insert into t_hp_article (
+			<include refid="baseColumn" />
+		)values(
+			#{articleId},
+			#{articleUid},
+			#{category},
+			#{articleCategory},
+			#{title},
+			#{content},
+			#{contentDetail},
+			#{banner},
+			#{url},
+			#{articleType},
+			#{likeCount},
+			#{commentCount},
+			#{type},
+			#{typeDesc},
+			#{positionName},
+			#{businessId},
+			#{businessName},
+			#{longitude},
+			#{latitude},
+			#{cityId},
+			#{otherArticleId},
+			#{remarkName},
+			#{articleTime}
+		)
+	</insert>
+	
+	<update id="updatePojo"> 
+		update t_hp_article
+		set	f_like_count = #{likeCount},
+			f_comment_count = #{commentCount}
+		where f_article_id = #{articleId}
+	</update>
+	
+	<update id="deletePojo">
+		update t_hp_article
+		set f_is_delete = true
+		where f_article_id = #{articleId}
+	</update>
+
+</mapper>

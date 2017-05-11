@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.heipiao.api.mapper.EmpMapper">
+	<resultMap id="BaseResultMap" type="cn.heipiao.api.pojo.Emp">
+		<id column="f_uid" property="userId" jdbcType="INTEGER" />
+		<result column="f_fish_site_id" property="fishSiteId" jdbcType="INTEGER" />
+		<result column="f_remark" property="remark" jdbcType="VARCHAR" />
+		<result column="f_status" property="empStatus" jdbcType="VARCHAR" />
+		<result column="f_fish_site_name" property="fishSiteName"  />
+		<result column="f_main_img" property="mainImg"  />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		f_uid, f_fish_site_id, f_remark , f_status
+	</sql>
+
+	<select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_fish_site_employee
+		where f_uid = #{userId}
+	</select>
+	
+	<select id="selectByUid" resultMap="BaseResultMap">
+		select e.f_fish_site_id,e.f_status,s.f_fish_site_name,s.f_main_img,s.f_uid
+		from (
+			select f_fish_site_id,f_status
+			from t_fish_site_employee
+			where f_uid = #{userId} and f_status != 0
+			) e left join t_fish_site s on e.f_fish_site_id = s.f_fish_site_id
+	</select>
+
+	<delete id="deleteById">
+		delete from
+		t_fish_site_employee
+		where f_uid = #{userId}
+	</delete>
+
+	<insert id="insert" parameterType="cn.heipiao.api.pojo.Emp">
+		insert into
+		t_fish_site_employee (f_uid, f_fish_site_id, f_remark, f_status)
+		values (#{userId},
+		#{fishSiteId},
+		#{remark},
+		#{empStatus})
+	</insert>
+
+	<update id="updateById" parameterType="cn.heipiao.api.pojo.Emp">
+		update t_fish_site_employee
+		<set>
+			<if test="fishSiteId != null">
+				f_fish_site_id = #{fishSiteId,jdbcType=INTEGER},
+			</if>
+			<if test="remark != null">
+				f_remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="empStatus != null">
+				f_status = #{empStatus,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where f_uid = #{userId,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectList" resultType="cn.heipiao.api.pojo.Emp" parameterType="map">
+		<!-- select t1.f_uid userId, t1.f_user_nickname userName , t1.f_user_phonenum phone ,
+		t1.f_user_portriat portriat, t2.f_remark remark, t2.f_status empStatus
+		from
+		(select f_uid , f_user_nickname , f_user_portriat , f_user_status , f_user_phonenum from 
+		t_user where f_user_status = 1) t1
+		JOIN
+		(
+		select f_uid , f_remark , f_status from t_fish_site_employee where
+		f_fish_site_id = #{fishSiteId} and f_status = 2 
+		union 
+		(
+		select f_uid , f_remark , f_status from t_fish_site_employee where
+		f_fish_site_id = #{fishSiteId}
+		order by t1.f_uid)
+		) t2
+		on
+		t1.f_uid = t2.f_uid -->
+		
+		select t1.*,t2.f_user_nickname as userName , t2.f_user_phonenum as phone,t2.f_user_portriat as portriat
+		from 
+		(
+		select f_uid as userId , f_remark as remark , f_status as empStatus from t_fish_site_employee 
+		where f_fish_site_id = #{fishSiteId} 
+		) t1 left join t_user t2 on t1.userId = t2.f_uid
+		
+	</select>
+	
+	<select id="getFishSiteIdByPhone" resultType="java.lang.Integer">
+		select f_fish_site_id from t_fish_site_employee where f_uid = (select f_uid from t_user where f_user_phonenum = #{phone})
+	</select>
+	
+	<select id="findEmpByParams" resultType="cn.heipiao.api.pojo.Emp">
+	SELECT
+		t1.f_uid userId,
+		t1.f_fish_site_id fishSiteId,
+		t1.f_status empStatus,
+		t2.f_username userName,
+		t2.f_user_portriat portriat,
+		t2.f_user_nickname nickname,
+		t2.f_user_realname realname,
+		t2.f_user_birthday birthday,
+		t2.f_user_sex sex,
+		t2.f_user_phonenum phone,
+		t2.f_user_email email,
+		t2.f_user_region_id regionId,
+		t2.f_user_remarks remark
+	FROM
+		t_fish_site_employee t1 , 
+		(
+		SELECT
+			f_uid,
+			f_user_password,
+			f_username,
+			f_user_portriat,
+			f_user_nickname,
+			f_user_realname,
+			f_user_birthday,
+			f_user_sex,
+			f_user_phonenum,
+			f_user_email,
+			f_user_region_id,
+			f_user_remarks
+		FROM
+			t_user where f_user_phonenum = #{param}
+		UNION
+		SELECT
+			f_uid,
+			f_user_password,
+			f_username,
+			f_user_portriat,
+			f_user_nickname,
+			f_user_realname,
+			f_user_birthday,
+			f_user_sex,
+			f_user_phonenum,
+			f_user_email,
+			f_user_region_id,
+			f_user_remarks
+		FROM
+			t_user where f_user_email = #{param}
+		UNION
+		SELECT
+			f_uid,
+			f_user_password,
+			f_username,
+			f_user_portriat,
+			f_user_nickname,
+			f_user_realname,
+			f_user_birthday,
+			f_user_sex,
+			f_user_phonenum,
+			f_user_email,
+			f_user_region_id,
+			f_user_remarks
+		FROM
+			t_user where f_username = #{param}
+		) t2
+	where t1.f_uid = t2.f_uid
+	</select>
+	
+	<select id="selectEmpAndPasswordByParams" resultType="cn.heipiao.api.pojo.Emp">
+
+		select 
+			t1.f_uid userId,
+			t1.f_fish_site_id fishSiteId,
+			t1.f_status empStatus,
+			t2.f_username userName,
+			t2.f_user_portriat portriat,
+			t2.f_user_nickname nickname,
+			t2.f_user_realname realname,
+			t2.f_user_birthday birthday,
+			t2.f_user_sex sex,
+			t2.f_user_phonenum phone,
+			t2.f_user_email email,
+			t2.f_user_region_id regionId,
+			t2.f_user_remarks remark,
+			t2.f_user_password password
+ 		from t_fish_site_employee t1, (
+		SELECT
+			f_uid,
+			f_user_password,
+			f_username,
+			f_user_portriat,
+			f_user_nickname,
+			f_user_realname,
+			f_user_birthday,
+			f_user_sex,
+			f_user_phonenum,
+			f_user_email,
+			f_user_region_id,
+			f_user_remarks
+		FROM
+			t_user where f_user_phonenum = #{param}
+		UNION
+		SELECT
+			f_uid,
+			f_user_password,
+			f_username,
+			f_user_portriat,
+			f_user_nickname,
+			f_user_realname,
+			f_user_birthday,
+			f_user_sex,
+			f_user_phonenum,
+			f_user_email,
+			f_user_region_id,
+			f_user_remarks
+		FROM
+			t_user where f_user_email = #{param}
+		UNION
+		SELECT
+			f_uid,
+			f_user_password,
+			f_username,
+			f_user_portriat,
+			f_user_nickname,
+			f_user_realname,
+			f_user_birthday,
+			f_user_sex,
+			f_user_phonenum,
+			f_user_email,
+			f_user_region_id,
+			f_user_remarks
+		FROM
+			t_user where f_username = #{param}
+		) t2
+		where t1.f_uid = t2.f_uid
+	
+	</select>
+	
+	<select id="selectEmpByuid" resultType="cn.heipiao.api.pojo.Emp">
+
+		select 
+			t1.f_uid userId,
+			t1.f_fish_site_id fishSiteId,
+			t1.f_status empStatus,
+			t2.f_username userName,
+			t2.f_user_portriat portriat,
+			t2.f_user_nickname nickname,
+			t2.f_user_realname realname,
+			t2.f_user_birthday birthday,
+			t2.f_user_sex sex,
+			t2.f_user_phonenum phone,
+			t2.f_user_email email,
+			t2.f_user_region_id regionId,
+			t2.f_user_remarks remark,
+			t2.f_user_password password
+ 		from t_fish_site_employee t1, (
+		SELECT
+			f_uid,
+			f_user_password,
+			f_username,
+			f_user_portriat,
+			f_user_nickname,
+			f_user_realname,
+			f_user_birthday,
+			f_user_sex,
+			f_user_phonenum,
+			f_user_email,
+			f_user_region_id,
+			f_user_remarks
+		FROM
+			t_user where f_uid = #{uid}
+		) t2
+		where t1.f_uid = t2.f_uid
+	
+	</select>
+	
+	<select id="selectUidsBySiteId" parameterType="java.lang.Integer" resultType="java.lang.Long">
+		select f_uid 
+		from t_fish_site_employee
+		where f_fish_site_id = #{siteId}
+	</select>
+
+	<delete id="deleteBySiteId" parameterType="java.lang.Integer">
+		delete from t_fish_site_employee
+		where f_fish_site_id = #{siteId}
+	</delete>
+
+
+</mapper>

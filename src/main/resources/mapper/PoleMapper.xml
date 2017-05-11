@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.heipiao.api.mapper.PoleMapper">
+	<resultMap id="BaseResultMap" type="cn.heipiao.api.pojo.Pole">
+		<id column="f_tickets_id" property="id"/>
+		<result column="f_uid" property="userId"/>
+		<result column="f_fish_site_id" property="fishSiteId"/>
+		<result column="f_begin_time" property="begin"/>
+		<result column="f_checked_tickets_time" property="checked"/>
+		<result column="f_end_time" property="end"/>
+		<result column="f_is_leave" property="isLeave"/>
+		<result column="f_pond_name" property="pondName"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		f_tickets_id, f_uid, f_fish_site_id, f_begin_time, f_checked_tickets_time,
+		f_end_time,f_is_leave,f_pond_name
+	</sql>
+	
+	<select id="selectOverTimeUsers" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT * FROM t_orders_poled WHERE f_end_time &lt; #{now} AND f_is_leave = '1'
+	</select>
+
+	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from t_orders_poled
+		where f_tickets_id = #{id,jdbcType=BIGINT}
+	</select>
+
+	<select id="selectList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_orders_poled
+		where f_tickets_id = #{id} and f_is_leave = #{isLeave}
+	</select>
+	
+	<select id="selectListByTime" resultType="cn.heipiao.api.pojo.Pole">
+		select 
+				t2.f_user_nickname username, t2.f_user_portriat portriat,
+		t1.f_tickets_id id, t1.f_uid userId, t1.f_fish_site_id fishSiteId, t1.f_begin_time begin, t1.f_checked_tickets_time checked,
+		t1.f_end_time end,t1.f_is_leave isLeave, t1.f_pond_name pondName,t1.c1 allCount, t1.c2 onlienCount , t1.c3 outTimeCount
+		from
+		(
+		SELECT 
+		t0.f_tickets_id, t0.f_uid, t0.f_fish_site_id, t0.f_begin_time, t0.f_checked_tickets_time,
+		t0.f_end_time,t0.f_is_leave,t0.f_pond_name,c1.c c1, c2.c c2, c3.c c3
+
+		from t_orders_poled t0,(select count(*) c from t_orders_poled 
+		<where>
+		<if test="fishSitsId != null">
+		f_fish_site_id = #{fishSitsId} 
+		and
+		</if>
+		<if test="begin != null">
+		f_checked_tickets_time >= #{begin} 
+		and
+		</if>
+		<if test="end != null"> 
+		f_checked_tickets_time &lt;= #{end}
+		and
+		</if>
+		1 = 1
+		</where> ) c1,
+	(select count(*) c from t_orders_poled
+	<where>
+		<if test="fishSitsId != null">
+		f_fish_site_id = #{fishSitsId} 
+		and
+		</if>
+		<if test="begin != null">
+		f_checked_tickets_time >= #{begin} 
+		and
+		</if>
+		<if test="end != null"> 
+		f_checked_tickets_time &lt;= #{end}
+		and
+		</if>
+		f_is_leave = 1
+	</where>
+	 ) c2,
+	(select count(*) c from t_orders_poled 
+	<where>
+		<if test="fishSitsId != null">
+		f_fish_site_id = #{fishSitsId} 
+		and
+		</if>
+		<if test="now != null">
+		#{now} >=  f_end_time
+		</if> 
+		and
+		f_is_leave = 1
+	</where>
+	 ) c3
+		<where>
+		<if test="fishSitsId != null">
+		f_fish_site_id = #{fishSitsId} 
+		and
+		</if>
+		<!-- <if test="begin != null">
+		f_checked_tickets_time >= #{begin} 
+		and
+		</if>
+		<if test="end != null"> 
+		f_checked_tickets_time &lt;= #{end}
+		and
+		</if> -->
+		f_is_leave = 1
+		</where> 
+		
+		<if test="start != null and size != null">
+		limit #{start} , #{size}
+		</if>
+		)
+		 t1
+		
+		left join
+		t_user t2
+		on
+		t1.f_uid = t2.f_uid
+		
+		
+	</select>
+	
+	<select id="selectHead" resultType="cn.heipiao.api.pojo.Pole" >
+	select c1.c allCount , c2.c onlienCount , c3.c outTimeCount
+	from
+		(select count(*) c from t_orders_poled 
+		<where>
+		<if test="fishSitsId != null">
+		f_fish_site_id = #{fishSitsId} 
+		and
+		</if>
+		<if test="begin != null">
+		f_checked_tickets_time >= #{begin} 
+		and
+		</if>
+		<if test="end != null"> 
+		f_checked_tickets_time &lt;= #{end}
+		and
+		</if>
+		1 = 1
+		</where> ) c1,
+		(select count(*) c from t_orders_poled
+		<where>
+			<if test="fishSitsId != null">
+			f_fish_site_id = #{fishSitsId} 
+			and
+			</if>
+			<if test="begin != null">
+			f_checked_tickets_time >= #{begin} 
+			and
+			</if>
+			<if test="end != null"> 
+			f_checked_tickets_time &lt;= #{end}
+			and
+			</if>
+			f_is_leave = 1
+		</where>
+		 ) c2,
+		(select count(*) c from t_orders_poled 
+		<where>
+			<if test="fishSitsId != null">
+			f_fish_site_id = #{fishSitsId} 
+			and
+			</if>
+			<if test="now != null">
+			#{now} >=  f_end_time
+			</if> 
+			and
+			f_is_leave = 1
+		</where>
+		 ) c3
+	</select>
+
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from t_orders_poled
+		where f_tickets_id = #{id,jdbcType=BIGINT}
+	</delete>
+
+	<insert id="insert" parameterType="cn.heipiao.api.pojo.Pole">
+		insert into t_orders_poled (f_tickets_id, f_uid, f_fish_site_id,
+		f_begin_time, f_checked_tickets_time, f_end_time, f_is_leave ,f_pond_name
+		)
+		values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER},
+		#{fishSiteId,jdbcType=INTEGER},
+		#{begin,jdbcType=TIMESTAMP}, #{checked,jdbcType=TIMESTAMP}, #{end,jdbcType=TIMESTAMP},
+		#{isLeave,jdbcType=TIMESTAMP}, #{pondName}
+		)
+	</insert>
+
+	<update id="updateById">
+		update t_orders_poled
+		<set>
+			<if test="userId != null">
+				f_uid = #{userId},
+			</if>
+			<if test="fishSiteId != null">
+				f_fish_site_id = #{fishSiteId},
+			</if>
+			<if test="begin != null">
+				f_begin_time = #{begin},
+			</if>
+			<if test="checked != null">
+				f_checked_tickets_time = #{checked},
+			</if>
+			<if test="end != null">
+				f_end_time = #{end},
+			</if>
+			<if test="isLeave != null">
+				f_is_leave = #{isLeave},
+			</if>
+			<if test="pondName != null">
+				f_pond_name = #{pondName},
+			</if>
+		</set>
+		where f_tickets_id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- <update id="updateByPrimaryKey" parameterType="cn.heipiao.api.pojo.Pole" 
+		> update t_orders_poled set f_uid = #{userId,jdbcType=INTEGER}, f_fish_site_id 
+		= #{fishSiteId,jdbcType=INTEGER}, f_begin_time = #{begin,jdbcType=TIMESTAMP}, 
+		f_checked_tickets_time = #{checked,jdbcType=TIMESTAMP}, f_end_time = #{end,jdbcType=TIMESTAMP} 
+		where f_tickets_id = #{id,jdbcType=BIGINT} </update> 
+		<insert id="insertSelective" 
+		parameterType="cn.heipiao.api.pojo.Pole" > insert into t_orders_poled <trim 
+		prefix="(" suffix=")" suffixOverrides="," > <if test="id != null" > f_tickets_id, 
+		</if> <if test="userId != null" > f_uid, </if> <if test="fishSiteId != null" 
+		> f_fish_site_id, </if> <if test="begin != null" > f_begin_time, </if> <if 
+		test="checked != null" > f_checked_tickets_time, </if> <if test="end != null" 
+		> f_end_time, </if> </trim> <trim prefix="values (" suffix=")" suffixOverrides="," 
+		> <if test="id != null" > #{id,jdbcType=BIGINT}, </if> <if test="userId != 
+		null" > #{userId,jdbcType=INTEGER}, </if> <if test="fishSiteId != null" > 
+		#{fishSiteId,jdbcType=INTEGER}, </if> <if test="begin != null" > #{begin,jdbcType=TIMESTAMP}, 
+		</if> <if test="checked != null" > #{checked,jdbcType=TIMESTAMP}, </if> <if 
+		test="end != null" > #{end,jdbcType=TIMESTAMP}, </if> </trim> </insert> -->
+</mapper>

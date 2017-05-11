@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.WxPayNotifyMapper">
+	
+	<resultMap type="wxPayNotify" id="baseResultMap">
+		<id column="f_out_trade_no" property="out_trade_no" />
+		<result column="f_appid" property="appid" />
+		<result column="f_mch_id" property="mch_id" />
+		<result column="f_device_info" property="device_info" />
+		<result column="f_nonce_str" property="nonce_str" />
+		<result column="f_sign" property="sign" />
+		<result column="f_result_code" property="result_code" />
+		<result column="f_err_code" property="err_code" />
+		<result column="f_err_code_des" property="err_code_des" />
+		<result column="f_openid" property="openid" />
+		<result column="f_is_subscribe" property="is_subscribe" />
+		<result column="f_trade_type" property="trade_type" />
+		<result column="f_bank_type" property="bank_type" />
+		<result column="f_total_fee" property="total_fee" />
+		<result column="f_fee_type" property="fee_type" />
+		<result column="f_cash_fee" property="cash_fee" />
+		<result column="f_cash_fee_type" property="cash_fee_type" />
+		<result column="f_coupon_fee" property="coupon_fee" />
+		<result column="f_coupon_count" property="coupon_count" />
+		<result column="f_coupon_id_index" property="coupon_id_index" />
+		<result column="f_coupon_fee_index" property="coupon_fee_index" />
+		<result column="f_transaction_id" property="transaction_id" />
+		<result column="f_attach" property="attach" />
+		<result column="f_time_end" property="time_end" />
+		<result column="f_return_code" property="return_code" />
+		<result column="f_return_msg" property="return_msg" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_appid,
+		f_mch_id,
+		f_device_info,
+		f_nonce_str,
+		f_sign,
+		f_result_code,
+		f_err_code,
+		f_err_code_des,
+		f_openid,
+		f_is_subscribe,
+		f_trade_type,
+		f_bank_type,
+		f_total_fee,
+		f_fee_type,
+		f_cash_fee,
+		f_cash_fee_type,
+		f_coupon_fee,
+		f_coupon_count,
+		f_coupon_id_index,
+		f_coupon_fee_index,
+		f_transaction_id,
+		f_out_trade_no,
+		f_attach,
+		f_time_end,
+		f_return_code,
+		f_return_msg
+	</sql>
+	
+	<select id="selectWxPayNotifyByOutTradeNo" parameterType="java.lang.String" resultMap="baseResultMap">
+		select  
+		<include refid="baseColumn" />
+		from t_weixin_pay_notify
+		where f_out_trade_no = #{out_trade_no}
+	</select>
+	
+	<select id="selectWxPayNotifyAsLockByOutTradeNo" parameterType="java.lang.String" resultMap="baseResultMap">
+		select  
+		<include refid="baseColumn" />
+		from t_weixin_pay_notify
+		where f_out_trade_no = #{out_trade_no} for update
+	</select>
+	
+	
+	<select id="selectAll" resultMap="baseResultMap">
+		select * 
+		from t_weixin_pay_notify
+	</select>
+
+	<insert id="insertPojo" >
+		insert into t_weixin_pay_notify(
+		<include refid="baseColumn" />
+		)
+		values(
+			#{appid},
+			#{mch_id},
+			#{device_info},
+			#{nonce_str},
+			#{sign},
+			#{result_code},
+			#{err_code},
+			#{err_code_des},
+			#{openid},
+			#{is_subscribe},
+			#{trade_type},
+			#{bank_type},
+			#{total_fee},
+			#{fee_type},
+			#{cash_fee},
+			#{cash_fee_type},
+			#{coupon_fee},
+			#{coupon_count},
+			#{coupon_id_index},
+			#{coupon_fee_index},
+			#{transaction_id},
+			#{out_trade_no},
+			#{attach},
+			#{time_end},
+			#{return_code},
+			#{return_msg}
+		)
+	</insert>
+	
+	<update id="updatePojo">
+		update t_weixin_pay_notify
+		<set>
+			<if test="appid != null">
+				f_appid = #{appid},
+			</if>
+			<if test="mch_id != null">
+				f_mch_id = #{mch_id},
+			</if>
+			<if test="device_info != null">
+				f_device_info = #{device_info},
+			</if>
+			<if test="nonce_str != null">
+				f_nonce_str = #{nonce_str},
+			</if>
+			<if test="sign != null">
+				f_sign = #{sign},
+			</if>
+			<if test="result_code != null">
+				f_result_code = #{result_code},
+			</if>
+			<if test="err_code != null">
+				f_err_code = #{err_code},
+			</if>
+			<if test="err_code_des != null">
+				f_err_code_des = #{err_code_des},
+			</if>
+			<if test="openid != null">
+				f_openid = #{openid},
+			</if>
+			<if test="is_subscribe != null">
+				f_is_subscribe = #{is_subscribe},
+			</if>
+			<if test="trade_type != null">
+				f_trade_type = #{trade_type},
+			</if>
+			<if test="bank_type != null">
+				f_bank_type = #{bank_type},
+			</if>
+			<if test="total_fee != null">
+				f_total_fee = #{total_fee},
+			</if>
+			<if test="fee_type != null">
+				f_fee_type = #{fee_type},
+			</if>
+			<if test="cash_fee != null">
+				f_cash_fee = #{cash_fee},
+			</if>
+			<if test="cash_fee_type != null">
+				f_cash_fee_type = #{cash_fee_type},
+			</if>
+			<if test="coupon_fee != null">
+				f_coupon_fee = #{coupon_fee},
+			</if>
+			<if test="coupon_count != null">
+				f_coupon_count = #{coupon_count},
+			</if>
+			<if test="coupon_id_index != null">
+				f_coupon_id_index = #{coupon_id_index},
+			</if>
+			<if test="coupon_fee_index != null">
+				f_coupon_fee_index = #{coupon_fee_index},
+			</if>
+			<if test="transaction_id != null">
+				f_transaction_id = #{transaction_id},
+			</if>
+			<if test="attach != null">
+				f_attach = #{attach},
+			</if>
+			<if test="time_end != null">
+				f_time_end = #{time_end},
+			</if>
+			<if test="return_code != null">
+				f_return_code = #{return_code},
+			</if>
+			<if test="return_msg != null">
+				f_return_msg = #{return_msg},
+			</if>
+		</set>
+		where f_out_trade_no = #{out_trade_no}
+		</update>
+</mapper>

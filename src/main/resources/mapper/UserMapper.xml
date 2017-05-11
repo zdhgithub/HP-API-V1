@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserMapper">
+	<resultMap type="User" id="userRsultMap">
+		<id column="f_uid" property="id" />
+		<result column="f_username" property="username" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_user_password" property="password" />
+		<result column="f_user_realname" property="realname" />
+		<result column="f_idcard" property="idcard" />
+		<result column="f_user_birthday" property="birthday" />
+		<result column="f_user_sex" property="sex" />
+		<result column="f_user_phonenum" property="phone" />
+		<result column="f_user_email" property="email" />
+		<result column="f_user_openid" property="unionId" />
+		<result column="f_user_source" property="source" />
+		<result column="f_user_register_time" property="regisTime" />
+		<result column="f_user_region_id" property="regionId" />
+		<result column="f_user_region_str" property="regionStr" />
+		<result column="f_user_portriat" property="portriat" />
+		<result column="f_user_remarks" property="remark" />
+		<result column="f_user_platform_remarks" property="platformRemarks" />
+		<result column="f_user_last_logintime" property="lastLoginTime" />
+		<result column="f_user_status" property="status" />
+		<result column="f_stat" property="stat" />
+		
+		<result column="f_fish_shop_id" property="shopId" />
+	</resultMap>
+	<sql id="usersql">
+		f_uid,
+		f_username,f_user_nickname,f_user_password,f_user_realname,f_idcard,f_user_birthday,f_user_sex
+		,f_user_phonenum,f_user_email,f_user_openid,f_user_source,f_user_register_time,f_user_region_id,f_user_region_str,f_user_portriat
+		,f_user_remarks,f_user_platform_remarks,f_user_last_logintime,f_user_status,f_stat
+	</sql>
+	<select id="getUsersNum" resultType="int">
+		SELECT COUNT(*) FROM t_user
+	</select>
+	
+	
+	<select id="selectNotPartnerList"  parameterType="java.util.Map" resultMap="userRsultMap">
+		SELECT
+		<include refid="usersql"/>
+		FROM t_user u where (not EXISTS(SELECT f_uid from t_partner p WHERE u.f_uid=p.f_uid))
+		<if test="searchfor != null">
+			and (f_username  LIKE CONCAT('%',#{searchfor},'%')
+			or f_user_nickname like CONCAT('%',#{searchfor},'%')
+		 	or f_user_realname like CONCAT('%',#{searchfor},'%')
+		 	or f_user_phonenum like CONCAT('%',#{searchfor},'%'))
+		</if>
+		<if test="order!=null">
+			ORDER BY ${order}
+		</if>
+		<choose>
+			<when test="asc!=null">
+				asc
+			</when>
+			<when test="desc!=null">
+				desc
+			</when>
+		</choose>
+		<if test="start != null and size != null">
+			limit #{start},#{size}
+		</if>
+	</select>
+
+	<select id="selectById" resultMap="userRsultMap">
+		SELECT
+		<include refid="usersql"></include>
+		FROM t_user u where u.f_uid = #{id}
+	</select>
+
+	<select id="queryUserByOpenId" parameterType="java.util.Map"
+		resultMap="userRsultMap">
+		select
+		<include refid="usersql" />
+		from t_user 
+		where f_user_openid = #{unionId}
+		<if test="source != null">
+			and f_user_source =	#{source}
+		</if> 
+	</select>
+
+	<select id="selectList" resultMap="userRsultMap">
+		SELECT
+		<include refid="usersql"></include>
+		FROM t_user
+		<where>
+			<if test="username != null">
+				and f_username = #{username,jdbcType=VARCHAR}
+			</if>
+			<if test="nickname != null">
+				and f_user_nickname = #{nickname,jdbcType=VARCHAR}
+			</if>
+			<if test="password != null">
+				and f_user_password = #{password,jdbcType=VARCHAR}
+			</if>
+			<if test="realname != null">
+				and f_user_realname = #{realname,jdbcType=VARCHAR}
+			</if>
+			<if test="birthday != null">
+				and f_user_birthday = #{birthday,jdbcType=DATE}
+			</if>
+			<if test="sex != null">
+				and f_user_sex = #{sex,jdbcType=CHAR}
+			</if>
+			<if test="phone != null">
+				and f_user_phonenum = #{phone}
+			</if>
+			<if test="email != null">
+				and f_user_email = #{email,jdbcType=VARCHAR}
+			</if>
+			<if test="unionId != null">
+				and f_user_openid = #{unionId,jdbcType=VARCHAR}
+			</if>
+			<if test="source != null">
+				and f_user_source = #{source,jdbcType=VARCHAR}
+			</if>
+			<if test="regisTime != null">
+				and f_user_register_time =
+				#{regisTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="regionId != null">
+				and f_user_region_id = #{regionId}
+			</if>
+			<if test="portriat != null">
+				and f_user_portriat = #{portriat,jdbcType=VARCHAR}
+			</if>
+			<if test="remark != null">
+				and f_user_remarks = #{remark,jdbcType=VARCHAR}
+			</if>
+			<if test="lastLoginTime != null">
+				and f_user_last_logintime =
+				#{lastLoginTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="status != null">
+				and f_user_status = #{status,jdbcType=CHAR}
+			</if>
+			<if test="stat != null">
+				and f_stat = #{stat}
+			</if>
+		</where>
+		<if test="order!=null">
+			ORDER BY ${order}
+		</if>
+		<choose>
+			<when test="asc!=null">
+				asc
+			</when>
+			<when test="desc!=null">
+				desc
+			</when>
+		</choose>
+		<if test="start != null and size != null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="getUserIDs" resultType="Integer">
+		SELECT f_uid FROM t_user
+	</select>
+	<select id="getUsersByConditions" parameterType="User"
+		resultMap="userRsultMap">
+		SELECT
+		<include refid="usersql"></include>
+		FROM t_user
+	</select>
+	<select id="getUsersByPhoneOrName" resultMap="userRsultMap">
+
+		SELECT
+		<include refid="usersql"></include>
+		FROM
+		t_user
+		WHERE
+		f_user_nickname LIKE CONCAT('%',#{condition},'%')
+		OR
+		f_user_phonenum LIKE CONCAT('%', #{condition},'%')
+		OR f_username LIKE
+		CONCAT('%', #{condition},'%')
+		ORDER BY f_user_register_time DESC
+		<if test="start!=null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+
+	<insert id="insert" parameterType="User" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- <if test="id != null"> -->
+			<!-- f_uid, -->
+			<!-- </if> -->
+			<if test="username != null">
+				f_username,
+			</if>
+			<if test="nickname != null">
+				f_user_nickname,
+			</if>
+			<if test="password != null">
+				f_user_password,
+			</if>
+			<if test="realname != null">
+				f_user_realname,
+			</if>
+			<if test="idcard != null">
+				f_idcard,
+			</if>
+			<if test="birthday != null">
+				f_user_birthday,
+			</if>
+			<if test="sex != null">
+				f_user_sex,
+			</if>
+			<if test="phone != null">
+				f_user_phonenum,
+			</if>
+			<if test="email != null">
+				f_user_email,
+			</if>
+			<if test="unionId != null">
+				f_user_openid,
+			</if>
+			<if test="source != null">
+				f_user_source,
+			</if>
+			<if test="regisTime != null">
+				f_user_register_time,
+			</if>
+			<if test="regionId != null">
+				f_user_region_id,
+			</if>
+			<if test="regionStr != null">
+				f_user_region_str,
+			</if>
+			<if test="portriat != null">
+				f_user_portriat,
+			</if>
+			<if test="remark != null">
+				f_user_remarks,
+			</if>
+			<if test="platformRemarks != null">
+				f_user_platform_remarks,
+			</if>
+			<if test="lastLoginTime != null">
+				f_user_last_logintime,
+			</if>
+			<if test="status != null">
+				f_user_status,
+			</if>
+			<if test="stat != null">
+				f_stat,
+			</if>
+		</trim>
+		<trim prefix=" values (" suffix=")" suffixOverrides=",">
+			<!-- <if test="id != null"> -->
+			<!-- #{id,jdbcType=INTEGER}, -->
+			<!-- </if> -->
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				#{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="realname != null">
+				#{realname,jdbcType=VARCHAR},
+			</if>
+			<if test="idcard != null">
+				#{idcard,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				#{birthday,jdbcType=DATE},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=CHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=BIGINT},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="unionId != null">
+				#{unionId,jdbcType=VARCHAR},
+			</if>
+			<if test="source != null">
+				#{source,jdbcType=VARCHAR},
+			</if>
+			<if test="regisTime != null">
+				#{regisTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regionId != null">
+				#{regionId},
+			</if>
+			<if test="regionStr != null">
+				#{regionStr},
+			</if>
+			<if test="portriat != null">
+				#{portriat,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="platformRemarks != null">
+				#{platformRemarks,jdbcType=VARCHAR},
+			</if>
+			<if test="lastLoginTime != null">
+				#{lastLoginTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="stat != null">
+				#{stat},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="deleteById">
+		UPDATE t_user SET
+		f_user_status = 0 where f_uid =#{ id
+		}
+	</delete>
+
+	<update id="updateById" parameterType="User">
+		update t_user
+		<set>
+			<if test="username != null">
+				f_username = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				f_user_nickname = #{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				f_user_password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="realname != null">
+				f_user_realname = #{realname,jdbcType=VARCHAR},
+			</if>
+			<if test="idcard != null">
+				f_idcard = #{idcard,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				f_user_birthday = #{birthday,jdbcType=DATE},
+			</if>
+			<if test="sex != null">
+				f_user_sex = #{sex,jdbcType=CHAR},
+			</if>
+			<if test="phone != null">
+				f_user_phonenum = #{phone},
+			</if>
+			<if test="email != null">
+				f_user_email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="unionId != null">
+				f_user_openid = #{unionId,jdbcType=VARCHAR},
+			</if>
+			<if test="source != null">
+				f_user_source = #{source,jdbcType=VARCHAR},
+			</if>
+			<if test="regionId != null">
+				f_user_region_id = #{regionId},
+			</if>
+			<if test="regionStr != null">
+				f_user_region_str = #{regionStr},
+			</if>
+			<if test="portriat != null">
+				f_user_portriat = #{portriat,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				f_user_remarks = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="platformRemarks != null">
+				f_user_platform_remarks = #{platformRemarks,jdbcType=VARCHAR},
+			</if>
+			<if test="lastLoginTime != null">
+				f_user_last_logintime =
+				#{lastLoginTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				f_user_status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="stat != null">
+				f_stat = #{stat},
+			</if>
+		</set>
+		where f_uid = #{id}
+	</update>
+
+	<update id="updateRealnameOrIdcardByUid">
+		update t_user
+		<set>
+			<if test="realname != null">
+				f_user_realname = #{realname,jdbcType=CHAR},
+			</if>
+			<if test="idcard != null">
+				f_idcard = #{idcard,jdbcType=CHAR},
+			</if>
+		</set>
+		where f_uid = #{id}
+	</update>
+
+
+	<select id="findByLoginParam" resultMap="userRsultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="usersql" />
+		from t_user
+		where f_user_phonenum = #{param}
+		UNION
+		select
+		<include refid="usersql" />
+		from t_user
+		where f_user_email = #{param}
+		UNION
+		select
+		<include refid="usersql" />
+		from t_user
+		where f_username = #{param}
+	</select>
+
+	<select id="queryUserByPhone" parameterType="java.lang.String" resultMap="userRsultMap">
+		select 
+		<include refid="usersql" />	
+		from t_user
+		where f_user_phonenum = #{phone}
+	</select>
+
+
+	<update id="updateNewMobileByOldMobile" parameterType="java.util.Map">
+		UPDATE `t_user` 
+		SET `f_username`=#{mobileNew}, 
+			`f_user_phonenum`=#{mobileNew} 
+			WHERE `f_user_phonenum`=#{mobileOld};
+	</update>
+	
+	<select id="selectIdealUser" resultMap="userRsultMap">
+		select f_uid,f_username, f_user_nickname, f_user_register_time, f_user_region_id, f_user_portriat, f_user_remarks
+		from t_user where f_username like '\\_%'
+	</select>
+	
+	<update id="removeOpenid">
+		update t_user
+		set f_user_openid = null
+		where f_uid = #{id}
+	</update>
+	
+	<update id="removePhone">
+		update t_user
+		set f_user_phonenum = null
+		where f_uid = #{id}
+	</update>
+	
+</mapper>

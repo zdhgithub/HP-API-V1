@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.WxMiniPayOnceRewardMapper">
+	
+	<resultMap type="wxMiniPayOnceReward" id="baseResultMap">
+		<id column="f_trade_id" property="tradeId" />
+		<result column="f_uid" property="uid" />
+		<result column="f_order_id" property="orderId" />
+		<result column="f_amount" property="amount" />
+		<result column="f_create_time" property="createTime" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_trade_id,f_uid,f_order_id,f_amount,f_create_time
+	</sql>
+	
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_wx_mini_pay_once_reward
+		where f_uid = #{uid}
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_wx_mini_pay_once_reward(
+			<include refid="baseColumn" />
+		)
+		values
+		(
+			#{tradeId},
+			#{uid},
+			#{orderId},
+			#{amount},
+			#{createTime}
+		)
+	</insert>
+
+</mapper>

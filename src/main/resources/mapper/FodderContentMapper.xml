@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FodderContentMapper">
+
+	<resultMap id="BaseResultMap" type="FodderContent">
+		<id     column="f_id"          jdbcType="INTEGER"     property="id" />
+		<result column="f_title"       jdbcType="VARCHAR"     property="title" />
+		<result column="f_remark"      jdbcType="VARCHAR"     property="remark" />
+		<result column="f_content"     jdbcType="LONGVARCHAR" property="content" />
+		<result column="f_cover_img"   jdbcType="VARCHAR"     property="coverImg" />
+		<result column="f_type"        jdbcType="VARCHAR"     property="type" />
+		<result column="f_parent_id"   jdbcType="INTEGER"     property="parentId" />
+		<result column="f_status"      jdbcType="INTEGER"     property="status" />
+		<result column="f_sort"        jdbcType="INTEGER"     property="sort" />
+		<result column="f_share_count" jdbcType="INTEGER"     property="shareCount" />
+		<result column="f_read_count"  jdbcType="INTEGER"     property="readCount" />
+		<result column="f_agree_count" jdbcType="INTEGER"     property="agreeCount" />
+		<result column="f_createtime"  jdbcType="DATE"        property="createtime" />
+		<result column="f_updatetime"  jdbcType="DATE"        property="updatetime" />
+	</resultMap>
+	
+	<sql id="sql_column_main_list">
+		f_id, f_title, f_remark, f_content, f_cover_img, f_type, f_parent_id, 
+		f_createtime, f_updatetime
+	</sql>
+	
+	<sql id="sql_column_statistics_list">
+		f_share_count, f_read_count, f_agree_count
+	</sql>
+	
+	<select id="selectArticles" resultType="hashmap">
+		SELECT tfc.f_id AS fid, tfc.`f_title` AS title, tfc.`f_remark` AS subtitle, 
+			CONCAT(#{imgpath}, tfc.`f_cover_img`) AS img,CONCAT(#{domain}, to_base64(tfc.f_id)) AS url,
+			tfc.`f_sort` AS sortNo, tfc.`f_status` AS `status`, 
+			tfc.`f_createtime` AS createTime, tfc.`f_parent_id` AS pid,
+			tfc.`f_type` AS `type`
+		FROM `t_article_hp` AS tfc
+		WHERE `f_parent_id` = 1
+		ORDER BY
+			`f_sort` DESC,
+			`f_createtime` DESC
+		LIMIT #{start},#{size}
+	</select>
+	
+	<select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select 
+			<include refid="sql_column_main_list"/>,
+			<include refid="sql_column_statistics_list"/>
+		from t_article_hp 
+		where f_id = #{id}
+	</select>
+
+	<insert id="insertFodderContent" useGeneratedKeys="true" keyProperty="id" parameterType="FodderContent">
+		insert t_article_hp 
+		(
+			f_title, f_remark, f_content, f_cover_img, f_type, f_parent_id, f_createtime, f_updatetime
+		)values
+		(
+			#{title}, #{remark}, #{content}, #{coverImg}, #{type}, #{parentId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+		)
+	</insert>
+	
+	<update id="updateById" parameterType="FodderContent" >
+		update t_article_hp
+		<set>
+ 			<if test="title != null">
+ 				f_title = #{title},
+ 			</if>
+ 			<if test="remark != null">
+ 				f_remark = #{remark},
+ 			</if>
+ 			<if test="content != null">
+ 				f_content = #{content},
+ 			</if>
+ 			<if test="coverImg != null">
+ 				f_cover_img = #{coverImg},
+ 			</if>
+ 			<if test="type != null">
+ 				f_type = #{type},
+ 			</if>
+ 			<if test="title != null or remark != null or content != null or coverImg != null or type != null">
+ 				f_updatetime = CURRENT_TIMESTAMP,
+ 			</if>
+ 			f_createtime = f_createtime
+		</set>
+		where f_id = #{id}
+	</update>
+	
+	<update id="plusReadCount" parameterType="FodderContent" >
+		update t_article_hp
+		<set>
+			f_read_count = f_read_count + 1
+		</set>
+		where f_id = #{id}
+	</update>
+	
+	<select id="selectList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select *
+		<include refid="sql_queryList" />
+		order by f_createtime desc
+		LIMIT #{startItem},#{pagesize}
+	</select>
+	
+	<sql id="sql_queryList">
+		from t_article_hp
+		where f_status =1
+		<if test="parentId != null">
+			and f_parent_id=#{parentId} 
+		</if>
+		<if test="keyword != null">
+			and (
+ 				f_title like #{keyword} or
+ 				f_remark like #{keyword} or
+ 				f_content like #{keyword}
+ 				)
+		</if>
+	</sql>
+	
+	<select id="selectListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(0)
+		<include refid="sql_queryList" /> 
+	</select>
+	
+	<select id="selectAllClassify" resultMap="BaseResultMap">
+		SELECT f_id FROM `t_fodder_content` WHERE f_parent_id=0
+	</select>
+	
+	<update id="delectArticle" parameterType="FodderContent">
+		update t_article_hp
+		<set>
+			f_status ="0"
+		</set>
+		where f_id = #{id}
+	</update>
+	
+</mapper>

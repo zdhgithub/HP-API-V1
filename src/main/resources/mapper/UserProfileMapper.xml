@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserProfileMapper">
+
+	<resultMap type="userProfile" id="baseResultMap">
+		<id column="f_uid" property="uid" />
+		<result column="f_msg_sum" property="msgSum" />
+		<result column="f_article_banner" property="articleBanner" />
+	</resultMap>
+	
+	
+	<sql id="baseColumn">
+		f_uid,f_msg_sum,f_article_banner
+	</sql>
+	
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="baseResultMap"> 
+		select *
+		from t_user_profile
+		where f_uid = #{uid}
+	</select>
+
+	<insert id="insertPojo">
+		insert into t_user_profile(
+			<include refid="baseColumn" />
+		)values(
+			#{uid},
+			#{msgSum},
+			#{articleBanner}
+		)
+	</insert>
+
+	<update id="updatePojo">
+		update t_user_profile 
+		set f_article_banner = #{articleBanner}
+		where f_uid = #{uid}
+	</update>
+		
+	<update id="updateMsgSum">
+		update t_user_profile 
+		set f_msg_sum = #{msgSum}
+		where f_uid = #{uid}
+	</update>	
+		
+</mapper>

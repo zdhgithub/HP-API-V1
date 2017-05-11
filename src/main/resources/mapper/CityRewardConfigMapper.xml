@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CityRewardConfigMapper">
+
+	<resultMap type="cityRewardConfig" id="baseResultMap">
+		<id column="f_city_id" property="cityId" />
+		<result column="f_reward_amount" property="rewardAmount" />
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_city_id,f_reward_amount
+	</sql>
+	
+	<select id="selectById" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select *
+		from t_city_reward_config
+		where f_city_id = #{cityId}
+	</select>
+	
+	<select id="selectAsLockById" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select *
+		from t_city_reward_config
+		where f_city_id = #{cityId} for update
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_city_reward_config(
+			<include refid="baseColumn" />
+		)
+		values(
+			#{cityId},
+			#{rewardAmount}
+		)
+	</insert>
+
+</mapper>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.MarketingMapper">
+	<resultMap type="Marketing" id="MarketingResultMap">
+		<id column="f_id" property="id" />
+		<result column="f_name" property="name" />
+		<result column="f_banner" property="banner" />
+		<result column="f_detail" property="detail" /> 
+		<result column="f_begin_time" property="beginTime" />
+		<result column="f_end_time" property="endTime" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_status" property="status" />
+	</resultMap>
+	
+	<resultMap type="MarketingPicture" id="MarketingPictureMap">
+		<id column="f_marketing_activity_id" property="marketingId" />
+		<result column="f_marketing_uid" property="uid" />
+		<result column="f_picture" property="picture" />
+		<result column="f_picture_desc" property="pictureDesc" />
+		<result column="f_like_count" property="likeCount" />
+		<result column="f_status" property="status" />
+		<result column="f_upload_time" property="uploadTime" />
+		<result column="f_refund_reason" property="refundReason" />
+		<result column="f_refund_time" property="refundTime" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_username" property="username" />
+		<result column="f_user_portriat" property="portriat" />
+		<result column="f_user_realname" property="realName" />
+	</resultMap>
+	
+	<resultMap type="LikeUser" id="LikeUserMap">
+		<id column="f_marketing_activity_id" property="marketingId" />
+		<result column="f_like_uid" property="likeUid" />
+		<result column="f_marketing_uid" property="marketUid" />
+		<result column="f_nickname" property="nickName" />
+		<result column="f_portrait" property="portrait" />
+		<result column="f_like_time" property="likeTime" />
+	</resultMap>
+	
+	<!-- 添加活动 -->
+	<insert id="addMarketing" >
+		insert into t_marketing_activity
+		(f_name,f_banner,f_detail,f_begin_time,f_end_time,f_create_time,f_status)
+		values (#{name}, #{banner}, #{detail}, #{beginTime}, #{endTime}, #{createTime},0)
+	</insert>
+	
+	<!-- 添加点赞用户 -->
+	<insert id="addLikeUser" >
+		insert into t_marketing_picture_like
+		(f_marketing_activity_id,f_like_uid,f_marketing_uid,f_nickname,f_portrait,f_like_time)
+		values (#{marketingId}, #{likeUid}, #{marketUid}, #{nickName}, #{portrait}, #{likeTime})
+	</insert>
+	
+	<!-- 添加图片 -->
+	<insert id="addMarketingPicture" >
+		insert into t_marketing_upload_picture
+		(f_marketing_activity_id,f_marketing_uid,f_picture,f_picture_desc,f_like_count,f_status,f_upload_time,f_refund_reason,f_refund_time)
+		values (#{marketingId}, #{uid}, #{picture}, #{pictureDesc}, #{likeCount}, 0,#{uploadTime},#{refundReason},#{refundTime})
+	</insert>
+	
+	<!-- 更新活动 -->
+	<update id="updateMarketing" parameterType="Marketing">
+		update t_marketing_activity
+		<set>
+		<if test="name != null">
+			f_name = #{name}, 
+		</if>
+		<if test="banner != null">
+			f_banner = #{banner}, 
+		</if>		
+		<if test="detail != null">
+			f_detail = #{detail}, 
+		</if>		
+		<if test="beginTime != null">
+			f_begin_time = #{beginTime},
+		</if>		
+		<if test="endTime != null">
+			f_end_time = #{endTime},
+		</if>		
+		<if test="status != null">
+		   	f_status = #{status}
+		</if>		
+		</set>
+		where f_id = #{id}
+	</update>
+	
+	<!-- 更新图片 -->
+	<update id="updatePicture" parameterType="java.util.Map">
+		update t_marketing_upload_picture
+		<set>
+		<if test="picture != null">
+			f_picture = #{picture}, 
+		</if>
+		<if test="pictureDesc != null">
+			f_picture_desc = #{pictureDesc}, 
+		</if>		
+		<if test="likeCount != null">
+			f_like_count = #{likeCount}, 
+		</if>		
+		<if test="status != null">
+			f_status = #{status},
+		</if>		
+		<if test="uploadTime != null">
+			f_upload_time = #{uploadTime},
+		</if>		
+		<if test="refundReason != null">
+		   	f_refund_reason = #{refundReason},
+		</if>	
+		<if test="refundTime != null">
+		   	f_refund_time = #{refundTime}
+		</if>	
+		</set>
+		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{uid}
+	</update>
+	
+	<!-- 获取活动 -->
+	<select id="getMarketing" parameterType="java.util.Map" resultMap="MarketingResultMap">
+		select * from t_marketing_activity 
+		<where>
+			<if test="status != null">
+				f_status = #{status}
+			</if>
+		</where>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="getMarketingCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*) from t_marketing_activity 
+		<where>
+			<if test="status != null">
+				f_status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 获取活动 -->
+	<select id="getMarketingById" parameterType="java.lang.Integer" resultMap="MarketingResultMap">
+		select *
+		from t_marketing_activity 
+		where f_id = #{id}
+	</select>
+	
+	<!-- 获取用户上传图片组 -->
+	<select id="getMarketingPicture" parameterType="java.util.Map" resultMap="MarketingPictureMap">
+		select u.f_user_nickname,u.f_username,u.f_user_portriat,u.f_user_realname,f_picture,f_picture_desc,f_like_count,m.f_status,f_upload_time,f_refund_reason,f_refund_time,f_status,
+		f_marketing_activity_id,f_marketing_uid
+		from t_marketing_upload_picture m
+		left join t_user u on m.f_marketing_uid = u.f_uid
+		<where>
+			<if test="marketingId != null">
+				 f_marketing_activity_id = #{marketingId} 
+			 </if>
+			<if test="uid != null">
+				and f_marketing_uid = #{uid}
+			</if>
+			<if test="status != null">
+				and f_status = #{status}
+			</if>
+		</where>
+		order by f_like_count
+	</select>
+		
+	<!-- 获取用户上传图片组 -->
+	<select id="getOneMarketingPicture" parameterType="java.util.Map" resultMap="MarketingPictureMap">
+		select u.f_user_nickname,u.f_username,u.f_user_portriat,u.f_user_realname,f_picture,f_picture_desc,f_like_count,f_status,f_upload_time,f_refund_reason,f_refund_time,f_status,
+		f_marketing_activity_id,f_marketing_uid
+		from t_marketing_upload_picture m
+		left join t_user u on m.f_marketing_uid = u.f_uid
+		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{uid}
+	</select>	
+	
+	<!-- 获取点赞用户列表 -->
+	<select id="getLikeUser" parameterType="java.util.Map"  resultMap="LikeUserMap">
+		select * from t_marketing_picture_like 
+		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{marketUid}
+	</select>
+	
+	<!-- 获取点赞用户列表 -->
+	<select id="getOneLikeUser" resultMap="LikeUserMap">
+		select * from t_marketing_picture_like 
+		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{marketUid} and f_like_uid = #{likeUid}
+	</select>
+</mapper>

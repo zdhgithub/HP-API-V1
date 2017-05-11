@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PartnerSiteRateConfigMapper">
+
+	<resultMap type="partnerSiteRateConfig" id="baseResultMap">
+		<id column="f_site_id" property="siteId" />
+		<result column="f_partner_id" property="partnerId" />
+		<result column="f_site_rate" property="siteRate" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_username" property="username" />
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_partner_id,f_site_id,f_site_rate
+	</sql>
+
+	<select id="selectById" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+		r.f_partner_id,f_site_id,f_site_rate,f_user_nickname,f_username
+		from t_partner_site_rate_config r
+		left join t_partner p on r.f_partner_id = p.f_partner_id
+		left join t_user u on u.f_uid = p.f_uid
+		where r.f_site_id = #{siteId} and r.f_partner_id = #{partnerId}
+	</select>
+
+	<insert id="insertPojo">
+		insert into t_partner_site_rate_config(
+			<include refid="baseColumn" />
+		)values(
+			#{partnerId},
+			#{siteId},
+			#{siteRate}
+		)
+	</insert>
+
+	<update id="updatePojo">
+		update t_partner_site_rate_config
+		<set>
+			<if test="partnerId != null">
+				f_partner_id = #{partnerId},
+			</if>
+			<if test="siteRate != null">
+				f_site_rate = #{siteRate}
+			</if>
+		</set>
+		where f_site_id = #{siteId}
+	</update>
+	
+</mapper>

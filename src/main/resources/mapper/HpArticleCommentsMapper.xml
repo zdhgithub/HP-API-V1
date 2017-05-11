@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.HpArticleCommentsMapper">
+
+	<resultMap type="hpArticleComments" id="baseResultMap">
+		<result column="f_comment_article_id" property="articleId" />
+		<result column="f_comment_uid" property="commentUid" />
+		<result column="f_comment_r_uid" property="commentRUid" />
+		<result column="f_comment_content" property="commentContent" />
+		<result column="f_comment_time" property="commentTime" />
+		
+		<result column="f_comment_nickname" property="commentNickname" />
+		<result column="f_comment_portrait" property="commentPortrait" />
+		<result column="f_comment_r_nickname" property="commentRNickname" />
+		<result column="f_comment_r_portrait" property="commentRPortrait" />
+		
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_article_id,f_comment_uid,f_comment_r_uid,f_comment_content,f_comment_time
+	</sql>
+	
+	<select id="selectByArticleId" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select t3.*,t4.f_user_nickname as f_comment_r_nickname , t4.f_user_portriat as f_comment_r_portrait
+		from
+		(
+			select t1.*,t2.f_user_nickname as f_comment_nickname , t2.f_user_portriat as f_comment_portrait
+			from
+			(
+				select *
+				from t_hp_article_comments
+				where f_article_id = #{articleId}
+			)t1 left join t_user t2 on t1.f_comment_uid = t2.f_uid
+		)t3 left join t_user t4 on t3.f_comment_r_uid = t4.f_uid
+	</select>
+	
+	<select id="selectCommentListByArticleId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select t3.*,t4.f_user_nickname as f_comment_r_nickname , t4.f_user_portriat as f_comment_r_portrait
+		from
+		(
+			select t1.*,t2.f_user_nickname as f_comment_nickname , t2.f_user_portriat as f_comment_portrait
+			from
+			(
+				select *
+				from t_hp_article_comments
+				where f_article_id = #{articleId}
+				<if test="commentTime &gt; 0">
+					and f_comment_time <![CDATA[>]]> #{commentTime}
+				</if>
+				limit #{size}
+			)t1 left join t_user t2 on t1.f_comment_uid = t2.f_uid
+		)t3 left join t_user t4 on t3.f_comment_r_uid = t4.f_uid
+	</select>
+	
+	<insert id="insertPojo">
+		insert into  t_hp_article_comments(
+			<include refid="baseColumn" />
+		)values(
+			#{articleId},
+			#{commentUid},
+			#{commentRUid},
+			#{commentContent},
+			#{commentTime}
+		)
+	</insert>
+	
+	<delete id="deletePojo">
+		delete from t_hp_article_comments
+		where f_article_id = #{articleId} and f_comment_uid = #{commentUid} and f_comment_time = #{commentTime}
+	</delete>
+	
+</mapper>

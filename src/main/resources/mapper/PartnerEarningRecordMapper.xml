@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.heipiao.api.mapper.PartnerEarningRecordMapper">
+
+	<resultMap type="partnerEarningRecord" id="baseResultMap">
+		<id column="f_id" property="id"/>
+		<result column="f_uid" property="uid"/>
+		<result column="f_gold_fee" property="goldFee"/>
+		<result column="f_fish_site_id" property="fishSiteId"/>
+		<result column="f_desc" property="desc"/>
+		<result column="f_create_time" property="createTime"/>
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_uid,f_gold_fee,f_fish_site_id,f_desc,f_create_time
+	</sql>
+	<!-- 
+	<select id="selectByUid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_partner_earning_record
+		where f_uid = #{uid}
+		order by f_create_time desc
+		limit #{index},#{size}
+	</select>
+	 -->
+	 <select id="selectByUid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select a.f_uid,a.f_gold_fee,a.f_desc,a.f_create_time from
+		( select f_uid,f_gold_fee,f_desc,f_create_time from t_partner_earning_record where f_uid = #{uid}
+		UNION
+		select f_uid,f_trade_fee AS f_gold_fee,f_desc,f_create_time from t_account_bill where f_uid=#{uid}
+		and f_type in(9,12,15,18) and f_in_out=1 and f_sub_type=2)a
+		order by a.f_create_time desc
+		limit #{index},#{size}
+	</select>
+	 
+	<select id="selectByUidAndFishSiteId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_partner_earning_record
+		where f_uid = #{uid} 
+			  and f_fish_site_id = #{fishSiteId}
+		order by f_create_time desc
+		limit #{index},#{size}
+	</select>
+	
+	<select id="selectByFishSiteIdIsNull" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_partner_earning_record
+		where f_uid = #{uid} 
+			  and f_fish_site_id is null
+		order by f_create_time desc
+		limit #{index},#{size}
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_partner_earning_record(
+			<include refid="baseColumn" />
+		)
+		values(
+			#{uid},
+			#{goldFee},
+			#{fishSiteId},
+			#{desc},
+			#{createTime}
+		)
+	</insert>
+
+</mapper>

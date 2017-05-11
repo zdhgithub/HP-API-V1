@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.heipiao.api.mapper.PartnerOverMapper" >
+  <resultMap id="BaseResultMap" type="cn.heipiao.api.pojo.PartnerOver" >
+    <id column="f_id" property="id"/>
+    <result column="f_business_type" property="type" />
+    <result column="f_business_id" property="bid" />
+    <result column="f_older_partner_id" property="partnerId" />
+    <result column="f_over_time" property="OverTime" />
+  </resultMap>
+    
+  <sql id="baseColumnList" >
+    f_id, f_business_type, f_business_id, f_older_partner_id,f_over_time
+  </sql> 
+  
+  <select id="selectByBid"  parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select
+  	<include refid="baseColumnList"/>
+  	from t_partner_over 
+  	<where> 
+  		<if test="bid !=null">
+  			f_business_id = #{bid} 
+  		</if>
+  		<if test="type!=null">
+  			and f_business_type = #{type}
+  		</if>
+  		<if test="partnerId !=null">
+  			and f_older_partner_id = #{partnerId}
+  		</if>
+  	</where>
+  </select>
+  
+  <insert id="insert" parameterType="cn.heipiao.api.pojo.PartnerOver" >
+    insert into t_partner_over (f_business_type, f_business_id, f_older_partner_id,f_over_time)
+    values (#{type}, #{bid}, #{partnerId},#{OverTime})
+  </insert>
+ 
+  <update id="updateByBid" parameterType="cn.heipiao.api.pojo.PartnerOver" >
+    update t_partner_over
+    <set >
+     <if test="partnerId != null" >
+       f_older_partner_id = #{partnerId},
+     </if>
+     <if test="OverTime != null" >
+       f_over_time = #{OverTime}
+     </if>
+    </set>
+    where f_id = #{id}
+  </update>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_partner_over
+    where f_id = #{id}
+  </delete>
+</mapper>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.heipiao.api.mapper.ModuleMapper" >
+  <resultMap id="BaseResultMap" type="cn.heipiao.api.pojo.Module" >
+    <id column="f_id" property="id" jdbcType="INTEGER" />
+    <result column="f_pid" property="pid" jdbcType="INTEGER" />
+    <result column="f_module_name" property="name" jdbcType="VARCHAR" />
+    <result column="f_module_url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    f_id, f_pid, f_module_name, f_module_url
+  </sql>
+  
+  <select id="isShopPrivilege" parameterType="java.util.Map" resultType="java.lang.Boolean">
+  	select 1
+  	from t_shop_emp_module_relevance
+  	where f_shop_id = #{shopId} and f_uid = #{uid} and f_moudle = #{moudle}
+  </select>
+  
+  <select id="selectList" resultType="cn.heipiao.api.pojo.Module" parameterType="map">
+  
+  	select t1.f_id id, t1.f_module_name name, t1.f_module_url url 
+  	from
+		(select f_id , f_module_name , f_module_url from t_emp_module where f_pid = #{modulePid} ) t1
+	,
+		(select f_uid , f_moudle from t_emp_module_relevance where f_uid = #{empId}) t2
+	where 
+		t1.f_id = t2.f_moudle
+  
+  </select>  
+  
+  <select id="selectAllModuleIds"  resultType="string" >
+  	select f_moudle from t_emp_module_relevance where f_uid = #{empId}
+  </select>
+  
+  <select id="selectOneModuleId"  resultType="string" >
+  	select f_moudle from t_emp_module_relevance where f_uid = #{empId} and f_moudle =#{module}
+  </select>
+  
+  <select id="selectShopEmpModules" resultType="String">
+  	SELECT f_id FROM t_shop_emp_module
+  </select>
+  
+  <select id="selectShopModuleIds"  resultType="string" >
+  	select f_moudle from t_shop_emp_module_relevance where f_uid = #{empId} AND f_shop_id = #{shopId}
+  </select>
+  
+  <select id="selectShopModuleofOneId"  resultType="string" >
+  	select f_moudle from t_shop_emp_module_relevance where f_uid = #{empId} AND f_shop_id = #{shopId} 
+  	and f_moudle =#{module}
+  </select>
+  
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_emp_module
+    where f_id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_emp_module
+    where f_id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="deleteEmpModuleRelevance" parameterType="java.util.Map" >
+   delete from t_emp_module_relevance where f_uid = #{empId} and f_moudle 
+    in(
+		select f_id from t_emp_module where f_id = #{moduleId}
+	UNION
+		select f_id from t_emp_module where f_pid = ${moduleId}
+	)
+	</delete>
+	
+  	<delete id="deleteShopEmpModuleRelevance" >
+   		delete from t_shop_emp_module_relevance where f_uid = #{id} and f_shop_id = #{shopId}
+	</delete>
+  
+  <insert id="insert" parameterType="cn.heipiao.api.pojo.Module" >
+    insert into t_emp_module (f_id, f_pid, f_module_name, 
+      f_module_url)
+    values (#{id,jdbcType=INTEGER}, #{pid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="selectCountByEmpAndModule" resultType="cn.heipiao.api.pojo.Module" >
+  		select f_uid empId, f_moudle id from t_emp_module_relevance where f_uid = #{empId} and f_moudle = 
+  		(select f_pid from t_emp_module where f_id = #{moduleId})
+  </select>
+  
+  <insert id="insertEmpModuleRelevance" >
+  		<!-- INSERT into t_emp_module_relevance 
+		select t2.f_uid f_uid, t1.f_pid f_moudle from 
+		(
+		select f_pid from t_emp_module where f_id = #{moduleId} 
+		UNION
+		select f_id FROM t_emp_module where f_id = #{moduleId}
+		) t1
+		,
+		(select f_uid from t_fish_site_employee where f_uid = #{empId}) t2 -->
+		insert into t_emp_module_relevance values( #{empId} ,#{moduleId} )
+  </insert>
+  
+  <insert id="insertEmpModuleRelevances" parameterType="java.util.Map" >
+		insert into t_emp_module_relevance values
+		<foreach collection="moduleIds" item="moduleId" index="index" separator=",">  
+    		(#{empId},#{moduleId})
+		</foreach>
+  </insert>
+  
+  <insert id="insertShopEmpModuleRelevances" parameterType="java.util.Map" >
+		insert into t_shop_emp_module_relevance values
+		<foreach collection="moduleIds" item="moduleId" index="index" separator=",">  
+    		(#{empId},#{shopId},#{moduleId})
+		</foreach>
+  </insert>
+  
+  
+  <insert id="insertShopPlatform" parameterType="java.util.Map">
+  	insert into t_shop_emp_module_relevance (
+  		f_uid,f_shop_id,f_moudle)
+  		values(#{empId},#{shopId},#{moduleId})
+  </insert>
+  <delete id="deleteShopPlatformModule" parameterType="java.util.Map" >
+  	 delete from t_shop_emp_module_relevance where f_uid = #{empId} 
+  		and f_moudle = #{moduleId} 
+   		and f_shop_id = #{shopId}
+  </delete>
+	<insert id="insertSitePlatform" parameterType="java.util.Map">
+  		insert into t_emp_module_relevance (
+  		f_uid,f_moudle)
+  		values(#{empId},#{moduleId})
+  	</insert>
+	<delete id="deleteSitePlatformModule" parameterType="java.util.Map" >
+  	 delete from t_emp_module_relevance where f_uid = #{empId} 
+  		and f_moudle = #{moduleId} 
+    </delete>
+  
+  
+  <update id="updateById" parameterType="cn.heipiao.api.pojo.Module" >
+    update t_emp_module
+    <set >
+      <if test="pid != null" >
+        f_pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        f_module_name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        f_module_url = #{url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where f_id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <insert id="insertAllEmpModuleRelevance">
+  insert into t_emp_module_relevance 
+select e.f_uid f_uid, m.f_id f_moudle from t_fish_site_employee e , t_emp_module m where e.f_uid = #{userId}
+  </insert>
+  <insert id="insertSite"></insert>
+  
+  <delete id="deleteAllPermissionsBySiteId" parameterType="java.util.List">
+  	 delete from t_emp_module_relevance
+  	 where  f_uid in  
+		<foreach collection="list" open="(" close=")" item="item" separator=",">
+			#{item}
+		</foreach>
+  </delete>
+  
+  <delete id="deleteShopEmpAllModuleRelevance" parameterType="java.lang.Long">
+  	delete from t_shop_emp_module_relevance where f_shop_id = #{shopId}
+  </delete>
+  
+</mapper>

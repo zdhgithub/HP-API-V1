@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ShareMapper">
+	<resultMap type="Share" id="shareResultMap">
+		<id column="f_sid" property="id" />
+		<result column="f_main_img" property="mainImg"/>
+		<result column="f_img" property="img" />
+		<result column="f_address" property="address" />
+		<result column="f_content" property="content" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_flag" property="flag" />
+		<result column="f_type" property="type" />
+		<result column="f_uid" property="userId" />
+		<result column="f_user_nickname" property="nickName"/>
+		<result column="f_fish_site_id" property="siteId"/>
+		<result column="f_user_portriat" property="portriat" />
+		<result column="f_share_portriat" property="sharePortriat" />
+		<result column="f_click_num" property="clickNum" />
+	</resultMap>
+	<sql id="shareSql">
+		f_sid,f_main_img,f_img,f_address,f_content,f_create_time,f_flag,f_type,s.f_uid,u.f_user_nickname,f_user_portriat,f_share_portriat,f_fish_site_id,f_click_num
+	</sql>
+	<select id="countShares" resultType="int">
+		SELECT
+		count(f_sid)
+		FROM
+		t_share_harvest
+		WHERE
+		f_flag = '1'
+		AND f_type = #{type}
+		AND f_fish_site_id = #{siteId}
+	</select>
+	<select id="selectById" parameterType="long" resultMap="shareResultMap">
+		SELECT
+		<include refid="shareSql"></include>
+		FROM t_share_harvest s,t_user u
+		<where>
+			s.f_uid = u.f_uid and
+			s.f_sid = #{id}
+		</where>
+	</select>
+	<select id="selectList" resultMap="shareResultMap">
+		SELECT
+		<include refid="shareSql"></include>
+		FROM t_share_harvest s,t_user u
+		<where>
+			s.f_uid = u.f_uid and s.f_flag = '1'
+			<if test="type!=null">
+				and s.f_type = #{type}
+			</if>
+			<if test="siteId!=null">
+				and f_fish_site_id = #{siteId}
+			</if>
+			<if test="start>0">
+				and s.f_sid &lt; #{start}
+			</if>
+		</where>
+		ORDER BY
+			s.f_sid DESC
+		LIMIT #{size}
+	</select>
+	
+	<select id="selectAll" parameterType="java.util.Map" resultMap="shareResultMap">
+		SELECT * FROM t_share_harvest WHERE f_type = 1
+	</select>
+	<insert id="insert" parameterType="Share">
+		INSERT INTO t_share_harvest
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id!=null">
+				f_sid,
+			</if>
+			<if test="mainImg!=null">
+				f_main_img,
+			</if>
+			<if test="img!=null">
+				f_img,
+			</if>
+			<if test="address!=null">
+				f_address,
+			</if>
+			<if test="content!=null">
+				f_content,
+			</if>
+			<if test="createTime!=null">
+				f_create_time,
+			</if>
+			<if test="flag!=null">
+				f_flag,
+			</if>
+			<if test="type!=null">
+				f_type,
+			</if>
+			<if test="userId!=null">
+				f_uid,
+			</if>
+			<if test="siteId!=null">
+				f_fish_site_id,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="id!=null">
+				#{id},
+			</if>
+			<if test="mainImg!=null">
+				#{mainImg},
+			</if>
+			<if test="img!=null">
+				#{img},
+			</if>
+			<if test="address!=null">
+				#{address},
+			</if>
+			<if test="content!=null">
+				#{content},
+			</if>
+			<if test="createTime!=null">
+				#{createTime},
+			</if>
+			<if test="flag!=null">
+				#{flag},
+			</if>
+			<if test="type!=null">
+				#{type},
+			</if>
+			<if test="userId!=null">
+				#{userId},
+			</if>
+			<if test="siteId!=null">
+				#{siteId},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateById" parameterType="Share">
+		UPDATE t_share_harvest
+		<set>
+			<if test="flag!=null">
+				f_flag = #{flag}
+			</if>
+		</set>
+		<where>
+			<if test="id>0">
+				f_sid = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<update id="addClickNum" parameterType="int">
+		UPDATE t_share_harvest
+		SET f_click_num = f_click_num + 1
+		WHERE
+			f_sid = #{sid}
+	</update>
+</mapper>

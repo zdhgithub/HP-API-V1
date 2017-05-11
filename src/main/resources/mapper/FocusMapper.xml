@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FocusMapper">
+	
+	<resultMap type="focus" id="baseColumn">
+		<result column="f_fid" property="fid"/>
+		<result column="f_uid" property="uid"/>
+		<result column="f_create_time" property="createTime"/>
+	</resultMap>
+	
+	<select id="countFocus" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_focus WHERE f_uid = #{uid}
+	</select>
+	<select id="selectUidsBySiteId" parameterType="java.lang.Integer" resultType="java.lang.Long">
+		select f_uid 
+		from t_focus
+		where f_fid = #{siteId}
+	</select>
+	
+	<select id="selectByUidAndFid" parameterType="java.util.Map" resultMap="baseColumn">
+		select * from t_focus
+		where f_uid = #{uid} and f_fid = #{fid}
+	</select>
+	
+	<insert id="insertPojo" parameterType="focus" >
+		insert into t_focus (f_fid,f_uid,f_create_time)
+		values (#{fid},#{uid},#{createTime})
+	</insert>
+	
+	<delete id="deletePojo" parameterType="focus">
+		delete from t_focus where f_uid = #{uid} and f_fid = #{fid}
+	</delete>
+
+</mapper>

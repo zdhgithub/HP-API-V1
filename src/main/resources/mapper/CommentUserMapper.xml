@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CommentUserMapper">
+	<resultMap type="CommentUser" id="BaseResultMap">
+		<id column="f_comment_user_id" property="id" />
+		<result column="f_comment_user_content" property="content" />
+		<result column="f_comment_user_createtime" property="createTime" />
+		<result column="f_comment_user_flag" property="flag" />
+		<result column="f_comment_user_reply_uid" property="reply_uid" />
+		<result column="f_comment_user_reply_name" property="reply_name" />
+		<result column="f_comment_user_replyed_uid" property="replyed_uid" />
+		<result column="f_comment_user_replyed_name" property="replyed_name" />
+	</resultMap>
+	<sql id="BaseSql">
+		f_comment_user_id,
+		f_comment_user_content,
+		f_comment_user_createtime,
+		f_comment_user_flag,
+		f_comment_user_reply_uid,
+		f_comment_user_replyed_uid,
+		f_comment_user_reply_name,
+		f_comment_user_replyed_name
+	</sql>
+	
+	<select id="selectListForShare" resultMap="BaseResultMap">
+		SELECT * FROM ((SELECT * FROM t_article_comment_user WHERE f_comment_user_reply_uid = #{uid} 
+		and f_comment_user_id = #{id})
+		UNION ALL
+		(SELECT * FROM t_article_comment_user WHERE f_comment_user_replyed_uid = #{uid} 
+		and f_comment_user_id = #{id})) t1
+		ORDER BY t1.f_comment_user_createtime ASC
+	</select>
+	
+	<select id="selectList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT <include refid="BaseSql"></include> FROM t_article_comment_user
+		<where>
+			<if test="reply_uid!=null">
+				and f_comment_user_reply_uid = #{reply_uid}
+			</if>
+			<if test="replyed_uid!=null">
+				and f_comment_user_replyed_uid = #{replyed_uid}
+			</if>
+			<if test="id!=null">
+				and f_comment_user_id = #{id}
+			</if>
+		</where>
+		ORDER BY f_comment_user_createtime ASC
+	</select>
+	
+	<insert id="insert" parameterType="CommentUser">
+		INSERT INTO t_article_comment_user
+		(f_comment_user_id,f_comment_user_content,f_comment_user_createtime,f_comment_user_flag,f_comment_user_reply_uid
+		,f_comment_user_replyed_uid,f_comment_user_reply_name,f_comment_user_replyed_name)
+		VALUES (#{id},#{content},#{createTime},#{flag},#{reply_uid},#{replyed_uid},#{reply_name},#{replyed_name})
+	</insert>
+</mapper>

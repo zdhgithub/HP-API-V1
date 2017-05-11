@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.OrdersMapper">
+	
+	<resultMap type="orders" id="baseResultMap">
+		<id column="f_order_id" property="orderId"/>
+		<result column="f_uid" property="uid" />
+		<result column="f_user_nickname" property="nickname"/>
+		<result column="f_user_portriat" property="portriat"/>
+		<result column="f_fish_site_id" property="fishSiteId" />
+		<result column="f_orders_money" property="ordersMoney" />
+		<result column="f_pay_money" property="payMoney" />
+		<result column="f_deposit_money" property="depositMoney" />
+		<result column="f_gold_coin_money" property="goldCoinMoney" />
+		<result column="f_earnings_gold_coin_money" property="earningsGoldCoinMoney" />
+		<result column="f_coupon_id" property="couponId" />
+		<result column="f_coupons_money" property="couponsMoney" />
+		<result column="f_other_coupons_money" property="otherCouponsMoney" />
+		<result column="f_refund_fee" property="refundFee" />
+		<result column="f_pay_time" property="payTime" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_status" property="status" />
+		<result column="f_trade_no" property="tradeNo" />
+		<result column="f_trade_platform" property="tradePlatform" />
+		<result column="f_coupons_fees" property="couponsFees" />
+		<result column="f_where_is_app" property="whereIsApp" />
+		<collection property="ordersDetails" column="f_order_id" ofType="ordersDetails"
+		 resultMap="cn.heipiao.api.mapper.OrdersDetailsMapper.baseResultMap">
+			<!-- <result column="f_order_id" property="orderId"/>
+			<result column="f_img" property="img" />
+			<result column="f_goods_name" property="goodsName" />
+			<result column="f_price" property="price" />
+			<result column="f_discount_price" property="discountPrice"/>
+			<result column="f_pay_price" property="payPrice"/>
+			<result column="f_deposit_fee" property="depositFee" />
+			<result column="f_gold_coin_fee" property="goldCoinFee" />
+			<result column="f_earnings_gold_coin_fee" property="earningsGoldCoinFee" />
+			<result column="f_coupons_fee" property="couponsFee" />
+			<result column="f_amount" property="amount" />
+			<result column="f_hour_long" property="hourLong" />
+			<result column="f_pid" property="pid" />
+			<result column="f_good_id" property="goodId" />
+			<result column="f_coupon_fee" property="couponFee" /> -->
+		</collection>
+	</resultMap>
+	
+	<sql id="base_column">
+		f_order_id,f_uid,f_fish_site_id,f_orders_money ,f_pay_money ,f_deposit_money ,f_gold_coin_money 
+		,f_earnings_gold_coin_money,f_coupon_id,f_coupons_money	,f_other_coupons_money, f_pay_time, f_create_time
+		, f_status,f_refund_fee,f_trade_no,f_trade_platform,f_coupons_fees,f_order_distance,f_where_is_app
+	</sql>
+	
+	<sql id="orderAndOrderDetail">
+		 t1.f_order_id,f_uid,f_fish_site_id,f_orders_money ,f_pay_money ,f_deposit_money, f_gold_coin_money ,f_coupon_id,f_coupons_money , f_pay_time, f_create_time, f_status
+		 ,f_img,f_goods_name,f_price,f_discount_price,f_pay_price,f_deposit_fee,f_gold_coin_fee,f_earnings_gold_coin_fee,
+		 f_coupons_fees,f_amount,f_hour_long,f_pid,f_refund_fee,f_trade_no,f_trade_platform,f_good_id,f_coupon_fee,f_where_is_app
+	</sql>
+	
+	<select id="countOrders" parameterType="int" resultType="int">
+		SELECT count(*) FROM t_orders WHERE f_uid = #{uid} AND f_status = 1
+	</select>
+	
+	<select id="selectAsLockById" parameterType="java.lang.String" resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />
+		 from t_orders 
+		 where f_order_id = #{orderId} for update
+	</select>
+	
+	
+	<select id="selectById" parameterType="java.lang.String" resultMap="baseResultMap">
+		select 
+		<include refid="orderAndOrderDetail" />
+		from 
+		(select * from t_orders where f_order_id = #{orderId})  t1 
+		left join t_orders_details  t2
+		on t1.f_order_id = t2.f_order_id
+		
+	</select>
+	
+	<select id="selectOrdersByUid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+			<include refid="orderAndOrderDetail"></include>
+		from 
+		(
+		select * from t_orders 
+		where f_uid = #{uid}
+		<if test="status != null">
+			and f_status = #{status}
+		</if>
+		<if test="start != null">
+			and f_create_time &lt; #{start}
+		</if>
+		order by f_create_time desc 
+		limit #{size}
+		)  t1 
+		left join t_orders_details  t2
+		on t1.f_order_id = t2.f_order_id
+		<!-- select 
+		<include refid="base_column" />
+		from 
+		t_orders
+		where f_uid = #{uid} 
+		<if test="status != null">
+			and f_status = #{status}
+		</if>
+		<if test="start > 0">
+			and f_order_id &lt; #{start}
+		</if>
+		order by f_order_id desc 
+		limit #{size} -->
+	</select>
+	
+	<select id="selectOrdersBySite" parameterType="java.util.Map" resultMap="baseResultMap">
+		
+		select 
+			t1.f_order_id,
+			t1.f_uid,
+			t3.f_user_nickname,
+			t3.f_user_portriat,
+			f_fish_site_id,
+			f_orders_money,
+			f_pay_money,
+			f_deposit_money,
+			f_gold_coin_money,
+			f_coupons_money,
+			f_pay_time,
+			f_create_time,
+			f_status,
+			f_img,
+			f_goods_name,
+			f_price,
+			f_discount_price,
+			f_amount,
+			f_hour_long,
+			f_pid,
+			f_refund_fee,
+			f_trade_no
+		from 
+		(
+		select * from t_orders 
+		where f_fish_site_id = #{fishSiteId}
+		<if test="start != null">
+			and f_create_time &lt; #{start}
+		</if>
+		<if test="status != null">
+			 AND f_status = #{status}
+		</if>
+		order by f_create_time desc 
+		 limit #{size}
+		)  t1 	left join t_orders_details  t2
+		on t1.f_order_id = t2.f_order_id 
+		LEFT JOIN t_user t3 ON t3.f_uid = t1.f_uid
+		<!-- select 
+		<include refid="base_column" />
+		from 
+		t_orders
+		where f_fish_site_id = #{fishSiteId}
+		<if test="start > 0">
+			and f_order_id &lt; #{start}
+		</if>
+		order by f_order_id desc 
+		limit #{size} -->
+	</select>
+	
+	<select id="selectTimeoutOrders" parameterType="java.util.Map" resultType="java.lang.String">
+		select f_order_id
+		from t_orders
+		where f_status = 0 and f_create_time &lt; #{date}
+		limit #{size}
+	</select>
+	
+	<!-- <select id="selectTimeoutOrders" parameterType="java.util.Map" resultType="java.lang.String">
+		select f_order_id
+		from t_orders
+		where f_status = 0 and f_create_time <![CDATA[<]]> #{date}
+		<if test="orderId != null">
+			f_order_id <![CDATA[<]]> #{orderId}
+		</if>
+		order by f_order_id desc
+		limit #{size}
+	</select> -->
+	
+	
+	<insert id="insertPojo" parameterType="orders" >
+		insert into t_orders(
+			<include refid="base_column"/>
+		)
+		values (
+			#{orderId},
+			#{uid},
+			#{fishSiteId},
+			#{ordersMoney},
+			#{payMoney},
+			#{depositMoney},
+			#{goldCoinMoney},
+			#{earningsGoldCoinMoney},
+			#{couponId},
+			#{couponsMoney},
+			#{otherCouponsMoney},
+			#{payTime},
+			#{createTime},
+			#{status},
+			#{refundFee},
+			#{tradeNo},
+			#{tradePlatform},
+			#{couponsFees},
+			#{distance},
+			#{whereIsApp}
+		)
+	</insert>
+	
+	<update id="updatePart" parameterType="orders">
+		update t_orders 
+		<set>
+			<if test="payTime != null">
+				f_pay_time = #{payTime},
+			</if>
+			<if test="status != null">
+				f_status = #{status},
+			</if>
+			<if test="tradeNo != null">
+				f_trade_no = #{tradeNo},
+			</if>
+			<if test="tradePlatform != null">
+				f_trade_platform = #{tradePlatform},
+			</if>
+		</set>
+		where f_order_id = #{orderId}
+	</update>
+
+	<update id="updateStatus" parameterType="java.util.Map">
+		update t_orders
+		set f_status = #{status}
+		where f_order_id = #{orderId}	
+	</update>
+	
+	<update id="updateRefundFee" parameterType="java.util.Map">
+		update t_orders
+		set f_refund_fee = #{refundFee}
+		where f_order_id = #{orderId}	
+	</update>
+
+	<!-- <update id="clearOutTimeOrder">
+		update t_orders set f_status = 2
+		where f_status = 0 and (UNIX_TIMESTAMP( #{now} ) - UNIX_TIMESTAMP(f_create_time)) > #{outTime}
+	</update> -->
+
+</mapper>

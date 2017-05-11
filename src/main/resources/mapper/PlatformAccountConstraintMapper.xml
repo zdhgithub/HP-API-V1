@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PlatformAccountConstraintMapper">
+	
+	<resultMap type="platformAccountConstraint" id="baseResultMap">
+		<id column="f_platform" property="platform" />
+		<result column="f_day_sum_limited" property="daySumLimited" />
+		<result column="f_single_min_fee" property="singleMinFee" />
+		<result column="f_single_max_fee" property="singleMaxFee" />
+		<result column="f_trade_max_amount" property="tradeMaxAmount" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_use_time" property="useTime" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_platform,f_day_sum_limited,f_single_min_fee,f_single_max_fee,f_trade_max_amount,f_create_time,f_use_time
+	</sql>
+
+	<select id="selectUniqueAccount" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select * 
+		from t_platform_account_constraint
+		where f_platform = #{platform}
+	</select>
+	
+	
+	
+</mapper>

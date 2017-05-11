@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ArticleDictMapper">
+
+	<resultMap type="articleDict" id="baseResultMap">
+		<id column="f_id" property="id" />
+		<result column="f_category" property="category" />
+		<result column="f_type" property="type" />
+		<result column="f_value" property="value" />
+	</resultMap>
+	
+	
+	<sql id="baseColumn">
+		f_id,f_category,f_type,f_value
+	</sql>
+	
+	<select id="selectListByCategory" parameterType="java.lang.Integer" resultMap="baseResultMap"> 
+		select f_type,f_value
+		from t_article_dict
+		where f_category = #{category}
+	</select>
+	
+</mapper>

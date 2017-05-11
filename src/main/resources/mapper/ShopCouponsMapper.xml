@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ShopCouponsMapper">
+
+	<resultMap type="shopCoupons" id="baseResultMap">
+		<id column="f_id" property="id" />
+		<result  column="f_shop_id" property="shopId" />
+		<result  column="f_coupon_name" property="couponName" />
+		<result  column="f_coupon_fee" property="couponFee" />
+		<result  column="f_start_time" property="startTime" />
+		<result  column="f_end_time" property="endTime" />
+		<result  column="f_use_rule" property="useRule" />
+		<result  column="f_amount" property="amount" />
+		<result  column="f_count" property="count" />
+		<result  column="f_use_count" property="useCount" />
+		<result  column="f_limit" property="limit" />
+		<result  column="f_status" property="status" />
+		<result  column="f_create_time" property="createTime" />
+		<result  column="f_category" property="category" />
+		<result  column="f_fee" property="fee" />
+		
+		<result  column="f_is_get" property="isGet" />
+	</resultMap>
+	
+	<!-- <resultMap type="couponConfig" id="couponConfig">
+		<result  column="f_status" property="status" />
+		<result  column="f_create_time" property="createTime" />
+		<result  column="f_category" property="category" />
+		<result  column="f_fee" property="fee" />
+	</resultMap> -->
+	
+	<sql id="base_column">
+	f_id,f_shop_id,f_coupon_name,f_coupon_fee,f_start_time,f_end_time,
+	f_use_rule,f_amount,f_count,f_use_count,f_limit,f_status,f_create_time,f_category,f_fee
+	</sql>
+	
+	<select id="selectByTimeout" parameterType="java.util.Map" resultType="java.lang.Long">
+		select f_id 
+		from t_shop_coupons
+		where f_status <![CDATA[<]]> 2 and date_format(f_end_time,'%Y%m%d') <![CDATA[<]]> #{date}
+	</select>
+	
+	<select id="countNormal" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		select count(*)
+		from t_shop_coupons
+		where f_shop_id = #{shopId} and f_status = 0 and f_category = 1 
+	</select>
+	
+	<select id="selectNotGetList" parameterType="java.util.Map" resultMap="baseResultMap"> 
+		select t1.* , if(t2.f_cid is null, false,true) as f_is_get
+		from
+		(
+			select * from t_shop_coupons where f_shop_id = #{shopId} and f_status = 0 and f_category = 1 
+		)t1 left join t_shop_coupons_record t2 on t1.f_id = t2.f_id and t2.f_uid = #{uid} group by f_id
+	</select>
+	
+	
+	<select id="selectById" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select *
+		from t_shop_coupons
+		where f_id = #{id}
+	</select>
+	
+	<select id="selectAslockById" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select *
+		from t_shop_coupons
+		where f_id = #{id} for update
+	</select>
+	
+	<select id="selectListByShopId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select *
+		from t_shop_coupons
+		where f_shop_id = #{shopId} 
+		<choose>
+			<when test="category == 1">
+				and f_category = #{category}
+			</when>
+			<otherwise>
+				and f_category <![CDATA[>=]]> #{category}
+			</otherwise>
+		</choose>
+		
+		<if test="index > 0">
+			 and f_id <![CDATA[<]]> #{index} 
+		</if>
+		order by f_id desc
+		limit #{size}
+	</select>
+	
+	<select id="selectNewListByShopId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select *
+		from t_shop_coupons
+		where f_shop_id = #{shopId} 
+		<choose>
+			<when test="category == 1">
+				and f_category = #{category}
+			</when>
+			<otherwise>
+				and f_category <![CDATA[>=]]> #{category}
+			</otherwise>
+		</choose>
+		order by
+		f_status asc, 
+		f_id desc
+		limit #{index}, #{size}
+	</select>
+	
+	<select id="countByShopId" parameterType="java.lang.Long" resultType="cn.heipiao.api.pojo.CouponsCount">
+		select count(f_id) as times, sum(f_count) as users, sum(f_use_count) as used , 
+		sum(f_use_count * f_coupon_fee) as fees,
+		 sum(if(f_category = 1,f_count,0)) as counts
+		from t_shop_coupons
+		where f_shop_id = #{shopId}
+	</select>
+	
+	<update id="updatePojo" >
+		update t_shop_coupons
+		set f_count = #{count},
+			f_use_count = #{useCount},
+			f_status = #{status}
+		where f_id = #{id}
+	</update>
+
+	<insert id="insertPojo" useGeneratedKeys="true" keyProperty="id">
+		insert into t_shop_coupons(
+			<include refid="base_column" />
+		)
+		values
+		(
+			#{id},
+			#{shopId},
+			#{couponName},
+			#{couponFee},
+			#{startTime},
+			#{endTime},
+			#{useRule},
+			#{amount},
+			#{count},
+			#{useCount},
+			#{limit},
+			#{status},
+			#{createTime},
+			#{category},
+			#{fee}
+		)
+	</insert>
+
+	<update id="updateShopCouponStatus" parameterType="java.util.Map">
+		update t_shop_coupons
+		set f_status = #{status}
+		where f_id = #{id}
+	</update>
+	
+	<!-- <update id="updateCouponsTimeout" parameterType="java.util.Map">
+		update t_shop_coupons
+		set f_status = 2
+		where f_status <![CDATA[<]]> 2 and f_end_time <![CDATA[<]]> #{date}
+	</update> -->
+	
+	<update id="updateShopAllCoupon" parameterType="java.lang.Long">
+		update t_shop_coupons
+		set f_status = 1
+		where f_shop_id = #{shopId}
+	</update>
+
+</mapper>

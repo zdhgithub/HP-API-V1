@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PayShopConfigMapper">
+	
+	<resultMap type="PayShopConfig" id="baseResultMap">
+		<result column="f_service_id" property="serviceId" />
+		<result column="f_rate" property="rate" />
+		<result column="f_use_rule" property="useRule" />
+		<result column="f_start_time" property="startTime" />
+		<result column="f_end_time" property="endTime" />
+		<result column="f_status" property="status" />
+		
+	</resultMap>
+	
+	<sql id="base_column">
+		f_service_id,f_rate,f_use_rule,f_start_time,f_end_time,f_status
+	</sql>
+	
+	<select id="selectAll"   resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />	 
+		from t_pay_shop_config 
+	</select>
+	
+	
+	<select id="selectById" parameterType="java.lang.Integer"  resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />	 
+		from t_pay_shop_config 
+		where  f_service_id = #{serviceId}
+	</select>
+	
+	
+	<insert id="insertPojo">
+		insert into t_pay_shop_config(
+		<include refid="base_column" />
+		)
+		values (
+			#{serviceId},
+			#{rate},
+			#{useRule},
+			#{startTime},
+			#{endTime},
+			#{status}
+		)
+	</insert>
+	
+	<update id="updatePojo">
+		update t_pay_shop_config
+		set
+			f_service_id = #{serviceId},
+			f_rate = #{rate},
+			f_use_rule = #{useRule},
+			f_start_time = #{startTime},
+			f_end_time = #{endTime},
+			f_status = #{status}
+		where f_service_id = #{serviceId} 
+	</update>
+	
+</mapper>

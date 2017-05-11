@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.GoodsMapper">
+	<resultMap type="Goods" id="goodResultMap">
+		<id column="f_gid" property="goodId" />
+		<result column="f_fish_site_id" property="fishSiteId" />
+		<result column="f_name" property="name" />
+		<result column="f_url" property="url" />
+		<result column="f_price" property="price" />
+		<result column="f_discount_price" property="discountPrice" />
+		<result column="f_amount" property="amount" />
+		<result column="f_pid" property="pId" />
+		<result column="f_desc" property="description" />
+		<result column="f_category" property="category" />
+		<result column="f_status" property="status" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_update_time" property="updateTime" />
+		<result column="f_hour_long" property="hourLong" />
+	</resultMap>
+	<sql id="goodSql">
+		f_gid,f_fish_site_id,f_name,f_url,f_price,f_discount_price,f_amount,f_pid,f_desc,f_category,f_status,f_create_time,f_update_time,f_hour_long
+	</sql>
+	<sql id="goodSqlext">
+		f_gid,f_fish_site_id,f_name,f_url,f_price,f_discount_price,f_amount,f_pid,f_desc,f_category,f_status,f_create_time,f_hour_long
+	</sql>
+	
+	<select id="isExists" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select 1
+		from t_goods
+		where f_pid = #{pid} and f_status = 1 limit 1
+	</select>
+	
+	
+	<select id="selectList" resultMap="goodResultMap">
+		SELECT
+		<include refid="goodSql"></include>
+		FROM t_goods
+		<where>
+			<if test="goodId != null">
+				and f_gid = #{goodId}
+			</if>
+			<if test="siteId != null">
+				and f_fish_site_id = #{siteId}
+			</if>
+			<if test="name != null">
+				and f_name = #{name}
+			</if>
+			<if test="url != null">
+				and f_url = #{url}
+			</if>
+			<if test="price != null">
+				and f_price = #{price}
+			</if>
+			<if test="discountPrice != null">
+				and f_discount_price = #{discountPrice}
+			</if>
+			<if test="amount != null">
+				and f_amount = #{amount}
+			</if>
+			<if test="pId != null">
+				and f_pid = #{pId}
+			</if>
+			<if test="description != null">
+				and f_desc = #{description}
+			</if>
+			<if test="category != null">
+				and f_category = #{category}
+			</if>
+			<if test="status != null">
+				and f_status = #{status}
+			</if>
+			<if test="createTime != null">
+				and f_create_time =#{createTime}
+			</if>
+			<if test="updateTime != null">
+				and f_update_time =#{updateTime}
+			</if>
+			<if test="hourLong != null">
+				and f_hour_long =#{hourLong}
+			</if>
+		</where>
+		ORDER BY f_update_time DESC
+		<if test="start!=null and size !=null">
+			LIMIT #{start},#{size}
+		</if>
+
+	</select>
+
+	<select id="selectByIdAsLock" parameterType="java.lang.Integer"
+		resultMap="goodResultMap">
+		SELECT
+		<include refid="goodSql"></include>
+		FROM t_goods
+		where f_gid = #{gid} for update
+	</select>
+
+	<insert id="insert" parameterType="Goods">
+		INSERT INTO t_goods
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="goodId != null">
+				f_gid,
+			</if>
+			<if test="fishSiteId != null">
+				f_fish_site_id,
+			</if>
+			<if test="name != null">
+				f_name,
+			</if>
+			<if test="url != null">
+				f_url,
+			</if>
+			<if test="price != null">
+				f_price,
+			</if>
+			<if test="discountPrice != null">
+				f_discount_price,
+			</if>
+			<if test="amount != null">
+				f_amount,
+			</if>
+			<if test="pId != null">
+				f_pid,
+			</if>
+			<if test="description != null">
+				f_desc,
+			</if>
+			<if test="category != null">
+				f_category,
+			</if>
+			<if test="status != null">
+				f_status,
+			</if>
+			<if test="createTime != null">
+				f_create_time,
+			</if>
+			<if test="updateTime != null">
+				f_update_time,
+			</if>
+			<if test="hourLong != null">
+				f_hour_long,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="goodId != null">
+				#{goodId},
+			</if>
+			<if test="fishSiteId != null">
+				#{fishSiteId},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="url != null">
+				#{url},
+			</if>
+			<if test="price != null">
+				#{price},
+			</if>
+			<if test="discountPrice != null">
+				#{discountPrice},
+			</if>
+			<if test="amount != null">
+				#{amount},
+			</if>
+			<if test="pId != null">
+				#{pId},
+			</if>
+			<if test="description != null">
+				#{description},
+			</if>
+			<if test="category != null">
+				#{category},
+			</if>
+			<if test="status != null">
+				#{status},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="hourLong != null">
+				#{hourLong},
+			</if>
+		</trim>
+	</insert>
+
+
+	<update id="updateAmountBatch" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";">
+			update
+			t_goods
+			set f_amount = #{item.amount}
+			where f_gid = #{item.goodId}
+		</foreach>
+	</update>
+
+	<update id="updateById" parameterType="Goods">
+		update t_goods
+		<set>
+			<!-- <if test="goodId != null"> -->
+			<!-- and f_gid = #{goodId} -->
+			<!-- </if> -->
+			<!-- <if test="fishSiteId != null"> -->
+			<!-- and f_fish_site_id = #{fishSiteId} -->
+			<!-- </if> -->
+			<if test="name != null">
+				f_name = #{name},
+			</if>
+			<if test="url != null">
+				f_url = #{url},
+			</if>
+<!-- 			<if test="price != null"> -->
+<!-- 				f_price = #{price}, -->
+<!-- 			</if> -->
+			<if test="discountPrice != null">
+				f_discount_price = #{discountPrice},
+			</if>
+			<if test="amount != null">
+				f_amount = #{amount},
+			</if>
+			<if test="pId != null">
+				f_pid = #{pId},
+			</if>
+			<if test="description != null">
+				f_desc = #{description},
+			</if>
+			<if test="category != null">
+				f_category = #{category},
+			</if>
+			<if test="status != null">
+				f_status = #{status},
+			</if>
+			<!-- <if test="createTime != null"> -->
+			<!-- f_create_time =#{createTime}, -->
+			<!-- </if> -->
+			<if test="updateTime != null">
+				f_update_time =#{updateTime},
+			</if>
+			<if test="hourLong != null">
+				f_hour_long =#{hourLong},
+			</if>
+		</set>
+		<where>
+			f_gid = #{goodId}
+		</where>
+	</update>
+	
+	<update id="salesVolume" parameterType="map">
+		insert into t_goods_sales  
+			(
+				select t1.f_fish_site_id a, t0.f_good_id b, sum(t0.f_amount) c from 
+				t_orders_details t0
+				left join
+				(
+				select f_order_id , f_fish_site_id from t_orders where f_status = 1 and f_pay_time > #{begin}
+				) t1
+				on t0.f_order_id = t1.f_order_id
+				group by t0.f_good_id
+			)
+		on duplicate key update
+			f_count = f_count + values(f_count)
+	</update>
+	
+	<select id="selectNewCountOrder" resultType="int" parameterType="map" >
+		select count(*) from t_orders where f_status = 1 and f_pay_time > #{begin}
+	</select>
+	
+</mapper>

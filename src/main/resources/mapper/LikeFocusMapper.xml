@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.LikeFocusMapper">
+	<resultMap type="LikeFocus" id="BaseResultMap">
+		<result column="f_uid" property="uid"/>
+		<result column="f_like_article_id" property="targetId" />
+		<result column="f_like_user_id" property="targetId" />
+		<result column="f_focus_user_id" property="targetId" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_nickname" property="nickname" />
+	</resultMap>
+	
+	<select id="selectFocusByUser" parameterType="int" resultType="int">
+		SELECT f_uid FROM t_user_focus WHERE f_focus_user_id = #{uid}
+	</select>
+	<select id="selectFocusUsers" parameterType="int" resultMap="cn.heipiao.api.mapper.UserMapper.userRsultMap">
+		SELECT
+			t2.f_uid,
+			f_user_nickname,
+			f_user_portriat,
+			f_fish_shop_id
+		FROM
+			t_user_focus t1
+		LEFT JOIN t_user t2 ON t1.f_focus_user_id = t2.f_uid
+		LEFT JOIN t_fish_shop t3 ON t1.f_focus_user_id = t3.f_uid
+		WHERE
+			t1.f_uid = #{uid}
+	</select>
+	
+	<select id="selectUidsByUid" parameterType="java.lang.Long" resultType="java.lang.Long">
+		select f_uid
+		from t_user_focus
+		where f_focus_user_id = #{uid}
+	</select>
+	
+	<select id="selectNamesforArticle" parameterType="int" resultType="String">
+		SELECT f_nickname FROM t_user_like_article WHERE f_like_article_id = #{targetId} ORDER BY f_create_time DESC
+		 limit 10
+	</select>
+	
+	<select id="countFocusOther" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_user_focus WHERE f_uid = #{uid}
+	</select>
+	<select id="countFocus" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_user_focus WHERE f_focus_user_id = #{uid}
+	</select>
+	<select id="countLikeUser" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_user_like WHERE f_like_user_id = #{uid}
+	</select>
+	<select id="countLikeArticle" resultType="int" parameterType="long">
+		SELECT COUNT(*) FROM t_user_like_article WHERE f_like_article_id = #{id}
+	</select>
+	
+	<select id="selectOneFocus" resultMap="BaseResultMap">
+		SELECT * FROM t_user_focus WHERE f_uid = #{uid2} AND f_focus_user_id = #{uid}
+	</select>
+	<select id="selectOneLike" resultMap="BaseResultMap">
+		SELECT * FROM t_user_like WHERE f_uid =  #{uid2} AND f_like_user_id =#{uid}
+	</select>
+	<select id="selectOneLikeArticle" resultMap="BaseResultMap">
+		SELECT * FROM t_user_like_article WHERE f_uid = #{uid} AND f_like_article_id = #{targetId}
+	</select>
+	
+	<insert id="insertLikeUser" parameterType="LikeFocus">
+		INSERT INTO t_user_like VALUES(#{uid},#{targetId})
+	</insert>
+	<insert id="insertFocusUser" parameterType="LikeFocus">
+		INSERT INTO t_user_focus VALUES(#{uid},#{targetId},#{createTime})
+	</insert>
+	<insert id="insertLikeArticle" parameterType="LikeFocus">
+		INSERT INTO t_user_like_article VALUES(#{uid},#{targetId},#{nickname},#{createTime})
+	</insert>
+	
+	<delete id="deleteLikeUser">
+		DELETE FROM t_user_like WHERE f_uid = #{uid} AND f_like_user_id = #{targetId}
+	</delete>
+	<delete id="deleteFocusUser">
+		DELETE FROM t_user_focus WHERE f_uid = #{uid} AND f_focus_user_id = #{targetId}
+	</delete>
+	<delete id="deleteLikeArticle">
+		DELETE FROM t_user_like_article WHERE f_uid = #{uid} AND f_like_article_id = #{targetId}
+	</delete>
+</mapper>

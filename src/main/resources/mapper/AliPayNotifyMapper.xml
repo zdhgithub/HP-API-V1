@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.AliPayNotifyMapper">
+	
+	<resultMap type="aliPayNotify" id="baseResultMap">
+		<id column="f_out_trade_no" property="out_trade_no" />
+		<result column="f_notify_time" property="notify_time" />
+		<result column="f_notify_type" property="notify_type" />
+		<result column="f_notify_id" property="notify_id" />
+		<result column="f_sign_type" property="sign_type" />
+		<result column="f_sign" property="sign" />
+		<result column="f_subject" property="subject" />
+		<result column="f_payment_type" property="payment_type" />
+		<result column="f_trade_no" property="trade_no" />
+		<result column="f_trade_status" property="trade_status" />
+		<result column="f_seller_id" property="seller_id" />
+		<result column="f_seller_email" property="seller_email" />
+		<result column="f_buyer_id" property="buyer_id" />
+		<result column="f_buyer_email" property="buyer_email" />
+		<result column="f_total_fee" property="total_fee" />
+		<result column="f_quantity" property="quantity" />
+		<result column="f_price" property="price" />
+		<result column="f_body" property="body" />
+		<result column="f_gmt_create" property="gmt_create" />
+		<result column="f_gmt_payment" property="gmt_payment" />
+		<result column="f_is_total_fee_adjust" property="is_total_fee_adjust" />
+		<result column="f_use_coupon" property="use_coupon" />
+		<result column="f_discount" property="discount" /> 
+		<result column="f_refund_status" property="refund_status" /> 
+		<result column="f_gmt_refund" property="gmt_refund" /> 
+		<result column="f_gmt_close" property="gmt_close" /> 
+		<result column="f_attach" property="attach" /> 
+
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_notify_time,
+		f_notify_type,
+		f_notify_id,
+		f_sign_type,
+		f_sign,
+		f_out_trade_no,
+		f_subject,
+		f_payment_type,
+		f_trade_no,
+		f_trade_status,
+		f_seller_id,
+		f_seller_email,
+		f_buyer_id,
+		f_buyer_email,
+		f_total_fee,
+		f_quantity,
+		f_price,
+		f_body,
+		f_gmt_create,
+		f_gmt_payment,
+		f_is_total_fee_adjust,
+		f_use_coupon,
+		f_discount,
+		f_refund_status,
+		f_gmt_refund,
+		f_gmt_close,
+		f_attach
+	</sql>
+	
+	<select id="selectAliPayNotifyByOutTradeNo" parameterType="java.lang.String" resultMap="baseResultMap">
+		select  
+		<include refid="baseColumn" />
+		from t_ali_pay_notify
+		where f_out_trade_no = #{out_trade_no}
+	</select>
+	
+	<select id="selectAliPayNotifyAsLockByOutTradeNo" parameterType="java.lang.String" resultMap="baseResultMap">
+		select  
+		<include refid="baseColumn" />
+		from t_ali_pay_notify
+		where f_out_trade_no = #{out_trade_no} for update
+	</select>
+	
+	<select id="selectAll" resultMap="baseResultMap">
+		select * 
+		from t_ali_pay_notify
+	</select>
+
+	<insert id="insertPojo" >
+		insert into t_ali_pay_notify(
+		<include refid="baseColumn" />
+		)
+		values(
+			#{notify_time},
+			#{notify_type},
+			#{notify_id},
+			#{sign_type},
+			#{sign},
+			#{out_trade_no},
+			#{subject},
+			#{payment_type},
+			#{trade_no},
+			#{trade_status},
+			#{seller_id},
+			#{seller_email},
+			#{buyer_id},
+			#{buyer_email},
+			#{total_fee},
+			#{quantity},
+			#{price},
+			#{body},
+			#{gmt_create},
+			#{gmt_payment},
+			#{is_total_fee_adjust},
+			#{use_coupon},
+			#{discount},
+			#{refund_status},
+			#{gmt_refund},
+			#{gmt_close},
+			#{attach}
+		)
+	</insert>
+	
+	<update id="updatePojo">
+		update t_ali_pay_notify
+		<set>
+			<if test="notify_time != null">
+				f_notify_time = #{notify_time},
+			</if>
+			<if test="notify_type != null">
+				f_notify_type = #{notify_type},
+			</if>
+			<if test="notify_id != null">
+				f_notify_id = #{notify_id},
+			</if>
+			<if test="sign_type != null">
+				f_sign_type = #{sign_type},
+			</if>
+			<if test="sign != null">
+				f_sign = #{sign},
+			</if>
+			<if test="subject != null">
+				f_subject = #{subject},
+			</if>
+			<if test="payment_type != null">
+				f_payment_type = #{payment_type},
+			</if>
+			<if test="trade_no != null">
+				f_trade_no = #{trade_no},
+			</if>
+			<if test="trade_status != null">
+				f_trade_status = #{trade_status},
+			</if>
+			<if test="seller_id != null">
+				f_seller_id = #{seller_id},
+			</if>
+			<if test="seller_email != null">
+				f_seller_email = #{seller_email},
+			</if>
+			<if test="seller_email != null">
+				f_seller_email = #{buyer_id},
+			</if>
+			<if test="buyer_email != null">
+				f_buyer_email = #{buyer_email},
+			</if>
+			<if test="total_fee != null">
+				f_total_fee = #{total_fee},
+			</if>
+			<if test="quantity != null">
+				f_quantity = #{quantity},
+			</if>
+			<if test="price != null">
+				f_price = #{price},
+			</if>
+			<if test="body != null">
+				f_body = #{body},
+			</if>
+			<if test="gmt_create != null">
+				f_gmt_create = #{gmt_create},
+			</if>
+			<if test="gmt_payment != null">
+				f_gmt_payment = #{gmt_payment},
+			</if>
+			<if test="is_total_fee_adjust != null">
+				f_is_total_fee_adjust = #{is_total_fee_adjust},
+			</if>
+			<if test="use_coupon != null">
+				f_use_coupon = #{use_coupon},
+			</if>
+			<if test="discount != null">
+				f_discount = #{discount},
+			</if>
+			<if test="refund_status != null">
+				f_refund_status = #{refund_status},
+			</if>
+			<if test="gmt_refund != null">
+				f_gmt_refund = #{gmt_refund},
+			</if>
+			<if test="gmt_close != null">
+				f_gmt_close = #{gmt_close},
+			</if>
+		</set>
+		where f_out_trade_no = #{out_trade_no}
+	</update>
+
+</mapper>

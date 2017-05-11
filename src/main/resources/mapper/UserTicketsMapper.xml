@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserTicketsMapper">
+	
+	<resultMap type="userTickets" id="baseResultMap">
+		<id column="f_tid" property="tid"/>
+		<result column="f_ticket_name" property="ticketName" />
+		<result column="f_order_id" property="orderId" />
+		<result column="f_uid" property="uid" />
+		<result column="f_fish_site_id" property="fishSiteId" />
+		<result column="f_pid" property="pid" />
+		<result column="f_good_id" property="goodId" />
+		<result column="f_prime_cost" property="primeCost" />
+		<result column="f_out_of_pocket" property="outOfPocket" />
+		<result column="f_deposit_fee" property="depositFee" />
+		<result column="f_gold_coin_fee" property="goldCoinFee" />
+		<result column="f_earnings_gold_coin_fee" property="earningsGoldCoinFee" />
+		<result column="f_coupons_fee" property="couponsFee" />
+		<result column="f_coupon_fee" property="couponFee" />
+		<result column="f_coupon_id" property="couponId" />
+		<result column="f_duration" property="duration" />
+		<result column="f_buy_time" property="buyTime" />
+		<result column="f_expiration_date" property="expirationDate" />
+		<result column="f_use_time" property="useTime" />
+		<result column="f_status" property="status" />
+		<result column="f_pay_money" property="payMoney" />
+		<!-- 查詢使用 -->
+		<result column="f_fish_site_name" property="fishSiteName"/>
+		<result column="f_main_img" property="mainImg"/>
+		<result column="address" property="address"/>
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_user_portriat" property="portriat" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_tid,f_ticket_name,f_order_id,f_uid,f_fish_site_id,f_pid,f_good_id,f_prime_cost,f_out_of_pocket,f_deposit_fee,f_gold_coin_fee,
+		f_earnings_gold_coin_fee,f_coupons_fee,f_coupon_fee,f_coupon_id,f_duration,f_buy_time,f_expiration_date,f_use_time,f_status
+	</sql>
+	
+	<select id="selectUidsBySiteId" parameterType="java.lang.Integer" resultType="java.lang.Long">
+		select distinct f_uid
+		from t_user_tickets
+		where f_fish_site_id = #{siteId} and f_status = 1
+	</select>
+	
+	<select id="selectTicketsByUid" parameterType="java.util.Map" resultMap="baseResultMap">
+			SELECT
+			f_tid,
+			f_ticket_name,
+			f_order_id,
+			t.f_uid,
+			t.f_fish_site_id,
+			f_pid,
+			f_prime_cost,
+			f_out_of_pocket,
+			f_deposit_fee,
+			f_gold_coin_fee,
+			f_earnings_gold_coin_fee,
+			f_duration,
+			f_buy_time,
+			f_expiration_date,
+			f_use_time,
+			t.f_status,
+			f.f_fish_site_name,
+			f.f_main_img,
+			concat_ws(
+				'',
+				(
+					SELECT
+						r.f_region_name
+					FROM
+						t_sys_cfg_region r
+					WHERE
+						r.f_region_num = f.f_province_id
+				),
+				(
+					SELECT
+						r.f_region_name
+					FROM
+						t_sys_cfg_region r
+					WHERE
+						r.f_region_num = f.f_city_id
+				),
+				f.f_addr
+			) AS address
+		FROM
+			t_user_tickets t
+		LEFT JOIN t_fish_site f ON t.f_fish_site_id = f.f_fish_site_id
+		where t.f_uid = #{uid}
+		<choose>
+			<when test="status!=null and status != 0">
+				and t.f_status = #{status}
+			</when>
+			<when test="status !=null and status == 0">
+				and t.f_status in (0,3)
+			</when>
+		</choose>
+		<!-- <if test="start != null">
+		  and t.f_buy_time &lt; #{start}
+		</if> -->
+		order by t.f_buy_time desc
+		limit #{start},#{size}
+	</select>
+	
+	<select id="selectTicketsBySite" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+		<include refid="base_column"/>
+		from t_user_tickets
+		where f_fish_site_id = #{fishSiteId}
+		<if test="status != null">
+			and f_status = #{status}
+		</if>
+		<!-- <if test="start != null">
+		  and f_buy_time &lt; #{start}
+		</if> -->
+		order by f_buy_time desc
+		limit #{start},#{size}
+	</select>
+	
+	<select id="selectTicketsByTid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select 
+		<include refid="base_column"/>
+		from t_user_tickets
+		where f_tid = #{tid}
+	</select>
+	
+	<select id="selectTicketByFishSiteId" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+		f_tid,f_ticket_name,f_order_id,f_uid,f_fish_site_id,f_pid,f_good_id,
+		f_coupon_id,f_duration,f_buy_time,f_expiration_date,f_use_time,f_status,
+		f_out_of_pocket + (f_gold_coin_fee + f_earnings_gold_coin_fee) / 100 + f_coupons_fee as f_pay_money
+		
+		from t_user_tickets
+		where f_fish_site_id = #{siteId} and f_status = 1 and f_use_time is not null
+		<if test="index != null">
+			and	f_use_time <![CDATA[<]]> #{index}
+		</if>
+		order by f_use_time desc
+		limit #{size}
+	
+	</select>
+	
+	<select id="selectTicketsAsLockByTid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select 
+		<include refid="base_column"/>
+		from t_user_tickets
+		where f_tid = #{tid} for update
+	</select>
+	
+	<select id="isExists" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select 1
+		from t_user_tickets
+		where f_pid = #{pid} and f_status = 0 limit 1
+	</select>
+	
+	<select id="selectUniqueTicket" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from 
+		(
+		select 
+		<include refid="base_column"/>
+		from t_user_tickets 
+		where f_tid = #{tid} and f_fish_site_id = #{fishSiteId}
+		) t1 left join t_user t2 on t1.f_uid = t2.f_uid
+	</select>
+	
+	<insert id="insertBatch" parameterType="java.util.List" >
+		insert into t_user_tickets(
+			<include refid="base_column" />
+		)
+		values
+		<foreach collection="list" item="pojo" separator=",">
+			(
+			#{pojo.tid},
+			#{pojo.ticketName},
+			#{pojo.orderId},
+			#{pojo.uid},
+			#{pojo.fishSiteId},
+			#{pojo.pid},
+			#{pojo.goodId},
+			#{pojo.primeCost},
+			#{pojo.outOfPocket},
+			#{pojo.depositFee},
+			#{pojo.goldCoinFee},
+			#{pojo.earningsGoldCoinFee},
+			#{pojo.couponsFee},
+			#{pojo.couponFee},
+			#{pojo.couponId},
+			#{pojo.duration},
+			#{pojo.buyTime},
+			#{pojo.expirationDate},
+			#{pojo.useTime},
+			#{pojo.status}
+			)
+		</foreach>
+		
+	</insert>
+	
+	<update id="updateStatus" parameterType="userTickets">
+		update t_user_tickets
+		set f_status = #{status}
+		where f_tid = #{tid}
+	</update>
+	
+	<update id="updateStatusAndUseTime" parameterType="userTickets">
+		update t_user_tickets
+		set f_status = #{status},
+		f_use_time = #{useTime}
+		where f_tid = #{tid}
+	</update>
+	
+	<!-- 核票人记录 -->
+	<insert id="insertVerifyTicketRecord" parameterType="cn.heipiao.api.pojo.VerifyTicketRecord">
+		insert into t_verify_ticket_record
+		(f_uid,f_site_id,f_tid,f_create_time)
+		values
+		(
+			#{uid},
+			#{siteId},
+			#{tid},
+			#{createTime}
+		)
+	</insert>
+	
+</mapper>

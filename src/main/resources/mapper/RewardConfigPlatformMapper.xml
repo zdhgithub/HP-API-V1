@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RewardConfigPlatformMapper">
+	<resultMap type="RewardPlatform" id="baseResultMap">
+		<result column="f_reward_platform_id" property="id" />
+		<result column="f_reward_platform_business_id" property="bid" />
+		<result column="f_reward_platform_percent" property="percent" />
+		<result column="f_reward_platform_bonus" property="bonus" />
+		<result column="f_reward_platform_partner_bonus" property="partnerBonus" />
+		<result column="f_reward_plarform_status" property="status" />
+		<result column="f_reward_plarform_type" property="type"/> 
+	</resultMap>
+	<sql id="baseColumn">
+		f_reward_platform_id,f_reward_platform_business_id,f_reward_platform_percent,
+		f_reward_platform_bonus,f_reward_platform_partner_bonus,f_reward_plarform_status,f_reward_plarform_type
+	</sql>
+	<select id="selectRewardPlatformByBid" parameterType="java.util.Map" resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumn"></include>
+		FROM t_reward_platform_config
+		<where>
+			<if test="bid!=null">
+				and f_reward_platform_business_id = #{bid}
+			</if>
+			<if test="type!=null">
+				and f_reward_plarform_type = #{type}
+			</if>
+			<if test="status!=null">
+				and f_reward_plarform_status = #{status}
+			</if>
+		</where>
+	</select>
+	<insert id="insertRewardPlatform" parameterType="RewardPlatform">
+		INSERT INTO t_reward_platform_config(
+			f_reward_platform_business_id,
+			f_reward_platform_percent,
+			f_reward_platform_bonus,
+			f_reward_platform_partner_bonus,
+			f_reward_plarform_type
+			)
+			values (
+			#{bid},
+			#{percent},
+			#{bonus},
+			#{partnerBonus},
+			#{type}
+			)
+	</insert>
+	<update id="updateRewardPlatform" parameterType="java.util.Map">
+		UPDATE t_reward_platform_config
+		<set>
+			<if test="percent!=null">
+			 f_reward_platform_percent =#{percent},
+			</if>
+			<if test="bonus!=null">
+			 f_reward_platform_bonus=#{bonus},
+			</if>
+			<if test="partnerBonus!=null">
+			f_reward_platform_partner_bonus=#{partnerBonus}
+			</if>
+		</set>
+		<where>
+			<if test="id!=null">
+				f_reward_platform_id=#{id}
+			</if>
+		</where>
+	</update>
+	<update id="update" parameterType="java.util.Map">
+		UPDATE t_reward_platform_config SET f_reward_plarform_status=#{status}
+		where f_reward_platform_business_id=#{bid} and f_reward_plarform_type = #{type}
+	</update>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PartnerCouponRecordMapper">
+
+	<resultMap type="partnerCouponRecord" id="baseResultMap">
+		<result column="f_partner_id" property="partnerId" />
+		<result column="f_uid" property="uid" />
+		<result column="f_phone" property="phone" />
+		<result column="f_coupon_id" property="couponId" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_status" property="status" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_partner_id,f_uid,f_phone,f_coupon_id,f_create_time
+	</sql>
+	
+	
+	<select id="selectCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*)
+		from t_partner_coupon_record
+		where f_partner_id = #{partnerId}
+	</select>
+	
+	<select id="selectCountByUsed" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*)
+		from 
+		(
+			select f_coupon_id
+			from t_partner_coupon_record
+			where f_partner_id = #{partnerId}
+		) t1  join t_coupons t2 on t1.f_coupon_id = t2.f_cid and t2.f_status > 0
+	</select>
+	
+	
+	<select id="selectByPartnerId"  parameterType="java.lang.Integer"  resultMap="baseResultMap">
+		select f_phone,f_create_time,t2.f_status
+		from
+		(
+		select f_phone,f_create_time,f_coupon_id
+		from t_partner_coupon_record
+		where f_partner_id = #{partnerId}
+		)t1 
+		left join t_coupons t2 on t1.f_coupon_id = t2.f_cid
+	</select>
+	
+	<select id="selectByCouponIdAsLock" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_partner_coupon_record
+		where f_partner_id = #{partnerId} for update
+	</select>
+	
+	<select id="selectByCouponId" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from t_partner_coupon_record
+		where f_coupon_id = #{couponId}
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_partner_coupon_record
+		(<include refid="baseColumn" />)
+		values
+		(
+			#{partnerId},
+			#{uid},
+			#{phone},
+			#{couponId},
+			#{createTime}
+		)
+	</insert>
+	
+</mapper>

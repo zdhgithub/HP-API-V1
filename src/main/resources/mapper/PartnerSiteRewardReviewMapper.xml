@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.heipiao.api.mapper.PartnerSiteRewardReviewMapper" >
+  <resultMap id="BaseResultMap" type="cn.heipiao.api.pojo.PartnerSiteRewardReview" >
+    <result column="f_site_id" property="siteId" />
+    <result column="f_shelves_reward_amount" property="shelvesAmount" />
+    <result column="f_shelves_reward_status" property="shelvesStatus" />
+    <result column="f_trading_reward_amount" property="tradingAmount" />
+    <result column="f_trading_reward_status" property="tradingStatus" />
+    <result column="f_shelves_time" property="shelvesTime" />
+    <result column="f_trading_time" property="tradingTime"/>
+  </resultMap>
+    
+  <sql id="baseColumnList" >
+    f_site_id, f_shelves_reward_amount, f_shelves_reward_status, f_trading_reward_amount,f_trading_reward_status,f_shelves_time,f_trading_time
+  </sql> 
+  
+  <select id="selectBysiteId"  parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	select
+  	<include refid="baseColumnList"/>
+  	from t_partner_site_reward_review where f_site_id = #{siteId}
+  </select>
+  
+  <insert id="insert" parameterType="cn.heipiao.api.pojo.PartnerSiteRewardReview" >
+    insert into t_partner_site_reward_review (f_site_id, f_shelves_reward_amount, f_shelves_reward_status,f_trading_reward_amount,
+    f_trading_reward_status,f_shelves_time,f_trading_time)
+    values (#{siteId}, #{shelvesAmount}, 
+      #{shelvesStatus},#{tradingAmount},#{tradingStatus},#{shelvesTime},#{tradingTime})
+  </insert>
+ 
+  <update id="updateBysiteId" parameterType="cn.heipiao.api.pojo.PartnerSiteRewardReview" >
+    update t_partner_site_reward_review
+    <set >
+     <if test="shelvesStatus != null" >
+       f_shelves_reward_status = #{shelvesStatus},
+     </if>
+     <if test="tradingStatus != null" >
+       f_trading_reward_status = #{tradingStatus},
+     </if>
+     <if test="shelvesAmount!=null">
+     	f_shelves_reward_amount = #{shelvesAmount},
+     </if>
+      <if test="tradingAmount!=null">
+     	f_trading_reward_amount = #{tradingAmount},
+     </if>
+     <if test="shelvesTime!=null">
+     	f_shelves_time = #{shelvesTime},
+     </if>
+     <if test="tradingTime != null">
+     	f_trading_time = #{tradingTime}
+     </if>
+    </set>
+    where f_site_id = #{siteId}
+  </update>
+  <delete id="deleteBySiteId" parameterType="java.lang.Integer" >
+    delete from t_partner_site_reward_review
+    where f_site_id = #{siteId}
+  </delete>
+</mapper>

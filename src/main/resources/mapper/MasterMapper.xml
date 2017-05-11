@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.MasterMapper">
+
+	<resultMap type="Master" id="baseResultMap">
+		<id      column="f_uid" property="uid" />
+		<result  column="f_user_nickname" property="nickname" />
+		<result  column="f_user_realname" property="realname" />
+		<result  column="f_user_portriat" property="portriat" />
+		<result  column="f_top_img" property="topImg" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_uid, f_top_img, f_update_time, f_create_time
+	</sql>
+
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="baseResultMap"> 
+		SELECT tu.*, tm.`f_top_img` 
+		FROM `t_user` AS tu 
+			LEFT JOIN `t_master` AS tm ON tu.`f_uid` = tm.`f_uid`
+		WHERE tu.`f_uid` = #{uid}
+	</select>
+	
+	<insert id="insertMaster" parameterType="Master">
+		INSERT INTO `t_master` (`f_uid`, `f_top_img`, `f_create_time`) 
+		VALUES(#{uid}, #{topImg}, CURRENT_TIMESTAMP);
+	</insert>
+	
+	
+	<update id="updateById" parameterType="Master">
+ 		update t_master
+ 		<set>
+ 			`f_uid` = `f_uid`,
+ 			<if test="topImg != null">
+ 				f_top_img = #{topImg},
+ 			</if>
+ 		</set>
+ 		where f_uid = #{uid}
+	</update>
+	
+
+
+</mapper>

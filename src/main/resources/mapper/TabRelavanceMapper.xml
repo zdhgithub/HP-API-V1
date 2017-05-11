@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.TabRelavanceMapper">
+	<resultMap type="TabRelavance" id="tabResultMap">
+		<id column="f_uid" property="userId" />
+		<result column="f_tab_code" property="tabCode" />
+		<result column="f_tab_name" property="tabName" />
+		<result column="f_ticker_time" property="time" />
+	</resultMap>
+	<sql id="tabSql">
+		f_uid,f_tab_code,f_tab_name,f_ticker_time
+	</sql>
+	<select id="getUserTab" resultMap="tabResultMap">
+		SELECT
+		<include refid="tabSql"></include>
+		FROM t_user_tab_relevance t WHERE t.f_uid=#{userId} AND t.f_tab_code
+		in(SELECT
+		c.f_code FROM t_sys_cfg_dict c WHERE c.f_type = #{type})
+	</select>
+	<insert id="saveUserTab" parameterType="TabRelavance">
+		INSERT INTO t_user_tab_relevance
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId>=0">
+				f_uid,
+			</if>
+			<if test="tabCode!=null">
+				f_tab_code,
+			</if>
+			<if test="tabName!=null">
+				f_tab_name,
+			</if>
+			<if test="time!=null">
+				f_ticker_time,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="userId>=0">
+				#{userId},
+			</if>
+			<if test="tabCode!=null">
+				#{tabCode},
+			</if>
+			<if test="tabName!=null">
+				#{tabName},
+			</if>
+			<if test="time!=null">
+				#{time},
+			</if>
+		</trim>
+	</insert>
+	<delete id="deleteUserTab" >
+		DELETE from
+		t_user_tab_relevance WHERE f_uid=#{userId} AND f_tab_code in(SELECT f_code
+		from t_sys_cfg_dict WHERE f_type=#{type})
+	</delete>
+</mapper>

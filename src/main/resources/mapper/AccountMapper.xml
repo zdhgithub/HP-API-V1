@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.AccountMapper">
+	
+	<resultMap type="account" id="baseResultMap">
+		<id column="f_uid" property="uid" />
+		<result column="f_balance" property="balance" />
+		<result column="f_withdraw_time" property="withdrawTime" />
+		<result column="f_pay_pwd" property="payPwd" />
+		<result column="f_withdraw_rule_id" property="withdrawRuleId" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_uid,f_balance,f_withdraw_time,f_pay_pwd,f_withdraw_rule_id
+	</sql>
+	
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_account
+		where f_uid = #{uid}
+	</select>
+	
+	<select id="selectByUidAsLock" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_account
+		where f_uid = #{uid} for update
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_account(
+		<include refid="base_column" />
+		)
+		values(
+			#{uid},		
+			#{balance},		
+			#{withdrawTime},		
+			#{payPwd},
+			#{withdrawRuleId}	
+		)
+	</insert>
+	
+	<update id="updatePayPwd" parameterType="java.util.Map">
+		update t_account
+		set f_pay_pwd = #{payPwd}
+		where f_uid = #{uid}
+	</update>
+
+	<update id="updateBalance" parameterType="java.util.Map">
+		update t_account
+		set f_balance = #{balance}
+		where f_uid = #{uid}
+	</update>
+	
+	<update id="updatePojo" >
+		update t_account 
+		set
+			f_balance = #{balance},
+			f_withdraw_time = #{withdrawTime}
+		where f_uid = #{uid}
+	</update>
+	
+	<update id="updateRuleId" >
+		update t_account 
+		set	f_withdraw_rule_id = #{withdrawRuleId}
+		where f_uid = #{uid}
+	</update>
+	
+</mapper>

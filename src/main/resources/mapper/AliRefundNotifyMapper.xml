@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.AliRefundNotifyMapper">
+	
+	<resultMap type="aliRefundNotify" id="baseResultMap">
+		<id column="f_batch_no" property="batch_no" />
+		<result column="f_notify_time" property="notify_time" />
+		<result column="f_notify_type" property="notify_type" />
+		<result column="f_notify_id" property="notify_id" />
+		<result column="f_sign_type" property="sign_type" />
+		<result column="f_sign" property="sign" />
+		<result column="f_success_num" property="success_num" />
+		<result column="f_result_details" property="result_details" />
+		<result column="f_unfreezed_details" property="unfreezed_details" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_notify_time,
+		f_notify_type,
+		f_notify_id,
+		f_sign_type,
+		f_sign,
+		f_batch_no,
+		f_success_num,
+		f_result_details,
+		f_unfreezed_details
+	</sql>
+	
+	<select id="selectAliRefundNotifyAsLockByBatchNo" parameterType="java.lang.String" resultMap="baseResultMap">
+		select  
+		<include refid="baseColumn" />
+		from t_ali_refund_notify
+		where f_batch_no = #{batch_no} for update
+	</select>
+	
+	<select id="selectAliRefundNotifyByBatchNo" parameterType="java.lang.String" resultMap="baseResultMap">
+		select  
+		<include refid="baseColumn" />
+		from t_ali_refund_notify
+		where f_batch_no = #{batch_no}
+	</select>
+	
+	<insert id="insertPojo" >
+		insert into t_ali_refund_notify(
+		<include refid="baseColumn" />
+		)
+		values(
+			#{notify_time},
+			#{notify_type},
+			#{notify_id},
+			#{sign_type},
+			#{sign},
+			#{batch_no},
+			#{success_num},
+			#{result_details},
+			#{unfreezed_details}
+		}
+	</insert>
+
+	<update id="updatePojo">
+		update t_ali_refund_notify 
+		<set>
+			<if test="notify_time != null">
+				f_notify_time = #{notify_time},
+			</if>
+			<if test="notify_type != null">
+				f_notify_type = #{notify_type},
+			</if>
+			<if test="notify_id != null">
+				f_notify_id = #{notify_id},
+			</if>
+			<if test="sign_type != null">
+				f_sign_type = #{sign_type},
+			</if>
+			<if test="sign != null">
+				f_sign = #{sign},
+			</if>
+			<if test="success_num != null">
+				f_success_num = #{success_num},
+			</if>
+			<if test="result_details != null">
+				f_#{result_details},
+			</if>
+			<if test="unfreezed_details != null">
+				f_unfreezed_details = #{unfreezed_details},
+			</if>
+		</set>
+		where f_batch_no = #{batch_no}
+	</update>
+
+</mapper>

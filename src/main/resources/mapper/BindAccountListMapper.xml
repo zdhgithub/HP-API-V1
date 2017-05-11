@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.BindAccountListMapper">
+	
+	<resultMap type="bindAccountList" id="baseResultMap">
+		<id column="f_bind_account_num" property="bindAccountNum" />
+		<result column="f_platform" property="platform" />
+		<result column="f_uid" property="uid" />
+		<result column="f_flag" property="flag" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_current_sum_fee" property="currentSumFee" />
+		<result column="f_trade_amount" property="tradeAmount" />
+		<result column="f_trade_update_time" property="tradeUpdateTime" />
+		<result column="f_bind_time" property="bindTime" />
+		
+		<result column="f_day_sum_limited" property="daySumLimited" />
+		<result column="f_single_min_fee" property="singleMinFee" />
+		<result column="f_single_max_fee" property="singleMaxFee" />
+		<result column="f_trade_max_amount" property="tradeMaxAmount" />
+
+		<result column="f_user_realname" property="realname" />
+		<result column="f_user_phonenum" property="phoneNum" />
+		
+	</resultMap>
+	
+	<sql id="base_column">
+		f_platform,f_bind_account_num,f_create_time,f_current_sum_fee,f_trade_amount,f_trade_update_time
+	</sql>
+
+
+	<select id="selectByAccountNumAndPlatform" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_bind_account_list
+		where f_bind_account_num = #{bindAccountNum} and f_platform = #{platform}
+	</select>
+
+	<select id="selectUniqueAccount" parameterType="java.util.Map" resultMap="baseResultMap">
+		<!-- select * 
+		from t_bind_account_list
+		where f_uid = #{uid} and f_platform = #{platform} and f_bind_account_num = #{bindAccount}
+		 -->
+	 select t3.f_uid,t3.f_bind_time,t3.f_platform,t3.f_bind_account_num,t3.f_create_time,t3.f_current_sum_fee ,t3.f_trade_amount,t3.f_trade_update_time
+	 		,t4.f_day_sum_limited,t4.f_single_min_fee,t4.f_single_max_fee,t4.f_trade_max_amount
+    from(
+		select  t1.f_uid,t1.f_bind_time,t2.f_platform,t2.f_bind_account_num,t2.f_create_time,t2.f_current_sum_fee ,t2.f_trade_amount,t2.f_trade_update_time
+		from t_bind_account_relevance t1  join t_bind_account_list t2 on t1.f_bind_account_num = t2.f_bind_account_num
+		 and t1.f_uid = #{uid} and t1.f_bind_account_num = #{bindAccountNum} and t1.f_platform = #{platform}
+    ) t3 left join t_platform_account_constraint t4 on t3.f_platform = t4.f_platform
+		
+		
+	</select>
+	
+	<select id="selectUniqueAccountAsLock" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_bind_account_list
+		where f_bind_account_num = #{bindAccountNum} and f_platform = #{platform} for update
+	</select>
+	
+	<select id="selectByUid"  parameterType="java.lang.Long" resultMap="baseResultMap">
+	select t3.f_single_min_fee,
+       t3.f_single_max_fee,
+       t3.f_trade_max_amount,
+       t3.f_use_time,
+       t3.f_day_sum_limited,
+       t3.f_uid,
+       t3.f_flag,
+       t3.f_platform,
+       t3.f_bind_account_num,
+       t3.f_create_time,
+       t3.f_bind_time,
+       t3.f_current_sum_fee,
+       t3.f_trade_amount,
+       t3.f_trade_update_time,
+       t4.f_user_realname,
+       t4.f_user_phonenum
+		  from(
+				select t2.f_single_min_fee, t2.f_single_max_fee, t2.f_trade_max_amount, t2.f_use_time, t2.f_day_sum_limited, t1.f_uid,t1.f_flag, t1.f_platform, t1.f_bind_account_num,t1.f_bind_time, t1.f_create_time, t1.f_current_sum_fee, t1.f_trade_amount, t1.f_trade_update_time
+		 	 	from(
+					select a1.f_uid,a1.f_flag,a1.f_bind_time,a2.f_platform,a2.f_bind_account_num,a2.f_create_time,a2.f_current_sum_fee ,a2.f_trade_amount,a2.f_trade_update_time
+		 			 from t_bind_account_relevance a1 left join t_bind_account_list a2 on a1.f_bind_account_num = a2.f_bind_account_num 
+		 			 where a1.f_uid = #{uid}
+		       ) t1	left join t_platform_account_constraint t2 on t1.f_platform= t2.f_platform
+		  ) t3
+		  left join t_user t4 on t3.f_uid= t4.f_uid
+	</select>
+ 
+	<update id="updatePojo">
+		update t_bind_account_list
+		<set>
+			<if test="currentSumFee != null">
+				f_current_sum_fee = #{currentSumFee},
+			</if>
+			<if test="tradeAmount != null">
+				f_trade_amount = #{tradeAmount},
+			</if>
+			<if test="tradeUpdateTime != null">
+				f_trade_update_time = #{tradeUpdateTime},
+			</if>
+		</set> 
+		where f_bind_account_num = #{bindAccountNum} and f_platform = #{platform}
+	</update>
+	
+	<insert id="insertPojo">
+		insert into t_bind_account_list(
+		<include refid="base_column" />
+		)
+		values(
+			#{platform},
+			#{bindAccountNum},
+			#{createTime},
+			#{currentSumFee},
+			#{tradeAmount},
+			#{tradeUpdateTime}
+		)
+	</insert>
+	
+	<!-- <delete id="deleteBindAccount">
+		delete 
+		from t_bind_account_list
+		where f_uid = #{uid} and f_platform = #{platform} and f_bind_account_num = #{bindAccountNum}
+	</delete> -->
+	
+	<!-- <delete id="deleteBindAccount">
+		delete 
+		from t_bind_account_relevance
+		where f_uid = #{uid} and f_bind_account_num = #{bindAccountNum} and f_platform = #{platform} 
+	</delete> -->
+</mapper>

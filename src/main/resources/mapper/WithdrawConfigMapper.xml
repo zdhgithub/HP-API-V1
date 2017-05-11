@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.WithdrawConfigMapper">
+	
+	<resultMap type="withdrawConfig" id="baseResultMap">
+		<result column="f_delay_for_day" property="delayForDay" />
+		<result column="f_withdraw_rate" property="withdrawRate" />
+		<result column="f_withdraw_rule_id" property="withdrawRuleId" />
+		<result column="f_service_id" property="serviceId" />
+		
+	</resultMap>
+	
+	<sql id="base_column">
+		f_delay_for_day,f_withdraw_rate,f_withdraw_rule_id,f_service_id
+	</sql>
+	
+	<select id="selectAll"   resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />	 
+		from t_withdraw_config 
+	</select>
+	
+	
+	<select id="selectAllByRuleId" parameterType="java.lang.Integer"  resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />	 
+		from t_withdraw_config 
+		where  f_withdraw_rule_id = #{withdrawRuleId} and f_service_id = #{serviceId}
+	</select>
+	
+	<select id="selectByRuleIdAndDelayForDay" parameterType="java.util.Map"  resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />	 
+		from t_withdraw_config 
+		where  f_withdraw_rule_id = #{withdrawRuleId}
+				and f_service_id = #{serviceId} 
+				and f_delay_for_day = #{delayForDay}
+	</select>
+	
+	
+	
+	<insert id="insertPojo">
+		insert into t_withdraw_config(
+		<include refid="base_column" />
+		)
+		values (
+			#{delayForDay},
+			#{withdrawRate},
+			#{withdrawRuleId},
+			#{serviceId}
+		)
+	</insert>
+	
+	<update id="updatePojo">
+		update t_withdraw_config
+		set f_withdraw_rate = #{withdrawRate}
+		where f_service_id = #{serviceId} 
+				and f_delay_for_day = #{delayForDay} 
+				and f_withdraw_rule_id = #{withdrawRuleId}
+	</update>
+	
+	
+</mapper>

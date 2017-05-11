@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PartnerDBMapper">
+	<resultMap type="PartnerDB" id="BaseResultMap">
+		<id column="f_db_id" property="id" />
+		<result column="f_db_title" property="title"/>
+		<result column="f_db_desc" property="des" />
+		<result column="f_db_create_time" property="createTime" />
+		<result column="f_db_update_time" property="updateTime" />
+		<result column="f_db_content" property="content" />
+		<result column="f_db_url" property="url" />
+		<result column="f_db_download" property="downloadNum" />
+	</resultMap>
+	
+	<sql id="BaseSql">
+	f_db_id,f_db_title,f_db_desc,f_db_create_time,f_db_update_time,f_db_content,f_db_url,f_db_download
+	</sql>
+	
+	<select id="selectList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+			<include refid="BaseSql"></include>
+		FROM
+			t_partner_db
+		<where>
+			<if test="start>0">
+				 and f_db_id &lt; #{start}
+			</if>
+		</where>
+		ORDER BY
+			f_db_id DESC
+		LIMIT #{size}
+	</select>
+	
+	<insert id="insert" parameterType="PartnerDB" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_partner_db (
+			f_db_title,
+			f_db_desc,
+			f_db_create_time,
+			f_db_update_time,
+			f_db_content,
+			f_db_url
+		)
+		VALUES
+			(#{title},#{des},#{createTime},#{updateTime},#{content},#{url})
+	</insert>
+	
+	<update id="update" parameterType="PartnerDB">
+		UPDATE t_partner_db
+		<set>
+			<if test="url!=null">
+				f_db_url = #{url},
+			</if>
+			<if test="updateTime!=null">
+				f_db_update_time = #{updateTime},
+			</if>
+			<if test="title!=null">
+				f_db_title = #{title},
+			</if>
+			<if test="downloadNum!=null">
+				f_db_download = f_db_download + 1
+			</if>
+		</set>
+		WHERE
+			f_db_id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM t_partner_db WHERE f_db_id = #{id}
+	</delete>
+</mapper>

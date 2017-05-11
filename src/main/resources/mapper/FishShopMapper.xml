@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FishShopMapper">
+
+	<resultMap id="BaseResultMap" type="FishShop">
+		<id column="f_fish_shop_id" jdbcType="INTEGER" property="id" />		
+		<result column="f_uid" jdbcType="INTEGER" property="uid" />
+		<result column="f_fish_shop_name" jdbcType="VARCHAR" property="name" />
+		<result column="f_fish_shop_province_id" jdbcType="INTEGER" property="provinceId" />
+		<result column="f_fish_shop_city_id" jdbcType="INTEGER" property="cityId" />
+		<result column="f_fish_shop_region_id" jdbcType="INTEGER" property="regionId" />
+		<result column="f_fish_shop_addr" jdbcType="VARCHAR" property="addr" />
+		<result column="f_fish_shop_duration" jdbcType="INTEGER" property="duration" />
+		<result column="f_fish_shop_k_num" jdbcType="INTEGER" property="kNum" />
+		<result column="f_fish_shop_longitude" jdbcType="DOUBLE" property="longitude" />
+		<result column="f_fish_shop_latitude" jdbcType="DOUBLE" property="latitude" />
+		<result column="f_fish_shop_main_img" jdbcType="VARCHAR" property="mainImg" />
+		<result column="f_fish_shop_main_top_img" jdbcType="VARCHAR" property="mainTopImg" />
+		<result column="f_fish_shop_main_img_none" jdbcType="VARCHAR" property="mainImgNone" />
+		<result column="f_fish_shop_resources" jdbcType="VARCHAR" property="resources" />
+		<result column="f_fish_shop_summary" jdbcType="VARCHAR" property="summary" />
+		<result column="f_fish_shop_contact" jdbcType="VARCHAR" property="contact" />
+		<result column="f_fish_shop_phone" jdbcType="VARCHAR" property="phone" />
+		<result column="f_fish_shop_p_type" jdbcType="VARCHAR" property="ptype" />
+		<result column="f_fish_shop_p_brand" jdbcType="VARCHAR" property="pbrand" />
+		<result column="f_fish_shop_focus_count" jdbcType="INTEGER" property="focusCount" />
+		<result column="f_fish_shop_scale" jdbcType="INTEGER" property="scale" />
+		<result column="f_fish_shop_status" jdbcType="INTEGER" property="status" />		
+		<result column="f_fish_shop_type" jdbcType="INTEGER" property="type" />
+		<result column="f_fish_shop_auth_status" jdbcType="INTEGER" property="authStatus" />
+		<result column="f_fish_shop_auth_time_name" jdbcType="VARCHAR" property="authTimeName" />
+		<result column="f_fish_shop_auth_time_sign" jdbcType="VARCHAR" property="authTimeSign" />
+		<result column="f_fish_shop_auth_sign_uid" jdbcType="VARCHAR" property="signUid" />
+		<result column="f_fish_shop_top" jdbcType="INTEGER" property="top" />
+		<result column="f_fish_shop_flag" jdbcType="CHAR" property="flag" />
+		<result column="f_fish_shop_sys_remarks" jdbcType="VARCHAR" property="sysRemarks" />
+		<result column="f_fish_shop_create_time" jdbcType="DATE" property="createtime" />
+		<result column="f_fish_shop_update_time" jdbcType="TIMESTAMP" property="updatetime" />
+		<result column="f_is_open_coupon" property="openCoupon" />
+		<result column="f_is_coupon" property="isCoupon" />
+		<result column="f_coupon_count" property="couponCount" />
+		<result column="f_is_auth_coupon" property="isAuthCoupon" />
+		
+		<result column="f_fish_shop_isPraise" jdbcType="INTEGER" property="isPraise" />
+		<result column="f_fish_shop_praise_time" jdbcType="TIMESTAMP" property="praiseTime" />
+		<result column="f_fish_shop_isCollect" jdbcType="INTEGER" property="isCollect" />
+		<result column="f_fish_shop_collect_time" jdbcType="TIMESTAMP" property="collectTime" />
+		<result column="f_fish_shop_praiseNum" jdbcType="INTEGER" property="praiseNum" />
+		<result column="f_fish_shop_collectNum" jdbcType="INTEGER" property="collectNum" />
+		<result column="f_user_nickname" jdbcType="VARCHAR" property="uNickname" />
+		<result column="f_user_portriat" jdbcType="VARCHAR" property="uPortriat" />
+		
+		<result column="f_sign_status" jdbcType="INTEGER" property="signStatus" />
+		<result column="f_sign_isApply" jdbcType="INTEGER" property="signIsApply" />
+		<result column="f_sign_shop_id" jdbcType="INTEGER" property="signShopId" />
+		<result column="f_sign_userid" jdbcType="INTEGER" property="signUserid" />
+		<result column="f_sign_nickname" jdbcType="VARCHAR" property="signNickname" />
+		<result column="f_sign_portriat" jdbcType="VARCHAR" property="signPortriat" />
+		<result column="f_shop_site_status" jdbcType="INTEGER" property="distributionStatus"/>
+		<result column="f_trading_reward_amount" jdbcType="INTEGER" property="tradingSum"/>
+		
+		<result property="partnerId" column="f_partner_id" />
+		<result property="partnerNickName" column="f_partner_nickname" />
+		<result property="partnerPhoneNum" column="f_partner_phone_num" />
+		<result property="partnerRealName" column="f_partner_realname" />
+		<result property="shopNickName" column="f_shop_nickname" />
+		<result property="shopPhoneNum" column="f_shop_phone_num" />
+		<result property="shopRealName" column="f_shop_realname" />
+		
+	</resultMap>
+	
+	<resultMap id="UserStatusResultMap" type="FishShopUserStatus">
+		<id column="f_fus_id" jdbcType="INTEGER" property="fusId" />		
+		<result column="f_type" jdbcType="INTEGER" property="fusType" />
+		<result column="f_fs_id" jdbcType="INTEGER" property="fsId" />
+		<result column="f_uid" jdbcType="INTEGER" property="uid" />
+		<result column="f_create_time" jdbcType="TIMESTAMP" property="fusIdCreateTime" />
+	</resultMap>
+		
+	<sql id="base_column_list"> 
+		`f_fish_shop_id`,`f_uid`,`f_fish_shop_name`,`f_fish_shop_province_id`,`f_fish_shop_city_id`,
+		`f_fish_shop_region_id`,`f_fish_shop_addr`,`f_fish_shop_k_num`,`f_fish_shop_longitude`,
+		`f_fish_shop_latitude`,`f_fish_shop_main_img`,`f_fish_shop_resources`,`f_fish_shop_summary`,
+		`f_fish_shop_contact`,`f_fish_shop_phone`,`f_fish_shop_p_type`,`f_fish_shop_p_brand`,
+		`f_fish_shop_focus_count`,`f_fish_shop_auth_status`,`f_fish_shop_flag`,`f_fish_shop_sys_remarks`,
+		`f_fish_shop_create_time`,`f_fish_shop_update_time`, `f_fish_shop_type`, `f_fish_shop_auth_time_name`,
+		`f_fish_shop_top`, `f_fish_shop_scale`, `f_fish_shop_status`, `f_fish_shop_auth_time_sign`, 
+		`f_fish_shop_auth_sign_uid`,f_is_open_coupon,f_is_coupon,f_coupon_count,f_is_auth_coupon, 
+		f_fish_shop_main_top_img, f_fish_shop_main_img_none
+	</sql>
+	<sql id="baseColumnlist"> 
+		`f_fish_shop_id`,s.`f_uid`,`f_fish_shop_name`,`f_fish_shop_province_id`,`f_fish_shop_city_id`,
+		`f_fish_shop_region_id`,`f_fish_shop_addr`,`f_fish_shop_k_num`,`f_fish_shop_longitude`,
+		`f_fish_shop_latitude`,`f_fish_shop_main_img`,`f_fish_shop_resources`,`f_fish_shop_summary`,
+		`f_fish_shop_contact`,`f_fish_shop_phone`,`f_fish_shop_p_type`,`f_fish_shop_p_brand`,
+		`f_fish_shop_focus_count`,`f_fish_shop_auth_status`,`f_fish_shop_flag`,`f_fish_shop_sys_remarks`,
+		`f_fish_shop_create_time`,`f_fish_shop_update_time`, `f_fish_shop_type`, `f_fish_shop_auth_time_name`,
+		`f_fish_shop_top`, `f_fish_shop_scale`, `f_fish_shop_status`, `f_fish_shop_auth_time_sign`, 
+		`f_fish_shop_auth_sign_uid`,f_is_open_coupon,f_is_coupon,f_coupon_count,f_is_auth_coupon, 
+		f_fish_shop_main_top_img, f_fish_shop_main_img_none
+	</sql>
+	
+	<sql id="sql_duration">
+		<if test="lng != null and lat != null">
+			round(6370996.81 * 2 * asin(sqrt(
+			pow(sin(((#{lat} * PI() /180.0) - (f_fish_shop_latitude * PI() /180.0))/2),2) 
+			+ cos(#{lat} * PI() /180.0) 
+			* cos(f_fish_shop_latitude * PI() /180.0) 
+			* pow(sin(((#{lng}-f_fish_shop_longitude) * PI()/180.0)/2),2)))) as f_fish_shop_duration,
+		</if>
+	</sql>
+	
+	<select id="getFishShopUIDs" resultType="int">
+		SELECT DISTINCT f_uid FROM t_fish_shop WHERE f_uid IS NOT NULL
+	</select>
+	
+	<select id="selectAllWhereUIDNotNull" resultType="long">
+		SELECT f_fish_shop_id FROM t_fish_shop WHERE f_uid is NOT NULL
+	</select>
+	
+	<select id="isExistsNormal" parameterType="java.lang.Long" resultType="boolean">
+		select if(count(*) > 0,true,false)
+		from t_fish_shop
+		where f_uid = #{uid} and f_fish_shop_status = 1
+		limit 1
+	</select>
+	
+	<select id="selectFishShopByShopId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select * 
+		from t_fish_shop
+		where  f_fish_shop_id=#{shopId}
+	</select>
+	
+	<select id="selectFishShopAsLockByShopId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select * 
+		from t_fish_shop
+		where  f_fish_shop_id=#{shopId} for update
+	</select>
+
+	<select id="selectFishShopById" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT 
+		<if test="uid != null">
+			zan.f_focus AS f_fish_shop_isPraise, collect.f_focus AS f_fish_shop_isCollect,
+		</if>
+		zant.zan_total AS f_fish_shop_praiseNum, collectt.collect_total AS f_fish_shop_collectNum,
+		tu.f_user_nickname, tu.f_user_portriat,
+		<include refid="base_column_list" /> 
+		FROM t_fish_shop AS t1
+			<if test="uid != null">
+				LEFT JOIN (
+							SELECT 1 AS f_focus, f_fs_id 
+							FROM t_fish_shop_user_status 
+							WHERE f_uid = #{uid} AND f_type=0 AND f_status=0
+						  ) zan ON t1.f_fish_shop_id = zan.f_fs_id
+				LEFT JOIN (
+							SELECT 1 AS f_focus, f_fs_id 
+							FROM t_fish_shop_user_status 
+							WHERE f_uid = #{uid} AND f_type=1 AND f_status=0
+						  ) collect ON t1.f_fish_shop_id = collect.f_fs_id
+			</if>
+			LEFT JOIN (
+						SELECT COUNT(0) AS zan_total, f_fs_id 
+						FROM t_fish_shop_user_status 
+						WHERE f_fs_id=#{id} AND f_type=0 AND f_status=0
+					   ) zant ON t1.f_fish_shop_id = zant.f_fs_id
+			LEFT JOIN (
+						SELECT COUNT(0) AS collect_total, f_fs_id 
+						FROM t_fish_shop_user_status 
+						WHERE f_fs_id=#{id} AND f_type=1 AND f_status=0
+					  ) collectt ON t1.f_fish_shop_id = collectt.f_fs_id
+			LEFT JOIN (
+					SELECT ttu.f_uid AS userid, ttu.f_user_nickname, ttu.f_user_portriat 
+					FROM t_user ttu
+				) AS tu ON tu.`userid` = t1.`f_uid`
+		WHERE f_fish_shop_id=#{id}
+	</select>
+
+	<select id="selectFishShopByUid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT 
+		f_fish_shop_id, f_fish_shop_name, f_fish_shop_main_img
+		FROM t_fish_shop 
+		WHERE f_uid=#{uid}
+		ORDER BY `f_fish_shop_name`
+	</select>
+	
+	
+
+	<select id="selectAllFishShop" resultMap="BaseResultMap">
+		SELECT * FROM t_fish_shop ORDER BY f_fish_shop_id
+	</select>
+	
+	<select id="selectFishShopAllByUid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT 
+		<include refid="base_column_list" /> 
+		FROM t_fish_shop 
+		WHERE f_uid=#{uid}
+		ORDER BY `f_fish_shop_name`
+	</select>
+	
+	<select id="queryList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select o5.*,o6.f_user_nickname as f_shop_nickname ,o6.f_user_realname as f_shop_realname 
+				,o6.f_user_phonenum as f_shop_phone_num
+				,if(o5.f_fish_shop_auth_sign_uid is null or o5.f_fish_shop_auth_sign_uid = 0 ,null ,o5.f_fish_shop_auth_sign_uid ) as f_partner_id
+		from 
+		(
+			select o3.*,o4.f_user_nickname as f_partner_nickname ,o4.f_user_realname as f_partner_realname 
+					,o4.f_user_phonenum as f_partner_phone_num 
+			from 
+			(
+				select o1.*,o2.f_uid as  f_partner_uid
+				from 
+				(
+				SELECT 
+					tu.f_user_nickname, tu.f_user_portriat,
+					<if test="uid != null">
+						zan.f_focus AS f_fish_shop_isPraise, collect.f_focus AS f_fish_shop_isCollect, 
+					</if>
+						collectt.collect_total AS f_fish_shop_collectNum,
+						zant.zan_total AS f_fish_shop_praiseNum, 
+					<include refid="sql_duration" /> 
+					<include refid="base_column_list" />
+				<include refid="sql_queryList" /> 
+				ORDER BY 
+					f_fish_shop_top DESC,
+					f_is_coupon DESC,
+					<if test="signUserid != null">
+						f_fish_shop_auth_status ASC,
+					</if>
+					f_fish_shop_auth_status DESC, 
+					<if test="lng != null and lat != null">
+						f_fish_shop_duration, 
+					</if>
+					<choose>
+						<when test='collect != null and collect == "ASC"'>
+							f_fish_shop_collectNum ASC, 
+						</when>
+						<when test='collect != null and collect == "DESC"'>
+							f_fish_shop_collectNum DESC, 
+						</when>
+					</choose>
+					<choose>
+						<when test="praise != null and praise == 'ASC'">
+							f_fish_shop_praiseNum ASC, 
+						</when>
+						<when test="praise != null and praise == 'DESC'">
+							f_fish_shop_praiseNum DESC, 
+						</when>
+					</choose>
+					<choose>
+						<when test="create != null and create == 'ASC'">
+							f_fish_shop_create_time ASC
+						</when>
+						<when test="create != null and create == 'DESC'">
+							f_fish_shop_create_time DESC
+						</when>
+						<otherwise>
+							f_fish_shop_create_time
+						</otherwise>
+					</choose>
+				
+				LIMIT #{startItem},#{pagesize}
+				) o1 left join t_partner o2 on o1.f_fish_shop_auth_sign_uid = o2.f_partner_id
+			)o3 left join t_user o4 on o3.f_partner_uid = o4.f_uid
+		)o5 left join t_user o6 on o5.f_uid = o6.f_uid
+	</select>
+	
+	<sql id="sql_queryList"> 
+		FROM t_fish_shop  AS t1
+			LEFT JOIN (
+					SELECT ttu.f_uid AS userid, ttu.f_user_nickname, ttu.f_user_portriat 
+					FROM t_user ttu
+				) AS tu ON tu.`userid` = t1.`f_uid`
+		<if test="uid != null">
+			LEFT JOIN (
+					SELECT 1 AS f_focus, f_fs_id 
+					FROM t_fish_shop_user_status 
+					WHERE f_uid = #{uid} AND f_type=0 AND f_status=0
+				) zan ON t1.f_fish_shop_id = zan.f_fs_id
+			LEFT JOIN (
+					SELECT 1 AS f_focus, f_fs_id 
+					FROM t_fish_shop_user_status 
+					WHERE f_uid = #{uid} AND f_type=1 AND f_status=0
+					GROUP BY f_fs_id
+				) collect ON t1.f_fish_shop_id = collect.f_fs_id
+		</if>
+			LEFT JOIN (
+					SELECT COUNT(0) AS collect_total, f_fs_id 
+					FROM t_fish_shop_user_status 
+					WHERE f_type=1 AND f_status=0 GROUP BY f_fs_id
+				) collectt ON t1.f_fish_shop_id = collectt.f_fs_id
+			LEFT JOIN (
+					SELECT COUNT(0) AS zan_total, f_fs_id 
+					FROM t_fish_shop_user_status 
+					WHERE f_type=0 AND f_status=0 GROUP BY f_fs_id
+				) zant ON t1.f_fish_shop_id = zant.f_fs_id
+		WHERE 1=1 
+			<if test="rtype != null and regionId != null">
+				<choose>
+					<when test="rtype == 1">
+						and f_fish_shop_province_id = #{regionId}			
+					</when>
+					<when test="rtype == 2">
+						and f_fish_shop_city_id = #{regionId}
+					</when>
+					<when test="rtype == 3">
+						and f_fish_shop_region_id = #{regionId}
+					</when>
+				</choose>	
+			</if>
+			<if test="authStatus != null">
+				<choose>
+					<when test="authStatus == 0">
+						AND f_fish_shop_auth_status=0
+					</when>
+					<when test="authStatus == 1">
+						AND (f_fish_shop_auth_status=1)
+					</when>
+					<when test="authStatus == 2">
+						AND f_fish_shop_auth_status=2
+					</when>
+				</choose>
+			</if>
+			<if test="status != null">
+				AND f_fish_shop_status = #{status}
+			</if>
+			<if test="type != null">
+				AND f_fish_shop_type = #{type}
+			</if>
+			<if test="signUserid != null">
+				AND f_fish_shop_auth_sign_uid = #{signUserid}
+			</if>
+			<if test="authList != null">
+				AND f_fish_shop_auth_status = 1
+			</if>
+			<if test="radius != null">
+				AND f_fish_shop_longitude &gt; #{minLng} AND f_fish_shop_longitude &lt; #{maxLng} AND 
+				f_fish_shop_latitude &gt; #{minLat} AND f_fish_shop_latitude &lt; #{maxLat}
+			</if>
+			<if test="keyword != null">
+				AND (
+	 				`f_fish_shop_name` like CONCAT('%', #{keyword},'%') OR 
+	 				`f_fish_shop_addr` like CONCAT('%', #{keyword},'%') OR 
+	 				`f_fish_shop_contact` like CONCAT('%', #{keyword},'%') OR 
+	 				`f_fish_shop_phone` like CONCAT('%', #{keyword},'%') OR 
+	 				`f_fish_shop_summary` like CONCAT('%', #{keyword},'%') OR 
+	 				`f_fish_shop_p_type` like CONCAT('%', #{keyword},'%') OR 
+	 				`f_fish_shop_p_brand` like CONCAT('%', #{keyword},'%') OR 
+	 				`f_fish_shop_sys_remarks` like CONCAT('%', #{keyword},'%')
+ 				)
+ 			</if>
+	</sql>
+	
+	<select id="queryListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(0)
+		<include refid="sql_queryList" /> 
+	</select>
+	
+	<select id="countCityFishShop" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) 
+		from t_fish_shop
+		where SUBSTR(`f_fish_shop_id`, 1, 6) = #{cityId}
+	</select>
+		
+	<insert id="insertFishShop" useGeneratedKeys="true" keyProperty="id" parameterType="FishShop">
+		insert into t_fish_shop
+		(`f_fish_shop_id`,`f_fish_shop_name`,`f_fish_shop_province_id`,`f_fish_shop_city_id`,
+		`f_fish_shop_region_id`,`f_fish_shop_addr`,`f_fish_shop_k_num`,`f_fish_shop_longitude`,
+		`f_fish_shop_latitude`,`f_fish_shop_main_img`,`f_fish_shop_resources`,`f_fish_shop_summary`,
+		`f_fish_shop_contact`,`f_fish_shop_phone`,`f_fish_shop_p_type`,`f_fish_shop_p_brand`,
+		`f_fish_shop_focus_count`,`f_fish_shop_auth_status`,`f_fish_shop_flag`,`f_fish_shop_sys_remarks`,
+		`f_fish_shop_create_time`, `f_fish_shop_type`, `f_fish_shop_status`, 
+		`f_fish_shop_auth_time_name`, 
+		`f_fish_shop_auth_time_sign`)
+		values
+		(#{id}, #{name}, #{provinceId}, #{cityId},
+		#{regionId}, #{addr}, #{kNum}, #{longitude}, 
+		#{latitude}, #{mainImg}, #{resources}, #{summary}, 
+		#{contact}, #{phone}, #{ptype}, #{pbrand}, 
+		#{focusCount}, #{authStatus}, #{flag}, #{sysRemarks}, 
+		CURRENT_TIMESTAMP, #{type}, #{status}, 
+		CURRENT_TIMESTAMP, 
+		CURRENT_TIMESTAMP)
+	</insert>
+	
+	<update id="updateFishShopById" parameterType="FishShop">
+ 		update t_fish_shop
+ 		<set>
+ 			<if test="name != null">
+ 				f_fish_shop_name = #{name},
+ 			</if>
+ 			<if test="provinceId != null">
+ 				f_fish_shop_province_id = #{provinceId},
+ 			</if>
+ 			<if test="cityId != null">
+ 				f_fish_shop_city_id = #{cityId},
+ 			</if>
+ 			
+ 			<if test="regionId != null">
+ 				f_fish_shop_region_id = #{regionId},
+ 			</if>
+ 			<if test="addr != null">
+ 				f_fish_shop_addr = #{addr},
+ 			</if>
+ 			<if test="kNum != null">
+ 				f_fish_shop_k_num = #{kNum},
+ 			</if>
+ 			<if test="longitude != null">
+ 				f_fish_shop_longitude = #{longitude},
+ 			</if>
+ 			
+ 			<if test="latitude != null">
+ 				f_fish_shop_latitude = #{latitude},
+ 			</if>
+ 			<if test="mainImg != null">
+ 				f_fish_shop_main_img = #{mainImg},
+ 			</if>
+ 			<if test="mainTopImg != null">
+ 				f_fish_shop_main_top_img = #{mainTopImg},
+ 			</if>
+ 			<if test="mainImgNone != null">
+ 				f_fish_shop_main_img_none = #{mainImgNone},
+ 			</if>
+ 			<if test="resources != null">
+ 				f_fish_shop_resources = #{resources},
+ 			</if>
+ 			<if test="summary != null">
+ 				f_fish_shop_summary = #{summary},
+ 			</if>
+ 			
+ 			<if test="contact != null">
+ 				f_fish_shop_contact = #{contact},
+ 			</if>
+ 			<if test="phone != null">
+ 				f_fish_shop_phone = #{phone},
+ 			</if>
+ 			<if test="ptype != null">
+ 				f_fish_shop_p_type = #{ptype},
+ 			</if>
+ 			<if test="pbrand != null">
+ 				f_fish_shop_p_brand = #{pbrand},
+ 			</if>
+ 			
+ 			<if test="flag != null">
+ 				f_fish_shop_flag = #{flag},
+ 			</if>
+ 			<if test="sysRemarks != null">
+ 				f_fish_shop_sys_remarks = #{sysRemarks},
+ 			</if>
+ 			<if test="status != null">
+ 				f_fish_shop_status = #{status},
+ 			</if>
+ 		</set>
+ 		where f_fish_shop_id = #{id}
+	</update>
+	
+	<update id="updateFishShopUidAuthStatus" parameterType="FishShop">
+ 		update t_fish_shop
+ 		<set>
+ 			<if test="uid != null">
+ 				f_uid = #{uid},
+ 			</if>
+ 			<if test="signUid != null">
+ 				f_fish_shop_auth_sign_uid = #{signUid},
+ 			</if>
+ 			<if test="signUid == null">
+ 				f_fish_shop_auth_sign_uid = null,
+ 			</if>
+ 			<if test="authStatus != null and authStatus == 1">
+ 				f_fish_shop_auth_status = 1,
+ 				f_fish_shop_auth_time_name = CURRENT_TIMESTAMP,
+ 			</if>
+ 			<if test="authStatus != null and authStatus == 2">
+ 				f_fish_shop_auth_status = 2,
+ 				f_fish_shop_auth_time_sign = CURRENT_TIMESTAMP,
+ 			</if>
+ 		</set>
+ 		where f_fish_shop_id = #{id}
+	</update>
+	
+	<update id="updateFishShopFocusCount" parameterType="java.lang.Long">
+		UPDATE `t_fish_shop` SET f_fish_shop_focus_count = (
+			SELECT COUNT(0) FROM `t_fish_shop_user_status` WHERE `f_fs_id`=#{id} AND `f_type`=1
+		) WHERE f_fish_shop_id=#{id}
+	</update>
+	
+	<select id="selectMaxTop" resultType="java.lang.Integer">
+		SELECT MAX(f_fish_shop_top) FROM t_fish_shop
+	</select>
+	
+	<update id="updateFishShopTop" parameterType="java.util.Map">
+ 		update t_fish_shop 
+ 		set f_fish_shop_top = #{top} 
+ 		where f_fish_shop_id = #{id}
+	</update>
+	
+	<select id="getAllFSUSShopId" resultMap="UserStatusResultMap">
+		SELECT DISTINCT(`f_fs_id`) f_fs_id FROM `t_fish_shop_user_status`
+	</select>
+	
+	<select id="selectFishShopUserStatus" parameterType="FishShopUserStatus" resultMap="UserStatusResultMap">
+		SELECT f_fus_id, f_type, f_fs_id, f_uid, f_status, f_create_time
+		FROM t_fish_shop_user_status
+		WHERE f_type=#{fusType} AND f_fs_id=#{fsId} AND f_uid=#{uid} AND f_status=0
+		ORDER BY f_create_time DESC 
+		LIMIT 0,1 
+	</select>
+	
+	<select id="selectUidsByShopId" parameterType="java.lang.Long" resultType="java.lang.Long">
+		SELECT distinct f_uid
+		FROM t_fish_shop_user_status
+		where f_fs_id = #{shopId} and f_type = 1 and f_status = 0
+	</select>
+	            
+	<update id="deleteFishShopUserStatus" parameterType="FishShopUserStatus">
+ 		update t_fish_shop_user_status
+ 		SET f_status = 1
+ 		WHERE f_type=#{fusType} AND f_fs_id=#{fsId} AND f_uid=#{uid}
+	</update>
+	
+	<delete id="deleteFishShopUserStatus4HD" parameterType="FishShopUserStatus">
+ 		DELETE FROM t_fish_shop_user_status
+ 		WHERE f_type=#{fusType} AND f_fs_id=#{fsId} AND f_uid=#{uid}
+	</delete>
+	
+	<insert id="insertFishShopUserStatus" parameterType="FishShopUserStatus" useGeneratedKeys="true" keyProperty="fusId" >
+		insert into t_fish_shop_user_status (f_type, f_fs_id, f_uid)
+		values (#{fusType}, #{fsId}, #{uid})
+	</insert>
+	
+	<update id="updateFishShopScale" parameterType="FishShop">
+ 		update t_fish_shop
+ 		SET f_fish_shop_scale = #{scale}
+ 		WHERE f_fish_shop_id = #{id}
+	</update>
+	
+	<delete id="deleteFishShopSign" parameterType="FishShop">
+ 		delete from t_fish_shop_sign
+ 		where f_fish_shop_id = #{id}
+ 		<if test="signUid != null">
+			AND f_uid = #{signUid}
+		</if>
+	</delete>
+	
+	<update id="updateOpenCoupon" parameterType="java.lang.Long">
+		update t_fish_shop
+ 		SET f_is_open_coupon = true
+ 		WHERE f_fish_shop_id = #{shopId}
+	</update>
+	
+	<update id="updateIsCouponAndCount" parameterType="java.util.Map">
+		update t_fish_shop
+ 		SET f_coupon_count = #{couponCount}
+ 			,f_is_coupon = #{isCoupon}
+ 		WHERE f_fish_shop_id = #{shopId}
+	</update>
+	
+	
+	<select id="selectPartnerList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT `f_fish_shop_id`, `f_fish_shop_name`, `f_fish_shop_addr`, `f_fish_shop_main_img`, 
+			CASE f_fish_shop_auth_status WHEN 1 THEN 0 WHEN 2 THEN 0 END AS f_sign_status,
+			<include refid="sql_duration" /> 
+			tfsSign.f_apply_sign AS f_sign_isApply, tfsSign.sign_userid AS f_sign_userid,
+			if(tfsSign.f_apply_sign =3,f_trading_reward_amount,null) AS f_trading_reward_amount 
+			<include refid="sql_selectPartnerList" />
+		ORDER BY 
+			f_fish_shop_duration
+		LIMIT #{startItem},#{pagesize}
+	</select>
+	
+	
+	<sql id="sql_selectPartnerList">
+	FROM (SELECT *
+	      FROM `t_fish_shop`
+	      LEFT JOIN t_partner_shop_reward_review a ON a.f_shop_id = f_fish_shop_id 
+	      WHERE 1=1 > 0 AND
+	            `f_fish_shop_city_id` IN 
+	            (
+		            <if test="cityId != null">
+		            	#{cityId}
+		 			</if>
+		            <if test="cityId == null">
+		            	SELECT `f_region_num` FROM `t_sys_cfg_region` WHERE `f_open_flag` IN(2, 3)
+		 			</if>
+	            )
+	            and f_fish_shop_id NOT IN 
+							(SELECT `f_business_id` AS f_fish_shop_id FROM t_partner_over WHERE `f_older_partner_id` =#{partnerId} AND `f_business_type` = 0)
+	     ) AS t1 
+	     LEFT JOIN (
+			SELECT CASE tfsSign1.f_fish_shop_status WHEN 0 THEN 1 WHEN 1 THEN 3 WHEN 2 THEN 4 WHEN 3 THEN 2 else 1 END AS f_apply_sign, tfsSign1.`f_fish_shop_id` AS sign_shop_id, tfsSign1.f_uid AS sign_userid, 
+					ttu1.f_user_nickname AS sign_nickname, ttu1.f_user_portriat AS sign_portriat 
+			FROM t_fish_shop_sign AS tfsSign1 
+				LEFT JOIN `t_partner` AS ttp ON ttp.f_partner_id = tfsSign1.`f_uid` 
+				LEFT JOIN `t_user` AS ttu1 ON ttu1.`f_uid` = ttp.f_uid 
+		) tfsSign ON t1.f_fish_shop_id = tfsSign.sign_shop_id 
+	</sql>
+
+	<select id="selectPartnerListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(0)
+		<include refid="sql_selectPartnerList" /> 
+	</select>
+	
+	<update id="updateIsAuthCoupon" parameterType="java.util.Map">
+		update t_fish_shop
+		set f_is_auth_coupon = #{isAuthCoupon}
+		<if test="!isAuthCoupon">
+			, f_is_coupon = false
+			, f_is_open_coupon = false
+			, f_coupon_count = 0
+		</if>
+ 		where f_fish_shop_id = #{shopId}
+	</update>
+	
+	
+	<update id="updatePartnerIdFishShopById" parameterType="java.lang.Long" >
+		update t_fish_shop
+		set f_fish_shop_auth_sign_uid = 0
+ 		where f_fish_shop_id = #{shopId}
+	</update>
+	
+	<update id="updatePartnerIdIsNull" parameterType="java.lang.Integer">
+		update t_fish_shop
+		set f_fish_shop_auth_sign_uid = 0
+		where f_fish_shop_auth_sign_uid = #{partnerId}
+	</update>
+		
+	<select id="selectCollectList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT tfs.* , f_fish_shop_collect_time, tu.f_user_nickname, 
+			<include refid="sql_duration" />
+			collectt.collect_total AS f_fish_shop_collectNum, 
+			collect.f_focus AS f_fish_shop_isCollect
+		<include refid="sql_selectCollectListList" /> 
+		ORDER BY f_fish_shop_collect_time DESC
+		LIMIT #{startItem},#{pagesize}
+	</select>
+	
+	<sql id="sql_selectCollectListList"> 
+		FROM (
+			SELECT f_fs_id, f_create_time AS f_fish_shop_collect_time
+			FROM `t_fish_shop_user_status` 
+			WHERE f_uid=#{uid} AND f_type=1 AND f_status=0
+		) AS tfsus 
+		LEFT JOIN `t_fish_shop` AS tfs ON tfsus.f_fs_id = tfs.`f_fish_shop_id`
+		LEFT JOIN (
+			SELECT ttu.f_uid AS userid, ttu.f_user_nickname, ttu.f_user_portriat 
+			FROM t_user ttu
+		) AS tu ON tu.`userid` = tfs.`f_uid`
+		LEFT JOIN (
+			SELECT COUNT(0) AS collect_total, f_fs_id 
+			FROM t_fish_shop_user_status 
+			WHERE f_type=1 AND f_status=0
+			GROUP BY f_fs_id
+		) collectt ON tfs.f_fish_shop_id = collectt.f_fs_id
+		LEFT JOIN (
+			SELECT 1 AS f_focus, f_fs_id 
+			FROM t_fish_shop_user_status 
+			WHERE f_uid = #{uid} AND f_type=1 AND f_status=0
+		) collect ON tfs.f_fish_shop_id = collect.f_fs_id
+	</sql>
+	
+	<select id="selectCollectListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(0)
+		<include refid="sql_selectCollectListList" /> 
+	</select>
+	
+	<update id="updateLogo" parameterType="FishShop">
+		update t_fish_shop
+		set f_fish_shop_logo = 1
+		where f_fish_shop_id = #{id}	
+	</update>
+	
+	<select id="queryDistributionList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select * from (select 
+		 <include refid="baseColumnlist" />,
+		 <include refid="sql_duration" />f_shop_site_status,u.f_user_nickname,u.f_user_portriat
+		from t_fish_shop s
+		LEFT JOIN `t_user` u ON u.f_uid = s.`f_uid` 
+		left join t_shop_site_distribution on s.f_fish_shop_id=f_fish_shopid and f_fish_siteid = #{siteId}
+		where s.f_fish_shop_status = 1
+		)a
+		where a.f_fish_shop_auth_status in(1,2) and a.f_fish_shop_duration &lt; 10000
+		<if test="start &gt; 0">
+			and a.f_fish_shop_duration &gt; #{start}
+		</if>
+		order by
+		a.f_shop_site_status desc,a.f_fish_shop_duration ASC 
+		<if test="size!=null">
+			limit #{size}
+		</if>
+	</select>
+	<update id="updateFishShopAuthUid" parameterType="java.lang.Long">
+		update t_fish_shop
+		set f_fish_shop_auth_sign_uid = null
+		where f_fish_shop_id = #{shopId}
+	</update>
+	<select id="queryFishShopStatusByPartner" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select * from t_fish_shop where f_fish_shop_auth_status = 2 and f_fish_shop_auth_sign_uid =#{partnerId} AND f_fish_shop_status =1
+	</select>
+	<select id="queryFishSignShopStatusByPartner" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select 
+		a.`f_fish_shop_id`,b.`f_uid`,a.f_uid AS f_sign_userid ,`f_fish_shop_name`,`f_fish_shop_province_id`,`f_fish_shop_city_id`,
+		`f_fish_shop_region_id`,`f_fish_shop_addr`,`f_fish_shop_k_num`,`f_fish_shop_longitude`,
+		`f_fish_shop_latitude`,`f_fish_shop_main_img`,`f_fish_shop_resources`,`f_fish_shop_summary`,
+		`f_fish_shop_contact`,`f_fish_shop_phone`,`f_fish_shop_p_type`,`f_fish_shop_p_brand`,
+		`f_fish_shop_focus_count`,`f_fish_shop_flag`,`f_fish_shop_sys_remarks`,
+		`f_fish_shop_create_time`,`f_fish_shop_update_time`, `f_fish_shop_type`, `f_fish_shop_auth_time_name`,
+		`f_fish_shop_top`, `f_fish_shop_scale`, a.`f_fish_shop_status`, `f_fish_shop_auth_time_sign`, 
+		`f_fish_shop_auth_sign_uid`,f_is_open_coupon,f_is_coupon,f_coupon_count,f_is_auth_coupon, 
+		f_fish_shop_main_top_img, f_fish_shop_main_img_none
+		 from t_fish_shop_sign a LEFT JOIN t_fish_shop b on 
+		 a.f_fish_shop_id=b.f_fish_shop_id where a.f_uid = #{partnerId} and a.f_fish_shop_status = #{status} and b.f_fish_shop_status =1
+	</select>
+	
+</mapper>

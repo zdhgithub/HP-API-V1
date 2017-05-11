@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.UserShareCityConfigMapper">
+	
+	<resultMap type="userShareCityConfig" id="baseResultMap">
+		<result column="f_city_id" property="cityId"/>
+		<result column="f_limit" property="limit"/>
+		<result column="f_amount" property="amount"/>
+		<result column="f_status" property="status"/>
+		<result column="f_create_time" property="createTime"/>
+		<result column="f_desc" property="desc"/>
+	</resultMap>
+
+	<sql id="base_column">
+		f_city_id,f_limit,f_amount,f_status,f_create_time,f_desc
+	</sql>
+
+	<select id="countShareCity" resultType="java.lang.Integer">
+		select count(*)
+		from t_user_share_city_config
+	</select>
+
+	<select id="selectByCityId" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select *
+		from  t_user_share_city_config
+		where f_city_id = #{cityId}
+	</select>
+	
+	<select id="selectAll" parameterType="java.util.Map" resultMap="baseResultMap">
+		select *
+		from  t_user_share_city_config
+		limit #{index},#{size}
+	</select>
+	
+	<update id="updatePojo" >
+		update t_user_share_city_config
+		set f_limit = #{limit},
+			f_amount = #{amount},
+			f_status = #{status},
+			f_desc = #{desc}
+		where f_city_id = #{cityId}
+		
+	</update>
+	
+	<insert id="insertPojo">
+		insert into t_user_share_city_config(
+			<include refid="base_column" />
+		)
+		values(
+			#{cityId},
+			#{limit},
+			#{amount},
+			#{status},
+			#{createTime},
+			#{desc}
+		)
+	</insert>
+	
+	<delete id="deleteShareCity" parameterType="java.lang.Integer">
+		delete from t_user_share_city_config where f_city_id = #{cityId}
+	</delete>
+
+</mapper>

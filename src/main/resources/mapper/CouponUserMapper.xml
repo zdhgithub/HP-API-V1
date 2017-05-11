@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CouponUserMapper">
+	<resultMap type="CouponUser" id="couponUserResultMap">
+		<result column="f_coupon_user_id" property="id" />
+		<result column="f_coupon_user_uid" property="userId" />
+		<result column="f_coupon_user_cid" property="couponId" />
+		<result column="f_coupon_user_indate_time" property="indateTime" />
+		<result column="f_coupon_user_get_time" property="getTime" />
+		<result column="f_coupon_user_used_time" property="usedTime" />
+		<result column="f_coupon_user_status" property="status" />
+		<collection property="coupon" ofType="Coupon">
+			<id column="f_coupon_cid" property="id" />
+			<result column="f_coupon_type" property="type" />
+			<result column="f_coupon_name" property="name" />
+			<result column="f_coupon_use_rule" property="useRule"/>
+			<result column="f_coupon_description" property="description" />
+			<result column="f_coupon_money" property="money" />
+			<result column="f_coupon_indate" property="indate" />
+			<result column="f_coupon_indate_time" property="indateTime" />
+			<result column="f_coupon_send_num" property="sendNum" />
+			<result column="f_coupon_send_date" property="sendTime" />
+			<result column="f_coupon_receive_way" property="receiveWay" />
+<!-- 			<result column="f_coupon_use_condition" property="useCondition" /> -->
+			<result column="f_coupon_flag" property="flag" />
+<!-- 			<result column="f_coupon_status" property="status" /> -->
+			<result column="f_coupon_fish_site_id" property="fishSiteId" />
+			<result column="f_coupon_create_time" property="createTime" />
+		</collection>
+	</resultMap>
+	<sql id="couponUserSql">
+		f_coupon_user_id,
+		f_coupon_user_uid,
+		f_coupon_user_cid,
+		f_coupon_user_indate_time,
+		f_coupon_user_get_time,
+		f_coupon_user_used_time,
+		f_coupon_user_status
+	</sql>
+	
+	<select id="countUnusedCoupons" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			t_coupon_user t
+		WHERE
+			t.f_coupon_user_uid = #{userId}
+		AND t.f_coupon_user_status = #{status}
+	</select>
+	
+	<select id="selectById" parameterType="int" resultMap="couponUserResultMap">
+		SELECT
+			<include refid="couponUserSql"></include>,
+			<include refid="cn.heipiao.api.mapper.CouponMapper.couponSql"></include>
+		FROM
+			t_coupon_user u
+		LEFT JOIN t_coupon c ON u.f_coupon_user_cid = c.f_coupon_cid
+		<where>
+			u.f_coupon_user_id = #{id}
+		</where>
+	</select>
+	
+	<select id="selectList" resultMap="couponUserResultMap">
+		SELECT
+			<include refid="couponUserSql"></include>,
+			<include refid="cn.heipiao.api.mapper.CouponMapper.couponSql"></include>
+		FROM
+			t_coupon_user u
+		LEFT JOIN t_coupon c ON u.f_coupon_user_cid = c.f_coupon_cid
+		<where>
+			<if test="userId!=null">
+				and f_coupon_user_uid = #{userId}
+			</if>
+			<if test="status!=null">
+				and f_coupon_user_status = #{status}
+			</if>
+			<if test="couponId!=null">
+				and f_coupon_user_cid = #{couponId}
+			</if>
+		</where>
+		ORDER BY f_coupon_user_get_time desc
+		<if test="start!=null and size!=null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="countSendedCoupons" resultType="int">
+		SELECT
+			COUNT(c.f_coupon_cid)
+		FROM
+			t_coupon c
+		LEFT JOIN t_coupon_user u ON c.f_coupon_cid = u.f_coupon_user_cid
+		WHERE
+			c.f_coupon_fish_site_id IS NOT NULL
+	</select>
+	
+	<select id="countSendedCouponMoney" resultType="double">
+		SELECT
+			SUM(c.f_coupon_money)
+		FROM
+			t_coupon c
+		LEFT JOIN t_coupon_user u ON c.f_coupon_cid = u.f_coupon_user_cid
+		WHERE
+			c.f_coupon_fish_site_id IS NOT NULL
+	</select>
+
+	<insert id="insert" parameterType="CouponUser" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_coupon_user
+		(
+		<include refid="couponUserSql"></include>
+		)
+		values(
+		null,#{userId},#{couponId},#{indateTime},#{getTime},#{usedTime},#{status}
+		)
+	</insert>
+	
+	<insert id="inserts">
+		insert into t_coupon_user values
+		
+		<foreach collection="list" item="couponUser" separator=",">
+			(null,#{couponUser.userId},#{couponUser.couponId},#{couponUser.indateTime},#{couponUser.getTime},#{couponUser.usedTime},#{couponUser.status})
+		</foreach>
+		
+	</insert>
+	
+	<update id="updateById" parameterType="CouponUser">
+		UPDATE t_coupon_user
+			SET f_coupon_user_status = #{status}
+			,f_coupon_user_used_time = #{usedTime}
+			WHERE
+				f_coupon_user_id = #{id}
+	</update>
+	
+	<update id="updateCouponByUid" parameterType="java.util.Map">
+		update t_coupon_user 
+		set f_coupon_user_indate_time = #{indateTime}
+		where f_coupon_user_uid = #{uid}
+	</update>
+	
+</mapper>

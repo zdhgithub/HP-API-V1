@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.CouponUser10Mapper">
+	<resultMap type="CouponUser" id="couponsResultMap">
+		<result column="f_cid" property="id" />
+		<result column="f_uid" property="userId" />
+		<result column="f_cid_0" property="couponId" />
+		<result column="f_deadline" property="indateTime" />
+		<result column="f_get_time" property="getTime" />
+		<result column="f_use_time" property="usedTime" />
+		<result column="f_status" property="status" />
+		<collection property="coupon" ofType="Coupon">
+			<id column="f_cid" property="id" />
+			<result column="f_coupon_name" property="name" />
+			<result column="f_use_rule" property="useRule"/>
+			<result column="f_desc" property="description" />
+			<result column="f_coupon_fee" property="money" />
+			<result column="f_coupon_indate" property="indate" />
+		</collection>
+	</resultMap>
+	
+	<sql id="couponUserSql">
+		f_cid,  f_cid as f_cid_0 ,f_cid as f_cid_1 ,f_uid ,f_coupon_name, f_coupon_fee, f_use_rule, f_use_time,
+		f_deadline, f_desc ,f_get_time, f_category, f_status
+	</sql>
+	
+	<select id="selectAll" resultMap="couponsResultMap">
+		select 
+		<include refid="couponUserSql" /> 
+		from t_coupons
+	</select>
+	
+	<select id="selectByUid" parameterType="java.util.Map" resultMap="couponsResultMap">
+		select 
+		<include refid="couponUserSql" /> 
+		from t_coupons
+		where f_uid = #{uid}
+			and f_status = #{status}
+		order by f_cid desc
+		limit #{start},#{size}
+	</select>
+	
+	<select id="countUnusedCoupons" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			t_coupons
+		WHERE f_uid = #{uid}
+			and f_status = #{status}
+	</select>
+	
+	<select id="getUsableCouponsByUser" parameterType="java.util.Map" resultMap="couponsResultMap">
+		(select 
+		<include refid="couponUserSql" />
+		from t_coupons
+		where f_uid = #{uid} and f_status = 0
+				and f_category <![CDATA[<]]> 2 
+				and f_use_rule <![CDATA[<=]]> #{smoney}
+				)
+		UNION 
+		(
+			SELECT
+			c.f_cid,
+			c.f_cid AS f_cid_0,
+			c.f_cid AS f_cid_1,
+			c.f_uid,
+			f_coupon_name,
+			f_coupon_fee,
+			f_use_rule,
+			f_use_time,
+			f_deadline,
+			f_desc,
+			f_get_time,
+			f_category,
+			f_status
+		from t_coupons c LEFT JOIN t_site_coupons_record s ON c.f_cid = s.f_cid
+				where c.f_uid = #{uid} and c.f_status = 0
+						and c.f_category = 2 
+						and c.f_use_rule <![CDATA[<=]]> #{smoney}
+		and s.f_site_id = #{siteId}
+		)
+	</select>
+	
+</mapper>

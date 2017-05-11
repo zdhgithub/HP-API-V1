@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ActivityArticleMapper">
+
+	<resultMap type="activityArticle" id="baseResultMap">
+		<id column="f_id" property="id" />
+		<result column="f_cid" property="cid" />
+		<result column="f_title" property="title" />
+		<result column="f_content" property="content" />
+		<result column="f_type" property="type" />
+		<result column="f_banner" property="banner" />
+		<result column="f_sort" property="sort" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_is_video" property="isVideo" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+		f_id,f_cid,f_title,f_content,f_type,f_banner,f_sort,f_create_time,f_is_video
+	</sql>
+
+	<select id="selectByCid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_activity_article
+		where f_cid = #{cid} 
+	</select>
+	
+	<select id="selectFilterByCid" parameterType="java.util.Map" resultMap="baseResultMap">
+		select  f_id,f_cid,f_title,f_type,f_banner,f_create_time,f_is_video
+		from t_activity_article
+		where f_cid = #{cid} 
+		order by f_sort asc 
+	</select>
+	
+	<select id="selectById" parameterType="java.lang.Long" resultMap="baseResultMap">
+		select * 
+		from t_activity_article
+		where f_id = #{id} 
+	</select>
+
+	<insert id="insertPojo" useGeneratedKeys="true" keyProperty="id">
+		insert into t_activity_article(
+			<include refid="baseColumn" />
+		)values(
+			#{id},
+			#{cid},
+			#{title},
+			#{content},
+			#{type},
+			#{banner},
+			#{sort},
+			#{createTime},
+			#{isVideo}
+		)
+	</insert>	
+	
+	<update id="updatePojo">
+		update t_activity_article
+		<set>
+			<if test="title != null">
+			   f_title = #{title},
+			</if>
+			<if test="content != null">
+			   f_content = #{content},
+			</if>
+			<if test="type != null">
+			   f_type = #{type},
+			</if>
+			<if test="banner != null">
+			   f_banner = #{banner},
+			</if>
+			<if test="sort != null">
+			   f_sort = #{sort},
+			</if>
+			<if test="isVideo != null">
+			   f_is_video = #{isVideo},
+			</if>
+		</set>
+		where f_id = #{id}
+	</update>
+	
+	<delete id="deleteById">
+		delete
+		from t_activity_article
+		where f_id = #{id}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FishShopSignMapper">
+	<resultMap type="FishShopSign" id="BaseResultMap">
+		<id column="f_fish_shop_id" property="shopId" />
+		<result column="f_uid" property="partnerId" />
+		<result column="f_fish_shop_sign_time" property="signTime" />
+		<result column="f_fish_shop_status" property="signStatus"/> 
+	</resultMap>
+
+	<sql id="BaseSql">
+		f_fish_shop_id,f_uid,f_fish_shop_sign_time
+	</sql>
+
+	<select id="selectList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="BaseSql"></include>
+		FROM
+		t_fish_shop_sign
+		<where>
+			<if test="partnerId!=null">
+				f_uid = #{partnerId}
+			</if>		
+		</where>
+	</select>
+
+	<select id="selectOne" resultMap="BaseResultMap" parameterType="long">
+		SELECT * FROM t_fish_shop_sign WHERE f_fish_shop_id = #{shopId}
+	</select>
+	
+	<select id="selectMax" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_fish_shop_sign WHERE f_uid = #{partnerId}
+	</select>
+
+	<insert id="insert" parameterType="FishShopSign">
+		INSERT INTO t_fish_shop_sign(f_fish_shop_id,f_uid,f_fish_shop_sign_time)
+		VALUES(#{shopId},#{partnerId},#{signTime});
+	</insert>
+	<update id="update" parameterType="java.util.Map">
+		UPDATE t_fish_shop_sign
+		SET f_fish_shop_sign_time = #{signTime},f_fish_shop_status = #{signStatus}
+		<if test="partnerId !=null">
+			,f_uid = #{partnerId}
+		</if>
+		where f_fish_shop_id = #{shopId}
+	</update>
+	
+	<update id="updatePartner" parameterType="java.util.Map">
+		UPDATE t_fish_shop_sign
+		SET f_fish_shop_sign_time = #{signTime},f_fish_shop_status = #{signStatus}
+		,f_uid = null
+		where f_fish_shop_id = #{shopId}
+	</update>
+	
+	<delete id="delete" parameterType="long">
+		DELETE FROM t_fish_shop_sign
+		WHERE f_fish_shop_id = #{shopId}
+	</delete>
+	
+	<delete id="deletePartnerId" parameterType="java.lang.Integer">
+		delete from t_fish_shop_sign
+		where f_uid = #{partnerId}
+	</delete>
+
+</mapper>

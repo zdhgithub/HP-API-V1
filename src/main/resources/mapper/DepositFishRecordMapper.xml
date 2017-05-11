@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.DepositFishRecordMapper">
+	<resultMap type="DepositFishRecord" id="depositFishRecordRsultMap">
+		<result column="f_uid" property="userId" />
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_fish_site_id" property="siteId" />
+		<result column="f_direction" property="direction" />
+		<result column="f_trade_money" property="tradeMoney" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_user_portriat" property="portriat" />
+	</resultMap>
+
+	<sql id="depositFishRecordsql">
+		f_uid,f_fish_site_id,f_direction,f_trade_money,f_create_time
+	</sql>
+
+	<sql id="depositFishRecordsql2">
+		d.f_uid,d.f_fish_site_id,d.f_direction,d.f_trade_money,d.f_create_time,u.f_user_portriat,u.f_user_nickname
+	</sql>
+	<select id="countRecords" parameterType="int" resultType="int">
+		SELECT COUNT(f_uid) FROM t_deposit_fish_record WHERE f_fish_site_id = #{siteId}
+	</select>
+	<select id="selectList" resultMap="depositFishRecordRsultMap">
+		SELECT
+		<include refid="depositFishRecordsql2"></include>
+		FROM t_deposit_fish_record d ,t_user u
+		<where>
+			d.f_uid = u.f_uid
+			<if test="userId != null">
+				and d.f_uid = #{userId}
+			</if>
+			<if test="siteId != null">
+				and d.f_fish_site_id = #{siteId}
+			</if>
+			<if test="direction != null">
+				and d.f_direction = #{direction}
+			</if>
+			<if test="tradeMoney != null">
+				and d.f_trade_money = #{tradeMoney}
+			</if>
+			<if test="createTime != null">
+				and d.f_create_time = #{createTime}
+			</if>
+		</where>
+		<choose>
+			<when test="asc != null and order!=null">
+				ORDER BY ${order} asc
+			</when>
+			<when test="desc != null and order!=null">
+				ORDER BY ${order} desc
+			</when>
+		</choose>
+		<if test="start != null and size != null">
+			LIMIT #{start},#{size}
+		</if>
+	</select>
+
+	<insert id="insert" parameterType="DepositFishRecord">
+		insert into t_deposit_fish_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				f_uid,
+			</if>
+			<if test="siteId != null">
+				f_fish_site_id,
+			</if>
+			<if test="direction != null">
+				f_direction,
+			</if>
+			<if test="tradeMoney != null">
+				f_trade_money,
+			</if>
+			<if test="createTime != null">
+				f_create_time,
+			</if>
+		</trim>
+		<trim prefix=" values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="siteId != null">
+				#{siteId},
+			</if>
+			<if test="direction != null">
+				#{direction},
+			</if>
+			<if test="tradeMoney != null">
+				#{tradeMoney},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+		</trim>
+	</insert>
+
+</mapper>

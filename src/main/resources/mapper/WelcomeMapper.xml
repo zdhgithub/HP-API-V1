@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.WelcomeMapper">
+
+	<resultMap id="BaseResultMap" type="Welcome">
+		<id column="f_welcome_id" jdbcType="INTEGER" property="welcomeId" />
+		<result column="f_terminal" jdbcType="INTEGER" property="terminal" />
+		<result column="f_but_show_flag" jdbcType="INTEGER" property="butShowFlag" />
+		<result column="f_delay_time" jdbcType="INTEGER" property="delayTime" />
+		<result column="f_content" jdbcType="VARCHAR"  property="content" />
+		<result column="f_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+		<result column="f_updatetime_tools" jdbcType="TIMESTAMP" property="updatetimeTools" />
+	</resultMap>
+	
+	<select id="selectAll"  resultMap="BaseResultMap">
+		SELECT * FROM t_welcome;
+	</select>
+
+	<select id="selectByTerminal"  resultMap="BaseResultMap">
+		SELECT f_terminal, f_but_show_flag, f_delay_time, f_content, f_updatetime FROM t_welcome WHERE f_terminal=#{terminal}
+	</select>
+	
+	<update id="updateByTerminal" parameterType="Welcome">
+		UPDATE t_welcome 
+		<set>
+ 			<if test="content != null">
+ 				f_content = #{content},
+ 			</if>
+ 			<if test="updatetime != null">
+ 				f_updatetime = #{updatetime},
+ 			</if>
+ 			<if test="butShowFlag != null">
+ 				f_but_show_flag = #{butShowFlag},
+ 			</if>
+ 			<if test="delayTime != null">
+ 				f_delay_time = #{delayTime},
+ 			</if>
+ 		</set>
+		WHERE f_terminal=#{terminal}
+	</update>
+	
+</mapper>
+	

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ImpressionRecordMapper">
+	
+	<resultMap type="ImpressionRecord" id="BaseResultMap">
+		<result column="f_person_impression_uid" property="targetId"/>
+		<result column="f_shop_id" property="shopId"/>
+		<result column="f_uid" property="uid"/>
+		<result column="f_person_impression_label" property="label"/>
+	</resultMap>
+	
+	<sql id="BaseSql">f_person_impression_uid,f_shop_id,f_uid,f_person_impression_label</sql>
+	<select id="selectOne" resultMap="BaseResultMap">
+		SELECT
+			<include refid="BaseSql"></include>
+		FROM
+			t_person_impression_record
+		WHERE
+			f_person_impression_uid = #{targetId}
+		AND f_uid = #{uid}
+		AND f_person_impression_label = #{label}
+		and f_shop_id = #{shopId}
+	</select>
+	
+	<insert id="insert" parameterType="ImpressionRecord" >
+		INSERT INTO t_person_impression_record (
+			f_person_impression_uid,
+			f_shop_id,
+			f_person_impression_label,
+			f_uid
+		)
+		VALUES
+			(#{targetId},#{shopId}, #{label}, #{uid});
+	</insert>
+	
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FoundMenuMapper">
+
+	<resultMap type="foundMenu" id="baseResultMap">
+		<id column="f_fid" property="fid" />
+		<result column="f_title" property="title" />
+		<result column="f_subtitle" property="subtitle" />
+		<result column="f_img" property="img" />
+		<result column="f_url" property="url" />
+		<result column="f_sort_no" property="sortNo" />
+		<result column="f_group" property="group" />
+		<result column="f_status" property="status" />
+		<result column="f_create_time" property="createTime"/>
+		<result column="f_type" property="type"/>
+		<result column="f_pid" property="pid"/>
+	</resultMap>
+	
+	<sql id="baseColnmu">
+		f_fid,f_title,f_subtitle,f_img,f_url,f_sort_no,f_group,f_status,f_create_time,f_type,f_pid
+	</sql>
+	
+	<select id="selectArticles" parameterType="java.util.Map" resultMap="baseResultMap">
+		SELECT
+			<include refid="baseColnmu"></include>
+		FROM
+			t_found_menu
+			WHERE f_type = 'article'
+		ORDER BY
+			f_sort_no DESC,
+			f_create_time DESC
+		limit #{start},#{size}
+	</select>
+	
+	<select id="selectAllByStatus" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select 
+		<include refid="baseColnmu" />
+		from t_found_menu 
+		where f_status = #{status}
+	</select>
+	
+	<select id="selectAll" resultMap="baseResultMap">
+		select 
+		<include refid="baseColnmu" />
+		from t_found_menu where f_pid is null
+	</select>
+	
+	<select id="selectSeconds" parameterType="int" resultMap="baseResultMap">
+		select 
+		<include refid="baseColnmu" />
+		from t_found_menu where f_pid = #{pid}
+	</select>
+	
+	<insert id="insertPojo" parameterType="foundMenu" >
+		insert into t_found_menu(f_title,f_subtitle,f_img,f_url,f_sort_no,f_group,f_status,f_create_time,f_type,f_pid)
+		values(#{title},#{subtitle},#{img},#{url},#{sortNo},#{group},#{status},#{createTime},#{type},#{pid})
+	</insert>
+	
+	<update id="updatePojo" parameterType="foundMenu">
+		update t_found_menu 
+		<set>
+			<if test="title != null">
+				f_title = #{title},
+			</if>
+			<if test="subtitle != null">
+				f_subtitle = #{subtitle},
+			</if>
+			<if test="url != null">
+				f_url = #{url},
+			</if>	
+			<if test="img != null">
+				f_img = #{img},
+			</if>
+			<if test="group != null">
+				f_group = #{group},
+			</if>	
+			<if test="status != null">
+				f_status = #{status},
+			</if>
+			<if test="sortNo != null">
+				f_sort_no = #{sortNo},
+			</if>
+			<if test="type != null">
+				f_type = #{type},
+			</if>
+			<if test="pid != null">
+				f_pid = #{pid},
+			</if>
+		</set>
+		where
+		f_fid = #{fid}
+	</update>
+	
+	<update id="updateList">
+		UPDATE t_found_menu
+		SET f_sort_no = NULL
+		WHERE
+			f_type = 'article'
+	</update>
+	
+	<delete id="deletePojo" parameterType="java.lang.Integer">
+		delete from t_found_menu where f_fid = #{fid}
+	</delete>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FishSiteSignMapper">
+	<resultMap type="FishSiteSign" id="BaseResultMap">
+		<id column="f_fish_site_id" property="siteId" />
+		<result column="f_partner_id" property="partnerId" />
+		<result column="f_fish_sign_time" property="signTime" />
+		<result column="f_fish_site_status" property="signStatus"/> 
+	</resultMap>
+
+	<sql id="BaseSql">
+		f_fish_site_id,f_partner_id,f_fish_sign_time,f_fish_site_status
+	</sql>
+
+	<select id="selectList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="BaseSql"></include>
+		FROM
+		t_fish_site_sign
+		<where>
+			<if test="partnerId!=null">
+				f_partner_id = #{partnerId}
+			</if>		
+		</where>
+	</select>
+
+	<select id="selectOne" resultMap="BaseResultMap" parameterType="Integer">
+		SELECT * FROM t_fish_site_sign WHERE f_fish_site_id = #{siteId}
+	</select>
+	
+	<select id="selectMax" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_fish_site_sign WHERE f_partner_id = #{partnerId}
+	</select>
+
+	<insert id="insert" parameterType="FishSiteSign">
+		INSERT INTO t_fish_site_sign(f_fish_site_id,f_partner_id,f_fish_sign_time,f_fish_site_status)
+		VALUES(#{siteId},#{partnerId},#{signTime},#{signStatus});
+	</insert>
+	<update id="update" parameterType="java.util.Map">
+		UPDATE t_fish_site_sign
+		SET f_fish_sign_time = #{signTime},f_fish_site_status = #{signStatus}
+		<if test="partnerId !=null">
+			,f_partner_id = #{partnerId}
+		</if>
+		where f_fish_site_id = #{siteId}
+	</update>
+	<delete id="delete" parameterType="Integer">
+		DELETE FROM t_fish_site_sign
+		WHERE f_fish_site_id = #{siteId}
+	</delete>
+	
+	<delete id="deletePartnerId" parameterType="java.lang.Integer">
+		delete from t_fish_site_sign
+		where f_partner_id = #{partnerId}
+	</delete>
+
+</mapper>

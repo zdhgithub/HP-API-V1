@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.RewardConfigMapper">
+
+	<resultMap type="RewardConfig" id="baseResultMap">
+		<result column="f_service_id" property="serviceId" />
+		<result column="f_max" property="max" />
+		<result column="f_min" property="min" />
+		<result column="f_once" property="once" />
+		<result column="f_twice" property="twice" />
+		<result column="f_more" property="more" />
+	</resultMap>
+
+	<sql id="baseColumn">
+		f_service_id,f_max,f_min,f_once,f_twice,f_more
+	</sql>
+
+	<select id="selectUnique" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_reward_config
+		where f_service_id = #{serviceId}
+			and f_max <![CDATA[>=]]> #{amount} and f_min <![CDATA[<]]> #{amount}
+	</select>
+
+	<select id="selectByServiceId" parameterType="java.lang.Integer" resultMap="baseResultMap">
+		select * 
+		from t_reward_config
+		where f_service_id = #{serviceId}
+	</select>
+
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.PersonImpressionMapper">
+	<resultMap type="PersonImpression" id="BaseResultMap">
+		<result column="f_person_impression_uid" property="uid" />
+		<result column="f_person_impression_shopId" property="shopId" />
+		<result column="f_person_impression_num" property="num" />
+		<result column="f_person_impression_status" property="status" />
+		<result column="f_person_impression_label" property="label" />
+	</resultMap>
+	<resultMap type="PersonImpression" id="BaseResultMap2">
+		<result column="f_person_field_uid" property="uid" />
+		<result column="f_shop_id" property="shopId" />
+		<result column="f_person_field_label" property="label" />
+	</resultMap>
+	
+	<sql id="BaseSql">
+		f_person_impression_uid,f_person_impression_shopId,f_person_impression_label,f_person_impression_num,f_person_impression_status
+	</sql>
+	
+	<sql id="BaseSql2">
+		f_person_field_uid,f_shop_id,f_person_field_label
+	</sql>
+	
+	<select id="selectList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+			<include refid="BaseSql"></include>
+		FROM
+			t_person_impression
+		<where>
+			f_person_impression_uid = #{uid}
+			and f_person_impression_shopId = #{shopId}
+			<if test="status!=null">
+				and f_person_impression_status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectListField" parameterType="java.util.Map" resultMap="BaseResultMap2">
+		SELECT <include refid="BaseSql2"></include> FROM t_person_field WHERE f_person_field_uid = #{uid}
+		and f_shop_id = #{shopId}
+	</select>
+	
+	<select id="selectOneField" resultMap="BaseResultMap2">
+		SELECT
+			<include refid="BaseSql2"></include>
+		FROM
+			t_person_field
+		WHERE
+			f_person_field_uid = #{uid}
+		AND f_person_field_label = #{label}
+		and f_shop_id = #{shopId}
+	</select>
+	
+	<select id="selectOne" resultMap="BaseResultMap">
+		SELECT
+			<include refid="BaseSql"></include>
+		FROM
+			t_person_impression
+		WHERE
+			f_person_impression_uid = #{uid}
+			and f_person_impression_shopId = #{shopId}
+		AND f_person_impression_label = #{label}
+	</select>
+	
+	<insert id="insert" parameterType="PersonImpression">
+		INSERT INTO t_person_impression VALUES(#{uid},#{shopId},#{label},#{num},#{status});
+	</insert>
+	
+	<insert id="insertField" parameterType="PersonImpression">
+		INSERT INTO t_person_field VALUES(#{uid},#{shopId},#{label});
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		UPDATE t_person_impression
+		<set>
+			<if test="status!=null">
+				f_person_impression_status = #{status},
+			</if>
+			<if test="num!=null">
+				f_person_impression_num = f_person_impression_num + 1,
+			</if>
+		</set>
+		WHERE
+			f_person_impression_uid = #{targetId}
+		AND f_person_impression_label = #{label}
+		and f_person_impression_shopId = #{shopId}
+	</update>
+	
+	<delete id="delete" >
+		DELETE
+		FROM
+			t_person_impression
+		WHERE
+			f_person_impression_uid = #{uid}
+		AND f_person_impression_label = #{label}
+		and f_person_impression_shopId = #{shopId}
+	</delete>
+	
+	<delete id="deleteField">
+		DELETE FROM t_person_field WHERE f_person_field_uid = #{uid} and f_person_field_label = #{label}
+		and f_shop_id = #{shopId}
+	</delete>
+</mapper>

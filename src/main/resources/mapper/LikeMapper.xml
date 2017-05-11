@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.LikeMapper">
+	<resultMap type="Likes" id="likeResultMap">
+		<result column="f_lid" property="lid" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_uid" property="userId" />
+		<result column="f_type" property="type" />
+	</resultMap>
+	
+	<sql id="likeSql">
+		f_lid,f_create_time,f_uid,f_type
+	</sql>
+	
+<!-- 	<select id="selectWhoLikesMe" parameterType="int" resultMap=""> -->
+<!-- 		SELECT -->
+<!-- 			l.f_lid, -->
+<!-- 			l.f_create_time, -->
+<!-- 			l.f_uid, -->
+<!-- 			l.f_type, -->
+<!-- 			u.f_user_nickname, -->
+<!-- 			u.f_user_portriat -->
+<!-- 		FROM -->
+<!-- 			t_likes l -->
+<!-- 		LEFT JOIN t_user u ON l.f_uid = u.f_uid -->
+<!-- 		WHERE l.f_type = 0 -->
+<!-- 		AND l.f_lid in(SELECT c.f_cid FROM t_comment c WHERE c.f_author = #{userId}) -->
+<!-- 	</select> -->
+	
+	<select id="selectAll" parameterType="int" resultMap="likeResultMap">
+		SELECT * FROM t_likes WHERE f_type = 1 AND f_lid = #{id}
+	</select>
+	
+	<select id="selectByUnionId" resultMap="likeResultMap">
+		SELECT
+		<include refid="likeSql"></include>
+		FROM t_likes t
+		WHERE t.f_uid = #{userId} and t.f_lid = #{shareId} and t.f_type = #{type}
+	</select>
+	
+	<select id="countLikes" resultType="long">
+		SELECT COUNT(*) FROM t_likes
+		t WHERE t.f_lid = #{id} and t.f_type = #{type}
+	</select>
+	
+	<insert id="insert" parameterType="Likes">
+		INSERT INTO t_likes
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="lid!=null">
+				f_lid,
+			</if>
+			<if test="createTime!=null">
+				f_create_time,
+			</if>
+			<if test="userId!=null">
+				f_uid,
+			</if>
+			<if test="type!=null">
+				f_type,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			<if test="lid!=null">
+				#{lid},
+			</if>
+			<if test="createTime!=null">
+				#{createTime},
+			</if>
+			<if test="userId!=null">
+				#{userId},
+			</if>
+			<if test="type!=null">
+				#{type},
+			</if>
+		</trim>
+	</insert>
+	
+	<delete id="deleteLikeById" parameterType="Likes">
+		DELETE FROM t_likes
+		WHERE f_lid = #{lid} and f_uid = #{userId} and f_type = #{type}
+	</delete>
+	
+</mapper>

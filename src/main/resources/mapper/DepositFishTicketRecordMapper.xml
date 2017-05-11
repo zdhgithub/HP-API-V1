@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.DepositFishTicketRecordMapper">
+
+	<resultMap type="DepositFishTicketRecord" id="baseResultMap">
+		<result column="f_uid" property="uid" />
+		<result column="f_tid" property="tid" />
+	</resultMap>
+
+	<sql id="base_column">
+		f_uid,f_tid
+	</sql>
+
+	<select id="selectById" resultMap="baseResultMap">
+		SELECT
+			<include refid="base_column"></include>
+		FROM
+			t_deposit_fish_ticket_record
+		WHERE
+			f_uid = #{uid}
+		AND f_tid = #{tid}
+	</select>
+
+	<insert id="insert" parameterType="DepositFishTicketRecord">
+		insert into t_deposit_fish_ticket_record(
+		<include refid="base_column" />
+		)
+		values(
+		#{uid},
+		#{tid}
+		)
+	</insert>
+
+</mapper>

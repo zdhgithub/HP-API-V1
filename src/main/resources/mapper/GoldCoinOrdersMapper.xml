@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.GoldCoinOrdersMapper">
+	
+	<resultMap type="goldCoinOrders" id="baseResultMap">
+		<id column="f_order_id" property="orderId"/>
+		<result column="f_uid" property="uid" />
+		<result column="f_orders_money" property="ordersMoney" />
+		<result column="f_giving_gold_coin" property="givingGoldCoin" />
+		<result column="f_pay_time" property="payTime" />
+		<result column="f_create_time" property="createTime" />
+		<result column="f_status" property="status" />
+		<result column="f_trade_no" property="tradeNo" />
+		<result column="f_trade_platform" property="tradePlatform" />
+		<result column="f_close_time" property="closeTime" />
+		<result column="f_where_is_app" property="whereIsApp" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_order_id,f_uid,f_orders_money, f_giving_gold_coin,f_pay_time, f_create_time, f_status,f_trade_no,
+		f_trade_platform,f_close_time,f_where_is_app
+	</sql>
+	
+	<select id="selectByOrderId" parameterType="java.lang.String" resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />
+		from t_gold_coin_orders
+		where f_order_id = #{orderId}
+	</select>
+	
+	<select id="selectByOrderIdAsLock" parameterType="java.lang.String" resultMap="baseResultMap">
+		select 
+		<include refid="base_column" />
+		from t_gold_coin_orders
+		where f_order_id = #{orderId} for update
+	</select>
+	
+	<insert id="insertPojo">
+		insert into t_gold_coin_orders(
+		<include refid="base_column" />
+		)
+		values(
+			#{orderId},
+			#{uid},
+			#{ordersMoney},
+			#{givingGoldCoin},
+			#{payTime},
+			#{createTime},
+			#{status},
+			#{tradeNo},
+			#{tradePlatform},
+			#{closeTime},
+			#{whereIsApp}
+		)
+	</insert>
+	
+	<update id="updatePojo">
+		update t_gold_coin_orders
+		<set>
+			<if test="payTime != null">
+				f_pay_time = #{payTime},
+			</if>
+			<if test="closeTime != null">
+				f_close_time = #{closeTime},
+			</if>
+			<if test="status != null">
+				f_status = #{status},
+			</if>
+			<if test="tradeNo != null">
+				f_trade_no = #{tradeNo},
+			</if>
+		</set>
+		where f_order_id = #{orderId}
+	</update>
+	
+	<update id="updateTimeoutOrders" parameterType="java.lang.String">
+		update t_gold_coin_orders 
+		set f_status = 2
+		where f_order_id = #{orderId}
+	</update>
+	
+	<select id="selectTimeoutOrders" parameterType="java.util.Map" resultType="java.lang.String">
+		select f_order_id
+		from t_gold_coin_orders
+		where f_status = 0 and f_create_time <![CDATA[<]]> #{date}
+		limit #{size}
+	</select>
+	
+</mapper>

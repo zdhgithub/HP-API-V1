@@ -1,0 +1,1196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FishSiteMapper">
+	<resultMap id="BaseResultMap" type="fishSite">
+		<id column="f_fish_site_id" jdbcType="INTEGER" property="fishSiteId" />
+		<result column="f_partner_id" jdbcType="INTEGER" property="partnerId" />
+		<result column="f_uid"  property="uid" />
+		<result column="f_named_time"  property="namedTime" />
+		<result column="f_fish_site_name" jdbcType="VARCHAR" property="fishSiteName" />
+		<result column="f_is_free" jdbcType="INTEGER" property="isFree" />
+		<result column="f_fish_site_type" jdbcType="VARCHAR" property="fishSiteType" />
+		<result column="f_fish_site_info" jdbcType="VARCHAR" property="fishSiteInfo" />
+		<result column="f_resources" jdbcType="VARCHAR" property="resources" />
+		<result column="f_region_id" jdbcType="INTEGER" property="regionId" />
+		<result column="f_city_id" jdbcType="INTEGER" property="cityId" />
+		<result column="f_province_id" jdbcType="INTEGER" property="provinceId" />
+		<result column="f_addr" jdbcType="VARCHAR" property="addr" />
+		<result column="f_contact_man" jdbcType="VARCHAR" property="contactMan" />
+		<result column="f_phone_num" jdbcType="VARCHAR" property="phoneNum" />
+		<result column="f_k_num" jdbcType="VARCHAR" property="kNum" />
+		<result column="f_is_buy_ticket" jdbcType="INTEGER" property="isBuyTicket" />
+		<result column="f_auth_type" jdbcType="INTEGER" property="authType" />
+		<result column="f_sys_remarks" jdbcType="VARCHAR" property="sysRemarks" />
+		<result column="f_grade" jdbcType="FLOAT" property="grade" />
+		<result column="f_main_img" jdbcType="VARCHAR" property="mainImg" />
+		<result column="f_main_top_img" jdbcType="VARCHAR" property="mainTopImg" />
+		<result column="f_main_img_none" jdbcType="VARCHAR" property="mainImgNone" />
+		<result column="f_status" jdbcType="INTEGER" property="status" />
+		<result column="f_flag" jdbcType="INTEGER" property="flag" />
+		<result column="f_create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="f_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="f_update_put_fish_time" jdbcType="TIMESTAMP" property="updatePutFishTime" />
+		<result column="f_longitude"  property="longitude" jdbcType="DOUBLE"/>
+		<result column="f_latitude"  property="latitude" jdbcType="DOUBLE"/>
+		<result column="f_label"  property="label" />
+		<result column="f_facility" property="facility" />
+		<result column="f_focus_count" property="focusCount" />
+		<result column="f_charge_desc" property="chargeDesc" />
+		<result column="f_back_fish_desc" property="backFishDesc" />
+		<result column="f_withdraw_rate"  property="withdrawRate" />
+		<result column="f_sign_status" property="signStatus" />
+		<result column="f_sign_time" property="signTime" />
+		<result column="f_category" property="category" />
+		<result column="f_fish_site_top" jdbcType="INTEGER" property="top" />
+		<result column="f_is_open_coupon" property="openCoupon" />
+		<result column="f_is_coupon" property="isCoupon" />
+		<result column="f_coupon_count" property="couponCount" />
+		<result column="f_is_auth_coupon" property="isAuthCoupon" />
+		<result column="f_fish_site_logo" property="logo" />
+		<result column="f_trading_reward_amount" property="transactionSum"/>
+		<result column="f_username" property="siteUserName"/>
+		<result column="f_user_nickname" property="siteNickName"/>
+		<result column="f_user_phonenum" property="sitePhonenum"/>
+		<result column="f_user_realname" property="siteRealName"/>
+		<result column="partnerRealName" property="partnerRealName"/>
+		<result column="partnerNickName" property="partnerNickName"/>
+		<result column="partnerPhone" property="partnerPhone"/>
+		<result column="partnerUserName" property="partnerUserName"/>
+		
+		<!-- 用户关注钓场标识 -->
+		<result column="f_focus"  property="focus" />
+		<result column="f_duration" property="duration" />
+		<!-- 渔具店配送状态 -->
+		<result column="f_shop_site_status" property="distributionStatus"/>
+		<!-- 钓场认领状态 -->
+		<result column="f_fish_site_status" property="isApply"/>
+	</resultMap>
+	
+	<resultMap type="FSPojo" id="FSPojoResultMap">
+		<result column="id" property="id"/>
+		<result column="img" property="img"/>
+		<result column="name" property="name"/>
+		<result column="addr" property="addr"/>
+		<result column="time" property="time"/>
+		<result column="status" property="status"/>
+	</resultMap>
+	
+	<resultMap id="BaseResultMap_2" type="fishSite">
+		<id column="f_fish_site_id" jdbcType="INTEGER" property="fishSiteId" />
+		<result column="f_fish_site_name"  property="fishSiteName" />
+		<result column="f_withdraw_rate"  property="withdrawRate" />
+	</resultMap>
+
+	<sql id="base_column_list"> f_fish_site_id,f_uid, f_partner_id, f_fish_site_name, f_is_free,
+		f_fish_site_type, f_fish_site_info, f_resources, f_region_id, f_city_id,f_province_id,f_addr,
+		f_contact_man, f_phone_num, f_k_num, f_is_buy_ticket, f_auth_type,
+		f_sys_remarks, f_grade, f_main_img, f_status, f_flag, f_create_time,
+		f_update_time,f_longitude,f_latitude,f_update_put_fish_time,f_label,f_facility,f_focus_count,
+		f_charge_desc,f_back_fish_desc,f_withdraw_rate,f_sign_status,f_sign_time,f_category,f_fish_site_top,
+		f_is_auth_coupon, f_main_top_img, f_main_img_none, f_fish_site_logo, f_named_time
+	</sql>
+	
+	<sql id="baseColumnList"> f_fish_site_id,s.f_uid, s.f_partner_id, f_fish_site_name, f_is_free,
+		f_fish_site_type, f_fish_site_info, f_resources, f_region_id, f_city_id,f_province_id,f_addr,
+		f_contact_man, f_phone_num, f_k_num, f_is_buy_ticket, f_auth_type,
+		f_sys_remarks, f_grade, f_main_img, f_status, f_flag, s.f_create_time,
+		f_update_time,f_longitude,f_latitude,f_update_put_fish_time,f_label,f_facility,f_focus_count,
+		f_charge_desc,f_back_fish_desc,f_withdraw_rate,f_sign_status,f_sign_time,f_category,f_fish_site_top,
+		f_is_auth_coupon, f_main_top_img, f_main_img_none, f_fish_site_logo, f_named_time,u.f_username,u.f_user_nickname,
+		u.f_user_phonenum,u.f_user_realname,a.partnerRealName,a.partnerNickName,a.partnerPhone,a.partnerUserName
+	</sql>
+	
+	<sql id="base_column_list_relevance">
+		f_fish_site_id,f_uid, f_partner_id, f_fish_site_name, f_is_free,
+				f_fish_site_type, f_fish_site_info, f_resources, f_region_id,f_city_id,f_province_id, f_addr,
+				f_contact_man, f_phone_num, f_k_num, f_is_buy_ticket, f_auth_type, f_main_top_img, f_main_img_none,
+				f_sys_remarks, f_grade, f_main_img, f_status, f_flag, f_create_time, f_fish_site_logo, f_named_time,
+				f_update_time,f_longitude,f_latitude,f_update_put_fish_time ,f_back_fish_desc,f_fish_site_top,
+				<if test="uid &gt; 0">
+					f_focus,
+				</if>
+				f_is_coupon,f_is_open_coupon,f_coupon_count,f_is_auth_coupon,
+				f_label,f_facility,
+				f_focus_count,f_charge_desc,
+				round(6370996.81 * 2 * asin(sqrt(
+				pow(sin(((#{lat} * PI() /180.0) - (f_latitude * PI() /180.0))/2),2) 
+				+ cos(#{lat} * PI() /180.0) 
+				* cos(f_latitude * PI() /180.0) 
+				* pow(sin(((#{lng}-f_longitude) * PI()/180.0)/2),2)))) as f_duration
+	</sql>
+	
+	<sql id="durationSql">
+		round(6370996.81 * 2 * asin(sqrt(
+				pow(sin(((#{lat} * PI() /180.0) - (f_latitude * PI() /180.0))/2),2) 
+				+ cos(#{lat} * PI() /180.0) 
+				* cos(f_latitude * PI() /180.0) 
+				* pow(sin(((#{lng}-f_longitude) * PI()/180.0)/2),2)))) as f_duration
+	</sql>
+	
+	<select id="getAllSiteUIDs" resultType="int">
+		(SELECT  f_uid FROM t_fish_site WHERE f_uid IS NOT NULL)
+		UNION
+		(SELECT  f_uid FROM t_fish_shop WHERE f_uid IS NOT NULL)
+	</select>
+	<select id="getFishSiteUIDs" resultType="int">
+		SELECT DISTINCT f_uid FROM t_fish_site WHERE f_uid IS NOT NULL
+	</select>
+	
+	<select id="isExistsNormal" parameterType="java.lang.Long" resultType="boolean">
+		select if(count(*) > 0,true,false)
+		from t_fish_site
+		where f_uid = #{uid} and f_status = 1
+		limit 1
+	</select>
+	
+	<select id="selectAllWhereUidNotNull" resultType="long">
+		SELECT f_fish_site_id FROM t_fish_site WHERE f_uid is NOT null		
+	</select>
+	
+	<select id="selectByCityId"  resultMap="BaseResultMap">
+		SELECT
+			fs.f_fish_site_id,
+			f_fish_site_name,
+			f_main_img, f_main_img_none,
+			if(f_sign_status >0, 0,null)AS f_sign_status,
+			f_addr,
+			fs.f_partner_id,
+			ss.f_fish_site_status,
+			if(ss.f_fish_site_status = 3,f_trading_reward_amount ,null) as f_trading_reward_amount,
+			<include refid="durationSql"></include>
+		FROM
+			t_fish_site fs
+			LEFT JOIN (SELECT f_trading_reward_amount,f_site_id from t_partner_site_reward_review ) a ON a.f_site_id = fs.f_fish_site_id
+			LEFT JOIN (select f_fish_site_status,f_fish_site_id from t_fish_site_sign)ss on ss.f_fish_site_id=fs.f_fish_site_id
+		WHERE
+			f_city_id = #{cityId}
+			and f_status = 1 
+			<if test="signStatus!=null">
+				and f_sign_status = #{signStatus}
+			</if>
+			<if test="partnerId!=null">
+				and fs.f_fish_site_id NOT IN 
+				(SELECT `f_business_id` AS f_fish_site_id FROM t_partner_over  
+				WHERE f_older_partner_id =#{partnerId} AND f_business_type = 1 )
+			</if>
+			ORDER BY f_duration ASC
+			LIMIT #{start},#{size}	
+	</select>
+	
+	<select id="selectByPartner"  resultMap="BaseResultMap">
+		SELECT
+			f_fish_site_id,
+			f_fish_site_name,
+			f_main_img, f_main_img_none,
+			f_sign_status,
+			f_addr
+		FROM
+			t_fish_site
+		WHERE
+			f_status = 1
+			and f_partner_id = #{pid}
+			and f_sign_status in (1,2,4)
+			LIMIT #{start},#{size}	
+	</select>
+	
+	<select id="selectBySignStatus"  resultMap="BaseResultMap">
+		SELECT
+			f_fish_site_id,
+			f_sign_status,
+			f_sign_time
+		FROM
+			t_fish_site
+		WHERE
+			f_status = 1
+			and f_sign_status =1
+			FOR UPDATE
+	</select>
+	
+	<select id="countClaimSite" parameterType="int" resultType="int">
+		SELECT
+			COUNT(f_fish_site_id)
+		FROM
+			t_fish_site
+		WHERE
+			f_partner_id = #{partnerId}
+		AND f_sign_status = 1
+		AND f_status = 1
+	</select>
+	
+	<select id="siteSelectList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select * 
+		from 
+		(select 
+			<include refid="base_column_list_relevance" />
+		from 
+			(select * 
+			from
+			t_fish_site
+			where f_status = 1
+				<choose>
+					<when test="category == 1">
+						and f_province_id = #{regionId}			
+					</when>
+					<when test="category == 2">
+						and f_city_id = #{regionId}
+					</when>
+					<when test="category == 3">
+						and f_region_id = #{regionId}
+					</when>
+				</choose>			
+				<if test="isFree != null">
+				    and f_is_free = #{isFree}
+				</if>
+				<if test="fishSiteType != null">
+					and f_fish_site_type like #{fishSiteType}
+				</if>
+				<if test="authType != null">
+					and f_auth_type = #{authType}
+				</if>
+			) t1
+			<if test="uid &gt; 0">
+				left join (select 1 as f_focus,f_fid from t_focus where f_uid = #{uid}) t2 on t1.f_fish_site_id = t2.f_fid
+			</if>
+		order by f_fish_site_top desc,
+				 f_is_coupon desc,
+				 f_duration asc
+		) t3 
+		<if test="start &gt; 0">
+			where f_duration &gt; #{start}
+		</if>
+		limit #{size}
+	
+	</select>
+
+
+	<select id="siteSelectList2" parameterType="java.util.Map" resultMap="BaseResultMap">
+	<!-- 	select * 
+		from 
+		( -->
+		select 
+			<include refid="base_column_list_relevance" />
+		from 
+			(select * 
+			from
+			t_fish_site
+			where f_status = 1
+				<choose>
+					<when test="category == 1">
+						and f_province_id = #{regionId}			
+					</when>
+					<when test="category == 2">
+						and f_city_id = #{regionId}
+					</when>
+					<when test="category == 3">
+						and f_region_id = #{regionId}
+					</when>
+				</choose>			
+				<if test="isFree != null">
+				    and f_is_free = #{isFree}
+				</if>
+				<if test="fishSiteType != null">
+					and f_fish_site_type like #{fishSiteType}
+				</if>
+				<if test="authType != null">
+					and f_auth_type = #{authType}
+				</if>
+			) t1
+			<if test="uid &gt; 0">
+				left join (select 1 as f_focus,f_fid from t_focus where f_uid = #{uid}) t2 on t1.f_fish_site_id = t2.f_fid
+			</if>
+		order by f_fish_site_top desc,
+				 f_is_coupon desc,
+				 f_is_buy_ticket desc,
+				 f_duration asc
+		limit #{start}, #{size}
+
+		<!-- ) t3 
+		 <if test="start &gt; 0">
+			where f_duration &gt; #{start}
+		</if> -->
+	
+	</select>
+
+
+
+	
+	<select id="selectByIdAsLock" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		*
+		from
+		t_fish_site
+		where f_fish_site_id=#{fishSiteId} for update
+	</select>
+
+	<select id="countCityFishSite" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) 
+		from t_fish_site
+		where f_city_id = #{cityId}		
+	</select>
+	
+	<select id="countCityFishSite2" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) 
+		from t_fish_site_ext
+		where f_city_id = #{cityId}		
+	</select>
+
+	<select id="selectCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) 
+		from
+		t_fish_site
+		where f_status = #{value}
+	</select>
+	
+	<select  id ="selectCountByNameAndPhone" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*)
+		from 
+		t_fish_site
+		where f_status = #{status} and f_fish_site_name like #{likeName} 
+		or f_phone_num like #{likeName}
+	</select>
+
+	<select id="queryList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select *
+		from
+			(select 
+			 <include refid="base_column_list_relevance" />
+			from 
+			<choose>
+				<when test="uid &gt; 0">
+					t_fish_site t1 left join (select 1 as f_focus,f_fid from t_focus where f_uid = #{uid}) t2 on t1.f_fish_site_id = t2.f_fid
+				</when>
+				<otherwise>
+					t_fish_site
+				</otherwise>		
+			</choose>
+			where f_status = 1 and f_longitude &gt; #{minLng} and f_longitude &lt; #{maxLng} and f_latitude &gt; #{minLat} and f_latitude &lt; #{maxLat}
+			order by
+				f_duration asc,
+			 f_fish_site_id desc
+			) t1 
+			where 1 = 1
+			<if test="start &gt; 0">
+				and f_duration &gt; #{start} and f_duration &lt; #{radius}
+			</if>
+			limit #{size}
+	</select>
+	
+	<select id="queryDistributionList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select * from (select 
+		 <include refid="base_column_list_relevance" />,f_shop_site_status
+		from t_fish_site
+		left join t_shop_site_distribution on f_fish_site_id=f_fish_siteid
+		where f_status = 1
+		<if test="region !=null">
+			and f_region_id = #{regionId}
+		</if>
+		)a
+		where a.f_duration &lt; 10000
+		<if test="start &gt; 0">
+			and a.f_duration &gt; #{start}
+		</if>
+		order by
+		 f_duration ASC
+		limit #{size}
+	</select>
+
+	<select id="selectById" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select *
+		from
+		t_fish_site
+		where f_fish_site_id=#{fishSiteId}
+	</select>
+	
+	<select id="selectByUid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select 
+		*
+		from
+		t_fish_site
+		where f_status = 1 and f_uid = #{uid}
+	</select>
+	
+	<select id="selectAllByUid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select 
+		*
+		from
+		t_fish_site
+		where f_uid = #{uid}
+	</select>
+
+	<select id="selectList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		<!-- select
+		<include refid="base_column_list" />
+		from
+		t_fish_site
+		where f_status = 1
+		other暂时没有用
+		<if test="other != null">
+			and other =#{other}
+		</if>
+		<if test="isFree != null">
+		    and f_is_free=#{isFree}
+		</if>
+		<if test="fishSiteType != null">
+			and f_fish_site_type = #{fishSiteType}
+		</if>
+		<if test="authType != null">
+			and f_auth_type = #{authType}
+		</if>
+		<if test="start > 0">
+			and f_fish_site_id &lt; #{start}
+		</if>
+		order by f_fish_site_id desc 
+		limit #{size} -->
+		
+		select 
+		 <include refid="base_column_list_relevance" />
+		from 
+			(select * 
+			from
+			t_fish_site
+			where f_status = 1
+			<!-- other暂时没有用 -->
+			<!-- <if test="other != null">
+				and other =#{other}
+			</if> -->
+			<if test="isFree != null">
+			    and f_is_free=#{isFree}
+			</if>
+			<if test="fishSiteType != null">
+				and f_fish_site_type like #{fishSiteType}
+			</if>
+			<if test="authType != null">
+				and f_auth_type = #{authType}
+			</if>
+			) t1
+			<if test="uid &gt; 0">
+				left join (select 1 as f_focus,f_fid from t_focus where f_uid = #{uid}) t2 on t1.f_fish_site_id = t2.f_fid
+			</if>
+			
+		<if test="start > 0">
+			and f_fish_site_id &lt; #{start}
+		</if>
+		order by 
+		<if test="uid &gt; 0">
+			f_focus desc,
+		</if>
+		f_duration asc,
+		f_fish_site_id desc 
+		limit #{size}
+	</select>
+	
+	<select id="selectFishSiteByPartnerId" parameterType="java.util.Map" resultMap="BaseResultMap"> 
+		select  
+		*
+		from t_fish_site
+		where f_partner_id = #{partnerId} and f_sign_status = 2
+		order by f_fish_site_id desc
+		limit #{start},#{size} 	
+	</select>
+	
+	
+	<select id="selectByRegion" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select 
+		<include refid="base_column_list_relevance" />
+		from
+			(select
+			<include refid="base_column_list" />
+			from
+			t_fish_site
+			where f_status = 1
+			<if test="category == 1">
+			    and f_province_id = #{regionId}
+			</if>
+			<if test="category == 2">
+				and f_city_id = #{regionId}
+			</if>
+			<if test="category == 3">
+				and f_region_id = #{regionId}
+			</if>
+			)t1
+			<if test="uid  &gt; 0">
+				left join (select 1 as f_focus,f_fid from t_focus where f_uid = #{uid}) t2 on t1.f_fish_site_id = t2.f_fid
+			</if>
+		
+		<if test="start > 0">
+			and f_fish_site_id &lt; #{start}
+		</if>
+		order by 
+		<if test="uid &gt; 0">
+			f_focus desc,
+		</if>
+		f_duration asc,
+		f_fish_site_id desc 
+		limit #{size}
+		
+	</select>
+	
+	<select id="selectByRegionCp" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select  
+			*
+			from
+			t_fish_site
+			where f_status = 1
+			<if test="category == 1">
+			    and f_province_id = #{regionId}
+			</if>
+			<if test="category == 2">
+				and f_city_id = #{regionId}
+			</if>
+			<if test="category == 3">
+				and f_region_id = #{regionId}
+			</if>
+		order by f_fish_site_id desc 
+		limit #{start} ,#{size};
+	</select>
+	
+	<select id="selectByRegionCpTotal" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*)  
+			from
+			t_fish_site
+			where f_status = 1
+			<if test="category == 1">
+			    and f_province_id = #{regionId}
+			</if>
+			<if test="category == 2">
+				and f_city_id = #{regionId}
+			</if>
+			<if test="category == 3">
+				and f_region_id = #{regionId}
+			</if>
+	</select>
+	
+	<select id="selectSitesByPartnerId" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select 
+		<include refid="base_column_list" />
+		from
+		t_fish_site
+		where f_status = 1
+		<if test="status !=null">
+			and  f_sign_status = #{status}
+		</if>
+		and f_partner_id = #{partnerId}
+		order by f_fish_site_id desc 
+		<if test="start !=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="selectSitesSignByPartnerId" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select 
+		a.f_fish_site_id,b.f_fish_site_name, f_is_free,
+		f_fish_site_type, f_fish_site_info, f_resources, f_region_id, f_city_id,f_province_id,f_addr,
+		f_contact_man, f_phone_num, f_k_num, f_is_buy_ticket, f_auth_type,
+		f_sys_remarks, f_grade, f_main_img, f_status, f_flag,
+		f_update_time,f_longitude,f_latitude,f_update_put_fish_time,f_label,f_facility,f_focus_count,
+		f_charge_desc,f_back_fish_desc,f_withdraw_rate,a.f_fish_site_status AS f_sign_status,a.f_fish_sign_time AS f_sign_time,f_category,f_fish_site_top,
+		f_main_top_img, f_main_img_none, f_fish_site_logo, f_named_time
+		from
+		t_fish_site_sign a
+		left join t_fish_site b on a.f_fish_site_id=b.f_fish_site_id
+		where a.f_partner_id = #{partnerId} AND b.f_status = 1
+		<if test="status !=null">
+			and  a.f_fish_site_status = #{status}
+		</if>
+			order by a.f_fish_site_id desc 
+		<if test="start !=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="selectByLikeName" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select *
+		from 
+		(select 
+		<include refid="base_column_list_relevance"/>
+		from 
+			(select 
+			* 
+			from
+			t_fish_site
+			where f_status = 1 and f_fish_site_name like #{likeName}
+			)t1 
+			<if test="uid &gt; 0">
+				left join (select 1 as f_focus,f_fid from t_focus where f_uid = #{uid}) t2 on t1.f_fish_site_id = t2.f_fid
+			</if>
+		order by
+		<!-- <if test="uid &gt; 0">
+			f_focus desc,
+		</if> -->
+		f_duration asc
+		) t3 
+		<if test="start &gt; 0">
+			where f_duration &gt; #{start}
+		</if>
+		limit #{size}
+	</select>
+	
+	
+	<select id="selectByLikeNameAndPhone" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select 
+		<include refid="baseColumnList" /> 
+		from
+		t_fish_site s
+		left join t_user u on s.f_uid = u.f_uid
+		left join 
+		(SELECT u.f_user_realname AS partnerRealName,u.f_user_nickname AS partnerNickName,u.f_user_phonenum AS partnerPhone,u.f_username AS partnerUserName,p.f_partner_id from t_partner p LEFT JOIN t_user u on p.f_uid=u.f_uid ) a 
+		on s.f_partner_id = a.f_partner_id
+		where f_status = #{status} and (f_fish_site_name like #{likeName} 
+		or f_phone_num like #{likeName})
+		order by f_fish_site_id desc 
+		limit #{start}, #{size}
+	</select>
+	
+	
+	<select id="selectByValue" parameterType="map" resultMap="BaseResultMap">
+		select
+		<include refid="baseColumnList" /> 
+		from
+		t_fish_site s
+		left join t_user u on s.f_uid = u.f_uid
+		left join 
+		(SELECT u.f_user_realname AS partnerRealName,u.f_user_nickname AS partnerNickName,u.f_user_phonenum AS partnerPhone,u.f_username AS partnerUserName,p.f_partner_id from t_partner p LEFT JOIN t_user u on p.f_uid=u.f_uid ) a 
+		on s.f_partner_id = a.f_partner_id
+		where 1=1
+		<choose>
+			<when test="category == 1">
+			 	and s.f_status = 1 and s.f_flag = #{value}
+			</when>
+			<when test="category == 2">
+				and s.f_status = #{value}
+			</when>
+		</choose>
+		order by s.f_fish_site_id desc 
+		limit #{start},#{size}
+	</select>
+
+	<select id="selectByFocus" parameterType="java.util.Map" resultMap="BaseResultMap">
+		<!-- select 
+		<include refid="base_column_list"/> 
+		from 
+			(select f_fid 
+			from t_focus where f_uid = #{uid}) t2 left join t_fish_site t1  on t2.f_fid = t1.f_fish_site_id  
+		where t1.f_status = 1
+		<if test="start > 0">
+			and t2.f_fid &lt; #{start} 
+		</if>
+		order by f_fid desc limit #{size}  -->
+		
+		
+		select * 
+		from(
+			select 
+			<include refid="base_column_list_relevance" />
+			from
+				(
+				select f_fid, 1 as f_focus from t_focus where f_uid = #{uid}
+				) t1
+			 join t_fish_site t2 on t1.f_fid = t2.f_fish_site_id and t2.f_status = 1
+			order by f_duration asc
+			)t3
+		<if test="start &gt; 0">
+			where f_duration > #{start}
+		</if>	
+		limit #{size}
+		
+	</select>
+
+	<update id="updateByPartnerIdAndSiteId" parameterType="java.util.Map">
+		update
+		t_fish_site
+		set f_partner_id = #{partnerId} 
+		 <if test="signStatus!=0">
+		 	,f_sign_status = #{signStatus}
+		 </if>
+		 ,f_sign_time = #{signTime}
+		where f_fish_site_id = #{siteId}
+	</update>
+	
+	<update id="updateBySiteId" parameterType="java.util.Map">
+		update
+		t_fish_site
+		set f_sign_status = #{signStatus},f_sign_time = #{signTime},
+		where f_fish_site_id = #{siteId}
+	</update>
+	
+	<update id="updatePutFishTime" parameterType="java.util.Map">
+		update
+		t_fish_site
+		set f_update_put_fish_time = #{updatePutFishTime} 
+		where f_fish_site_id = #{siteId}
+	</update>
+	
+	
+	<update id="updateFocusCount" parameterType="fishSite">
+		update
+		t_fish_site
+		set f_focus_count = #{focusCount} 
+		where f_fish_site_id = #{fishSiteId}	
+	</update>
+	
+	<update id="updatePojo" parameterType="FishSite">
+ 		update 
+ 		t_fish_site
+ 		<set>
+ 			<if test="partnerId != null">
+ 				f_partner_id = #{partnerId},
+ 			</if>
+ 			<if test="uid != null">
+ 				f_uid = #{uid},
+ 			</if>
+ 			<if test="namedTime != null">
+ 				f_named_time = #{namedTime},
+ 			</if>
+ 			<if test="fishSiteName != null">
+ 				f_fish_site_name = #{fishSiteName},
+ 			</if>
+ 			<if test="isFree != null">
+ 				f_is_free = #{isFree},
+ 			</if>
+ 			<if test="fishSiteType != null">
+ 			    f_fish_site_type= #{fishSiteType},
+ 			</if>
+ 			<if test="fishSiteInfo != null">
+ 				 f_fish_site_info = #{fishSiteInfo},
+ 			</if>
+ 			<if test="resources != null">
+ 				 f_resources = #{resources},
+ 			</if>
+ 			<if test="regionId != null">
+ 				f_region_id = #{regionId},
+ 			</if>
+ 			<if test="cityId != null">
+ 				f_city_id = #{cityId},
+ 			</if>
+ 			<if test="provinceId != null">
+ 				f_province_id = #{provinceId},
+ 			</if>
+ 			<if test="addr != null">
+ 				 f_addr = #{addr},
+ 			</if>
+ 			<if test="contactMan != null">
+ 				 f_contact_man = #{contactMan},
+ 			</if>
+ 			<if test="phoneNum != null">
+ 				 f_phone_num = #{phoneNum},
+ 			</if>
+ 			<if test="kNum != null">
+ 				 f_k_num = #{kNum},
+ 			</if>
+ 			<if test="isBuyTicket != null">
+ 				 f_is_buy_ticket = #{isBuyTicket},
+ 			</if>
+ 			<if test="authType != null">
+ 				 f_auth_type = #{authType},
+ 			</if>
+ 			<if test="sysRemarks != null">
+ 				 f_sys_remarks = #{sysRemarks},
+ 			</if>
+ 			<if test="grade != null">
+ 				 f_grade = #{grade},
+ 			</if>
+ 			<if test="mainImg != null">
+ 				 f_main_img = #{mainImg},
+ 			</if>
+ 			<if test="mainTopImg != null">
+ 				 f_main_top_img = #{mainTopImg},
+ 			</if>
+ 			<if test="mainImgNone != null">
+ 				 f_main_img_none = #{mainImgNone},
+ 			</if>
+ 			<if test="status != null">
+ 				 f_status = #{status},
+ 			</if>
+ 			<if test="flag != null">
+ 				 f_flag = #{flag},
+ 			</if>
+ 			<if test="createTime != null">
+ 				 f_create_time = #{createTime},
+ 			</if>
+ 			<if test="updateTime != null">
+ 				f_update_time = #{updateTime},
+ 			</if>
+ 			<if test="updatePutFishTime != null">
+ 				f_update_put_fish_time = #{updatePutFishTime},
+ 			</if>
+ 			<if test="longitude != null">
+ 				f_longitude = #{longitude},
+ 			</if>
+ 			<if test="latitude != null">
+ 				f_latitude = #{latitude},
+ 			</if>
+ 			<if test="label != null">
+ 				f_label = #{label},
+ 			</if>
+ 			<if test="facility != null">
+ 				f_facility = #{facility},
+ 			</if>
+ 			<if test="chargeDesc != null">
+ 				f_charge_desc = #{chargeDesc},
+ 			</if>
+ 			<if test="backFishDesc != null">
+ 				f_back_fish_desc = #{backFishDesc},
+ 			</if>
+ 			<if test="signStatus != null">
+ 				f_sign_status = #{signStatus},
+ 			</if>
+ 			<if test="signTime != null">
+ 				f_sign_time = #{signTime},
+ 			</if>
+ 			<if test="category != null">
+ 				f_category = #{category},
+ 			</if>
+ 		</set>
+ 		where f_fish_site_id = #{fishSiteId}
+	</update>
+	
+	<update id="updateFishSite">
+		UPDATE t_fish_site
+		SET f_partner_id = NULL,
+		 f_sign_status = 0,
+		 f_sign_time = NULL
+		WHERE
+			f_fish_site_id = #{id}
+	</update>
+	
+	<!-- 更新提现手续费费率 弃用 -->
+	<update id="updateWithdrawRate" parameterType="java.util.Map">
+		update t_fish_site
+		set f_withdraw_rate = #{withdrawRate}
+		where f_fish_site_id = #{fishSiteId}
+	</update>
+
+	<insert id="insertPojo" useGeneratedKeys="true" keyProperty="fishSiteId" parameterType="fishSite">
+		insert into 
+		t_fish_site
+		(f_fish_site_id,f_uid, f_partner_id, f_fish_site_name, f_is_free,
+		f_fish_site_type, f_fish_site_info, f_resources, f_region_id, f_city_id,f_province_id,f_addr,
+		f_contact_man, f_phone_num, f_k_num, f_is_buy_ticket, f_auth_type,
+		f_sys_remarks, f_grade, f_main_img, f_status, f_flag, f_create_time,
+		f_update_time,f_longitude,f_latitude,f_update_put_fish_time,f_label,f_facility,f_focus_count,
+		f_charge_desc,f_back_fish_desc)
+		values(
+			#{fishSiteId},
+			#{uid},
+			#{partnerId},
+			#{fishSiteName}, 
+			#{isFree},
+			#{fishSiteType},
+			#{fishSiteInfo},
+			#{resources},
+			#{regionId}, 
+			#{cityId},
+			#{provinceId},
+			#{addr},
+			#{contactMan},
+			#{phoneNum},
+			#{kNum}, 
+			#{isBuyTicket}, 
+			#{authType},
+			#{sysRemarks},
+			#{grade},
+			#{mainImg},
+			#{status}, 
+			#{flag},
+			#{createTime},
+			#{updateTime},
+			#{longitude},
+			#{latitude},
+			#{updatePutFishTime},
+			#{label},
+			#{facility},
+			#{focusCount},
+			#{chargeDesc},
+			#{backFishDesc}
+		)
+	</insert>
+	
+	<insert id="insertPojo2" useGeneratedKeys="true" keyProperty="fishSiteId" parameterType="fishSiteExt">
+		insert into 
+		t_fish_site_ext
+		(f_fish_site_id,f_uid, f_partner_id, f_fish_site_name, f_is_free,
+		f_fish_site_type, f_fish_site_info, f_resources, f_region_id, f_city_id,f_province_id,f_addr,
+		f_contact_man, f_phone_num, f_k_num, f_is_buy_ticket, f_auth_type,
+		f_sys_remarks, f_grade, f_main_img, f_status, f_flag, f_create_time,
+		f_update_time,f_longitude,f_latitude,f_update_put_fish_time,f_label,f_facility,f_focus_count,
+		f_charge_desc,f_back_fish_desc)
+		values(
+			#{fishSiteId},
+			#{uid},
+			#{partnerId},
+			#{fishSiteName}, 
+			#{isFree},
+			#{fishSiteType},
+			#{fishSiteInfo},
+			#{resources},
+			#{regionId}, 
+			#{cityId},
+			#{provinceId},
+			#{addr},
+			#{contactMan},
+			#{phoneNum},
+			#{kNum}, 
+			#{isBuyTicket}, 
+			#{authType},
+			#{sysRemarks},
+			#{grade},
+			#{mainImg},
+			#{status}, 
+			#{flag},
+			#{createTime},
+			#{updateTime},
+			#{longitude},
+			#{latitude},
+			#{updatePutFishTime},
+			#{label},
+			#{facility},
+			#{focusCount},
+			#{chargeDesc},
+			#{backFishDesc}
+		)
+	</insert>
+	
+	<select id="selectAll" resultMap="BaseResultMap">
+			select f_fish_site_id ,f_longitude , f_latitude
+				from
+			t_fish_site
+				where f_status = 1
+	</select>
+	
+	<update id="mapTransverter" parameterType="fishSite" >
+		UPDATE t_fish_site
+			set 
+				`f_latitude` = #{latitude},
+				`f_longitude` = #{longitude}
+			where 
+				f_fish_site_id = #{fishSiteId}
+	</update>
+	
+	<select id="selectPartnerIdIsNullFishSite" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select *
+		from t_fish_site
+		where f_partner_id is null and f_status = 1
+		<if test="likeName != null">
+			and (f_fish_site_name  like #{likeName} or
+		 		f_phone_num like #{likeName})
+		</if>
+		<if test="index &gt; 0">
+			and f_fish_site_id > #{index}
+		</if>
+		limit #{size}
+	</select>
+	
+	
+	<select id="selectFishSiteByPartner" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select f_fish_site_name,f_fish_site_id
+		from t_fish_site
+		where f_partner_id = #{partnerId} and f_sign_status = 2
+		<if test="index &gt; 0 ">
+			and f_fish_site_id &gt; #{index}
+		</if>
+		limit #{size}
+	</select>
+	
+	<select id="selectMaxTop" resultType="java.lang.Integer">
+		SELECT MAX(f_fish_site_top) FROM t_fish_site
+	</select>	
+	
+	<update id="updateSiteTop" parameterType="java.util.Map">
+ 		update t_fish_site 
+ 		set f_fish_site_top = #{top} 
+ 		where f_fish_site_id = #{fishSiteId}
+	</update>
+	
+	<select id="selectListForPartnerSign" resultMap="FSPojoResultMap">
+		SELECT * FROM (
+			(
+				SELECT
+					b.f_fish_shop_addr AS addr,
+					a.f_fish_shop_id AS id,
+					b.f_fish_shop_main_img AS img,
+					b.f_fish_shop_name AS name,
+					case a.f_fish_shop_status when 0 then 1 when 2 then 4 when 3 then 2 else 1 end AS STATUS,
+					a.f_fish_shop_sign_time AS time
+				FROM
+					t_fish_shop_sign a
+				LEFT JOIN t_fish_shop b ON a.f_fish_shop_id = b.f_fish_shop_id
+				WHERE
+					a.f_uid = #{pid}
+			)
+		UNION ALL
+			(
+			SELECT
+					b.f_addr AS addr,
+					a.f_fish_site_id AS id,
+					b.f_main_img AS img,
+					b.f_fish_site_name AS name,
+					a.f_fish_site_status AS status,
+					a.f_fish_sign_time AS time
+				FROM
+					t_fish_site_sign a
+					left join t_fish_site b on a.f_fish_site_id = b.f_fish_site_id
+				WHERE
+					b.f_status = 1
+				AND a.f_partner_id = #{pid}
+				AND a.f_fish_site_status in (1,4,2)
+		
+		)
+		) t1 ORDER BY time DESC
+		limit #{start},#{size}
+	</select>
+	
+	<update id="updateOpenCoupon" parameterType="java.lang.Integer">
+		update t_fish_site
+		set f_is_open_coupon = true
+ 		where f_fish_site_id = #{siteId}
+	</update>
+	
+	<update id="updateIsCouponAndCount" parameterType="java.util.Map">
+		update t_fish_site
+		set f_coupon_count = #{couponCount}
+ 			,f_is_coupon = #{isCoupon}
+ 		where f_fish_site_id = #{siteId}
+	</update>
+	
+	<update id="updateIsAuthCoupon" parameterType="java.util.Map">
+		update t_fish_site
+		set f_is_auth_coupon = #{isAuthCoupon}
+			<!-- ,f_is_coupon = #{isCoupon} -->
+		<if test="!isAuthCoupon">
+			, f_is_open_coupon = false
+			, f_is_coupon = false
+			, f_coupon_count = 0
+		</if>
+ 		where f_fish_site_id = #{siteId}
+	</update>
+	
+	<update id="updatePartnerIdIsNull" parameterType="java.lang.Integer">
+		update t_fish_site
+		set f_partner_id = null
+		where f_partner_id = #{partnerId}
+	</update>
+	
+	<update id="updatePartnerIdBySiteId" parameterType="java.lang.Integer">
+		update t_fish_site
+		set f_partner_id = null
+		where f_fish_site_id = #{siteId}
+	</update>
+	
+	<update id="updateLogo" parameterType="fishSite">
+		update t_fish_site
+		set f_fish_site_logo = 1
+		where f_fish_site_id = #{fishSiteId}	
+	</update>
+	
+	<update id="updateOldSite" parameterType="java.lang.Integer">
+		update t_fish_site
+		set f_partner_id = null,
+			f_uid = null,
+			f_status = 3
+		where f_fish_site_id = #{siteId}
+	
+	</update>
+	<delete id="deleteDistribution" parameterType="java.util.Map">
+		delete from t_shop_site_distribution 
+		where f_fish_shopid = #{shopId} and f_fish_siteid = #{siteId}
+	</delete>
+	<insert id="insertDistribution" parameterType="java.util.Map">
+		insert into t_shop_site_distribution(f_fish_siteid,f_fish_shopid)
+		values(#{siteId},
+				#{shopId})
+	</insert>
+	<select id="selectByShopId" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select f_fish_site_id,f_main_img,f_fish_site_name,f_addr,f_shop_site_status
+		from t_shop_site_distribution 
+		left join t_fish_site on f_fish_siteid=f_fish_site_id
+		where f_fish_shopid = #{shopId}
+	</select>
+	
+	<select id="selectSiteList" parameterType="map" resultMap="BaseResultMap">
+		select
+		<include refid="baseColumnList" /> 
+		from
+		t_fish_site s
+		left join t_user u on s.f_uid = u.f_uid
+		left join 
+		(SELECT u.f_user_realname AS partnerRealName,u.f_user_nickname AS partnerNickName,u.f_user_phonenum AS partnerPhone,u.f_username AS partnerUserName,p.f_partner_id from t_partner p LEFT JOIN t_user u on p.f_uid=u.f_uid ) a 
+		on s.f_partner_id = a.f_partner_id
+		LEFT JOIN (select count(*)as f_like_count,f_site_id from t_like_site ORDER BY f_site_id) l on l.f_site_id=s.f_fish_site_id
+		where 1=1
+			<if test="category == 1">
+			    and f_province_id = #{regionId}
+			</if>
+			<if test="category == 2">
+				and f_city_id = #{regionId}
+			</if>
+			<if test="category == 3">
+				and f_region_id = #{regionId}
+			</if>
+			<if test="status !=null">
+				and s.f_status = #{status}
+			</if>
+			<if test="likeName!=null">
+				and (f_fish_site_name like #{likeName} 
+				or f_phone_num like #{likeName})
+			</if>
+		order by f_fish_site_top DESC,
+		<choose>
+			<when test='collect != null and collect == "ASC"'>
+				f_focus_count ASC,
+			</when>
+			<when test='collect != null and collect == "DESC"'>
+				f_focus_count DESC,
+			</when>
+		</choose>
+		<choose>
+			<when test="praise != null and praise == 'ASC'">
+				l.f_like_count ASC,
+			</when>
+			<when test="praise != null and praise == 'DESC'">
+				l.f_like_count DESC,
+			</when>
+		</choose>
+		<choose>
+			<when test="create != null and create == 'ASC'">
+				f_create_time ASC,
+			</when>
+			<when test="create != null and create == 'DESC'">
+				f_create_time DESC,
+			</when>
+		</choose>
+		f_fish_site_id		 
+		limit #{start},#{size}
+	</select>
+	
+	
+	<select id="selectSiteCount" parameterType="map" resultType="java.lang.Integer">
+		select
+		count(*)
+		from
+		t_fish_site s
+		left join t_user u on s.f_uid = u.f_uid
+		left join 
+		(SELECT u.f_user_realname AS partnerRealName,u.f_user_nickname AS partnerNickName,u.f_user_phonenum AS partnerPhone,u.f_username AS partnerUserName,p.f_partner_id from t_partner p LEFT JOIN t_user u on p.f_uid=u.f_uid ) a 
+		on s.f_partner_id = a.f_partner_id
+		LEFT JOIN (select count(*)as f_like_count,f_site_id from t_like_site ORDER BY f_site_id) l on l.f_site_id=s.f_fish_site_id
+		where 1=1
+			<if test="category == 1">
+			    and f_province_id = #{regionId}
+			</if>
+			<if test="category == 2">
+				and f_city_id = #{regionId}
+			</if>
+			<if test="category == 3">
+				and f_region_id = #{regionId}
+			</if>
+			<if test="status !=null">
+				and s.f_status = #{status}
+			</if>
+			<if test="likeName!=null">
+				and (f_fish_site_name like #{likeName} 
+				or f_phone_num like #{likeName})
+			</if>
+	</select>
+</mapper>

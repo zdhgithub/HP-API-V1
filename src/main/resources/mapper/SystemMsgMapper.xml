@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.SystemMsgMapper">
+	<resultMap type="SystemMsg" id="systemMsgResultMap">
+		<id column="f_system_msg_id" property="id" />
+		<result column="f_system_msg_title" property="title" />
+		<result column="f_system_msg_url" property="url" />
+		<result column="f_system_msg_content" property="content" />
+		<result column="f_system_msg_create_time" property="createTime" />
+		<result column="f_system_msg_receiver" property="receiver" />
+		<result column="f_system_msg_sender" property="sender" />
+		<result column="f_system_msg_flag" property="flag" />
+		<result column="f_type" property="type" />
+	</resultMap>
+	<sql id="systemMsgSql">
+		f_system_msg_id,
+		f_system_msg_title,
+		f_system_msg_url,
+		f_system_msg_content,
+		f_system_msg_create_time,
+		f_system_msg_receiver,
+		f_system_msg_sender,
+		f_system_msg_flag,
+		f_type
+	</sql>
+	
+	<select id="countMsg" parameterType="int" resultType="int">
+		SELECT count(*) FROM t_system_msg WHERE f_system_msg_flag = 0 AND f_system_msg_receiver = #{uid} and f_type = 'C'
+	</select>
+	<select id="countMsgNew" resultType="int" parameterType="int">
+		SELECT COUNT(*) FROM t_system_msg WHERE f_system_msg_receiver = #{uid} AND f_system_msg_flag = 0 and f_type = 'C'
+	</select>
+	<select id="selectList" resultMap="systemMsgResultMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="systemMsgSql"></include>
+		FROM t_system_msg
+		<where>
+			<if test="receiver!=null">
+				and f_system_msg_receiver = #{receiver}
+			</if>
+			<if test="flag!=null">
+				and f_system_msg_flag = #{flag}
+			</if>
+			<if test="type!=null">
+				and f_type = #{type}
+			</if>
+			<if test="start>0">
+				and f_system_msg_id &lt; #{start}
+			</if>
+		</where>
+		ORDER BY
+			f_system_msg_id DESC
+		LIMIT #{size}
+	</select>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		INSERT INTO t_system_msg (
+		f_system_msg_title,
+		f_system_msg_url,
+		f_system_msg_content,
+		f_system_msg_create_time,
+		f_system_msg_receiver,
+		f_system_msg_sender,
+		f_type
+		)
+		values
+		<foreach collection="uids" item="uid" index="index" separator=",">
+			(#{title},#{url},#{content},#{createTime},#{uid},#{sender},#{type})
+		</foreach>
+	</insert>
+	
+	<insert id="insert" parameterType="SystemMsg" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_system_msg (
+		f_system_msg_title,
+		f_system_msg_url,
+		f_system_msg_content,
+		f_system_msg_create_time,
+		f_system_msg_receiver,
+		f_system_msg_sender,
+		f_type
+		)
+		values (#{title},#{url},#{content},#{createTime},#{receiver},#{sender},#{type})
+	</insert>
+	
+	<update id="update" parameterType="java.util.List">
+		UPDATE t_system_msg SET f_system_msg_flag = 1 WHERE f_system_msg_id in(
+			<foreach collection="list" item="id" index="index" separator=",">
+			#{id}
+			</foreach>
+		) and f_type = 'C'
+	</update>
+	
+	<update id="updateByUid">
+		UPDATE t_system_msg SET f_system_msg_flag = 1 where f_system_msg_receiver = #{uid} and f_type = #{type}
+	</update>
+</mapper>

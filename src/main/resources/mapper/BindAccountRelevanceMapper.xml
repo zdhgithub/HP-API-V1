@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.BindAccountRelevanceMapper">
+	
+	<resultMap type="bindAccountList" id="baseResultMap">
+		<id column="f_uid" property="uid" />
+		<result column="f_platform" property="platform" />
+		<result column="f_bind_account_num" property="bindAccountNum" />
+		<result column="f_bind_time" property="bindTime" />
+		<result column="f_flag" property="flag" />
+	</resultMap>
+	
+	<sql id="base_column">
+		f_uid,f_platform,f_bind_account_num,f_bind_time,f_flag
+	</sql>
+
+	<select id="selectUniqueAccount" parameterType="java.util.Map" resultMap="baseResultMap">
+		select * 
+		from t_bind_account_relevance
+		where f_uid = #{uid} and f_bind_account_num = #{bindAccountNum} and f_platform = #{platform}
+	</select>
+
+	<insert id="insertPojo">
+		insert into t_bind_account_relevance(
+		<include refid="base_column" />
+		)
+		values(
+			#{uid},
+			#{platform},
+			#{bindAccountNum},
+			#{bindTime},
+			#{flag}
+		)
+	</insert>
+	
+	
+	<delete id="deleteBindAccount">
+		delete 
+		from t_bind_account_relevance
+		where f_uid = #{uid} and f_bind_account_num = #{bindAccountNum} and f_platform = #{platform} 
+	</delete> 
+</mapper>

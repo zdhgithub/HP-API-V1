@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ArticleNewMapper">
+	
+<!-- 	<select id="selectOne" resultType="int"> -->
+<!-- 		SELECT f_flag FROM t_article_flag_new WHERE f_uid = #{uid} AND f_type = #{type} -->
+<!-- 	</select> -->
+	
+<!-- 	<insert id="insert"> -->
+<!-- 		INSERT INTO t_article_flag_new(f_uid,f_type) VALUES(#{uid},#{type}) -->
+<!-- 	</insert> -->
+	
+<!-- 	<update id="update"> -->
+<!-- 		UPDATE t_article_flag_new SET f_flag = #{flag} WHERE f_type = #{type} -->
+<!-- 	</update> -->
+	
+<!-- 	<update id="updateOne"> -->
+<!-- 		UPDATE t_article_flag_new SET f_flag = #{flag} WHERE f_uid = #{uid} and f_type = #{type} -->
+<!-- 	</update> -->
+	
+	<!-- =================================== -->
+	
+	<insert id="insertNew">
+		INSERT INTO t_article_new(f_s_id,f_uid,f_type) 
+		VALUES(#{sid},#{uid},#{type})
+	</insert>
+	
+	<insert id="insertNewBatchUser" parameterType="java.util.Map">
+		INSERT INTO t_article_new(f_s_id,f_uid,f_type) values
+		<foreach collection="uids" item="uid" index="index" separator=",">  
+    		(#{sid},#{uid},#{type})
+		</foreach>
+	</insert>
+	<insert id="insertNewBatchSite" parameterType="java.util.Map">
+		INSERT INTO t_article_new(f_s_id,f_uid,f_type) values
+		<foreach collection="sids" item="sid" index="index" separator=",">  
+    		(#{sid},#{uid},#{type})
+		</foreach>
+	</insert>
+	
+	<update id="updateNewSite">
+		UPDATE t_article_new SET f_flag = #{flag} WHERE f_s_id = #{sid} AND f_type = #{type}
+	</update>
+	
+	<update id="updateNewUser">
+		UPDATE t_article_new SET f_flag = #{flag} WHERE f_s_id = #{sid} AND f_type = #{type} AND f_uid = #{uid}
+	</update>
+	
+	<select id="selectNew" resultType="int">
+		SELECT f_flag from t_article_new WHERE f_s_id = #{sid} AND f_type = #{type} AND f_uid = #{uid}
+	</select>
+	
+	<select id="selectNewNum" resultType="int">
+		SELECT f_num from t_article_new WHERE f_s_id = #{sid} AND f_type = #{type} AND f_uid = #{uid}
+	</select>
+	
+	<update id="updateNewClear">
+		UPDATE t_article_new SET f_num = 0 WHERE f_s_id = #{sid} AND f_type = #{type} AND f_uid = #{uid}
+	</update>
+	
+	<update id="updateNewAdd">
+		UPDATE t_article_new SET f_num = f_num + 1 WHERE f_s_id = #{sid} AND f_type = #{type}
+	</update>
+</mapper>

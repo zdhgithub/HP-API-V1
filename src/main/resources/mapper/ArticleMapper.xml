@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.ArticleMapper">
+	<resultMap type="Article" id="BaseResultMap">
+		<id column="f_article_id" property="id"/>
+		<result column="f_article_title" property="title" />
+		<result column="f_article_sub_title" property="subTitle" />
+		<result column="f_article_main_picture" property="mainPicture" />
+		<result column="f_article_description" property="description" />
+		<result column="f_article_create_time" property="createTime" />
+		<result column="f_article_update_time" property="updateTime" />
+		<result column="f_article_status" property="status" />
+		<result column="f_article_content_id" property="contentId" />
+		<result column="f_content" property="content" />
+		<result column="f_article_uid" property="uid" />
+		<result column="f_shop_id" property="shopId" />
+		<result column="f_article_view_count" property="viewCount" />
+		<result column="f_type" property="type" />
+		<result column="f_is_read" property="isRead" />
+		
+		<result column="f_user_nickname" property="nickname" />
+		<result column="f_user_portriat" property="portriat" />
+		
+		<result column="f_main_img" property="mainImg" />
+		<result column="f_province_id"    property="fishSiteProvinceName" />
+		<result column="f_city_id"        property="fishSiteCityName" />
+		<result column="f_region_id"      property="fishSiteRegionName" />
+		<result column="f_addr"           property="fishSiteAddress" />
+		<result column="f_fish_site_name" property="fishSiteName" />
+		<result column="f_longitude" property="lng" />
+		<result column="f_latitude" property="lat" />
+		<result column="f_focus" property="focus" />
+		<result column="f_duration" property="duration" />
+		
+		<result column="f_article_location" property="location" />
+		<result column="f_article_lng" property="lng" />
+		<result column="f_article_lat" property="lat" />
+		<result column="f_article_site" property="site" />
+	</resultMap>
+	
+	<sql id="BaseSql">
+	f_article_id,f_article_title,f_article_sub_title,f_article_main_picture,f_article_description,
+	f_article_create_time,f_article_update_time,f_article_status,f_article_content_id,f_article_uid,
+	f_shop_id,f_article_view_count,f_type,f_article_location,f_article_lng,f_article_lat,f_article_site
+	</sql>
+	
+	<select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select * 
+		from  t_article
+		where f_article_id = #{id}
+	</select>
+	
+	<select id="countArtNew" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_article WHERE f_type = #{type} AND f_is_read = 0
+	</select>
+	<select id="countArts" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_article WHERE f_type = #{type}
+	</select>
+	<select id="selectListExtForPutFish" resultType="java.util.Map" resultMap="BaseResultMap">
+		SELECT
+			<include refid="BaseSql"></include>
+			,if((SELECT COUNT(*) FROM t_focus WHERE f_uid = #{uid} AND f_fid = f_fish_site_id)!=0,1,0) AS f_focus,
+			f_fish_site_name,
+			f_longitude,f_latitude,f_main_img,
+			round(6370996.81 * 2 * asin(sqrt(
+				pow(sin(((#{lat} * PI() /180.0) - (f_latitude * PI() /180.0))/2),2) 
+				+ cos(#{lat} * PI() /180.0) 
+				* cos(f_latitude * PI() /180.0) 
+				* pow(sin(((#{lng}-f_longitude) * PI()/180.0)/2),2)))) as f_duration
+		FROM
+			t_article a
+		LEFT JOIN t_fish_site f ON a.f_shop_id = f.f_fish_site_id
+		<where>
+			a.f_article_status = 2
+		AND a.f_type = 4
+		AND f_status = 1 
+		AND f_city_id = #{regionId}
+		<if test="start>0">
+			and f_article_id &lt; #{start}
+		</if>
+		</where>
+		ORDER BY f_article_id DESC
+		LIMIT #{size}
+	</select>
+	
+	<select id="selectList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+			<include refid="BaseSql"></include>,f_user_nickname,f_user_portriat
+		FROM
+			t_article LEFT JOIN t_user ON f_article_uid = f_uid
+			left join  t_fish_site on f_shop_id = f_fish_site_id
+		<where>
+			<if test="status!=null">
+				and f_article_status = #{status}
+			</if>
+			<if test="uid!=null">
+				and f_article_uid = #{uid}
+			</if>
+			<if test="regionId!=null">
+				and f_city_id = #{regionId}
+			</if>
+			<if test="shopId!=null">
+				and f_shop_id = #{shopId}
+			</if>
+			<if test="start>0">
+				and f_article_id &lt;#{start}
+			</if>
+			<choose>
+				<when test="type!=null and type==3">
+					and f_type in (3,4)
+				</when>
+				<when test="type!=null and type!=3">
+					and f_type = #{type}
+				</when>
+			</choose>
+		</where>
+		ORDER BY
+			f_article_id DESC
+		LIMIT #{size}
+	</select>
+	
+	<select id="selecShoptList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+			<include refid="BaseSql"></include>,f_user_nickname,f_user_portriat
+		FROM
+			t_article
+			 LEFT JOIN t_user ON f_article_uid = f_uid
+			 LEFT JOIN t_fish_shop ON f_shop_id = f_fish_shop_id
+		<where>
+			<if test="status!=null">
+				and f_article_status = #{status}
+			</if>
+			<if test="regionId!=null">
+				and f_fish_shop_city_id = #{regionId}
+			</if> 
+			<if test="start>0">
+				and f_article_id &lt;#{start}
+			</if>
+			<choose>
+				<when test="type!=null and type==3">
+					and f_type in (3,4)
+				</when>
+				<when test="type!=null">
+					and f_type = #{type}
+				</when>
+			</choose>
+		</where>
+		ORDER BY
+			f_article_id DESC
+		LIMIT #{size}
+	</select>
+	
+	<select id="selectOne" parameterType="long">
+		SELECT f_article_id FROM t_article WHERE f_article_id = #{id}
+	</select>
+	
+	<select id="selectOneByTitle" parameterType="String" resultMap="BaseResultMap">
+		SELECT f_article_id,f_article_title FROM t_article WHERE f_article_title = #{title}
+	</select>
+	
+	<select id="selectOneContent" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+			f_article_id,
+			f_user_nickname,
+			f_user_portriat,
+			f_article_update_time,
+			f_article_title,
+			f_article_sub_title,
+			f_content,
+			f_article_view_count,
+			f_type,
+			f_article_location,
+			f_article_lng,
+			f_article_lat,
+			f_article_site,
+			f_shop_id,
+			pp.`f_region_name` as f_province_id,
+			pc.`f_region_name` as f_city_id,
+			pr.`f_region_name` as f_region_id,
+			`f_addr`,
+			`f_fish_site_name`		
+		FROM
+			t_article_content
+		LEFT JOIN t_article ON f_article_content_id = f_content_id
+		LEFT JOIN t_user ON f_article_uid = f_uid		
+		LEFT JOIN t_fish_site ON f_shop_id = f_fish_site_id
+		LEFT JOIN `t_sys_cfg_region` AS pp ON pp.`f_region_num` = f_province_id
+		LEFT JOIN `t_sys_cfg_region` AS pc ON pc.`f_region_num` = f_city_id
+		LEFT JOIN `t_sys_cfg_region` AS pr ON pr.`f_region_num` = f_region_id		
+		WHERE
+			f_content_id = #{id}
+	</select>
+	
+	<!-- <select id="selectMaxId" resultType="long">
+		SELECT IFNULL(MAX(f_article_id),0) FROM t_article
+	</select> -->
+	
+	<insert id="insert" parameterType="Article" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_article (
+			<!-- f_article_id, -->
+			f_article_title,
+			f_article_sub_title,
+			f_article_main_picture,
+			f_article_description,
+			f_article_create_time,
+			f_article_update_time,
+			f_article_status,
+			f_article_content_id,
+			f_article_uid,
+			f_shop_id,
+			f_type,
+			f_article_location,
+			f_article_lng,
+			f_article_lat,
+			f_article_site
+		)
+		VALUES
+			(
+				<!-- #{id}, -->
+				#{title},
+				#{subTitle},
+				#{mainPicture},
+				#{description},
+				#{createTime},
+				#{updateTime},
+				#{status},
+				#{contentId},
+				#{uid},
+				#{shopId},
+				#{type},
+				#{location},
+				#{lng},
+				#{lat},
+				#{site}
+				
+			)
+	</insert>
+	
+	<insert id="insertContent" parameterType="Article">
+		INSERT INTO t_article_content
+		VALUES
+			(
+				#{contentId},
+				#{content}
+			)
+	</insert>
+	
+	<update id="update" >
+		UPDATE t_article
+		<set>
+			<if test="description!=null">
+				f_article_description = #{description},
+			</if>
+			<if test="status!=null">
+				f_article_status = #{status},
+			</if>
+			<if test="title!=null">
+				f_article_title = #{title},
+			</if>
+			<if test="subTitle!=null">
+				 f_article_sub_title = #{subTitle},
+			</if>
+			<if test="updateTime!=null">
+				 f_article_update_time = #{updateTime},
+			</if>
+			<if test="type!=null">
+				 f_type = #{type},
+			</if>
+			<if test="location!=null">
+				 f_article_location = #{location},
+			</if>
+			<if test="lng!=null">
+				 f_article_lng = #{lng},
+			</if>
+			<if test="lat!=null">
+				 f_article_lat = #{lat},
+			</if>
+			<if test="site!=null">
+				 f_article_site = #{site},
+			</if>
+		</set>
+		WHERE
+			f_article_id = #{id}
+	</update>
+	
+	<update id="updateArticleContentId" >
+		UPDATE t_article
+		SET f_article_content_id = #{contentId}
+		WHERE
+			f_article_id = #{id}
+	</update>
+	
+	<update id="updateContent" parameterType="java.util.Map">
+		UPDATE t_article_content
+		SET f_content = #{content}
+		WHERE
+			f_content_id = #{contentId}
+	</update>
+	
+	<update id="updateCount" parameterType="long">
+		UPDATE t_article SET f_article_view_count = f_article_view_count + 1 WHERE f_article_id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.heipiao.api.mapper.FishPostNewsMapper">
+
+	<resultMap type="fishPostNews" id="baseResultMap">
+		<id column="f_nid" property="nid" />
+		<result column="f_picture" property="picture"/>
+		<result column="f_main_picture" property="mainPicture"/>
+		<result column="f_content" property="content"/>
+		<result column="f_create_time" property="createTime"/>
+		<result column="f_fish_site_id" property="fishSiteId"/>
+		<result column="f_fish_site_name" property="fishSiteName" />
+		<result column="f_type" property="type"/>
+		<result column="f_focus"  property="focus" />
+		<result column="f_duration" property="duration" />
+	</resultMap>
+	
+	<sql id="baseColumn">
+	 	f_nid,f_picture,f_main_picture,f_content,f_create_time,f_fish_site_id,f_type
+	</sql>
+	
+	<select id="selectAll" parameterType="java.util.Map" resultMap="baseResultMap">
+		SELECT * FROM t_fish_post_news
+	</select>
+	
+	<select id="selectByMap" parameterType="java.util.Map" resultMap="baseResultMap">
+		select 
+		<include refid="baseColumn" />
+		from 
+		t_fish_post_news
+		where f_fish_site_id = #{fishSiteId}
+		<if test="type != null">
+			and f_type = #{type}
+		</if>
+		<if test="start > 0">
+			and f_nid &lt; #{start}
+		</if> 
+		order by f_nid desc
+		 limit #{size}
+	</select>
+	
+	<select id="selectByPutFish" parameterType="java.util.Map" resultMap="baseResultMap">
+		select  f_nid,f_picture,f_main_picture,f_content,t1.f_create_time,t1.f_fish_site_id,f_type,f_fish_site_name,t2.f_duration
+			<if test="uid &gt; 0">
+					,f_focus
+				</if>
+		from t_fish_post_news t1 join 
+				(select f_fish_site_id,f_uid, f_partner_id, f_fish_site_name, 
+				f_longitude,f_latitude,
+				<if test="uid &gt; 0">
+					f_focus,
+				</if>
+				
+				round(6370996.81 * 2 * asin(sqrt(
+				pow(sin(((#{lat} * PI() /180.0) - (f_latitude * PI() /180.0))/2),2) 
+				+ cos(#{lat} * PI() /180.0) 
+				* cos(f_latitude * PI() /180.0) 
+				* pow(sin(((#{lng}-f_longitude) * PI()/180.0)/2),2)))) as f_duration
+				from 
+				<choose>
+					<when test="uid &gt; 0">
+						t_fish_site t1 left join (select 1 as f_focus,f_fid from t_focus where f_uid = #{uid}) t2 on t1.f_fish_site_id = t2.f_fid
+					</when>
+					<otherwise>
+						t_fish_site
+					</otherwise>		
+				</choose>
+				where f_status = 1 and f_city_id = #{regionId}
+		        )t2 on t1.f_fish_site_id = t2.f_fish_site_id 
+	        
+	        <if test="start > 0">
+					and t1.f_nid &lt; #{start}
+			</if>
+	        order by 
+	        t1.f_nid desc
+	        limit #{size}
+	</select>
+	
+	<insert id="insertPojo" parameterType="fishPostNews">
+		insert into t_fish_post_news(f_picture,f_main_picture,f_content,f_create_time,f_fish_site_id,f_type)
+		values(#{picture},#{mainPicture},#{content},#{createTime},#{fishSiteId},#{type})
+	</insert>
+	
+	<delete id="deletePojo" parameterType="java.lang.Long">
+		delete from t_fish_post_news
+		where f_nid = #{nid}
+	</delete>	
+</mapper>
