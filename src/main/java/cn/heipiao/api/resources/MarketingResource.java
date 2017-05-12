@@ -132,6 +132,7 @@ public class MarketingResource {
 			map.put("picture", pojo.getPicture());
 			map.put("pictureDesc", pojo.getPictureDesc());
 			map.put("uploadTime", ExDateUtils.getDate());
+			map.put("status", "0");
 			
 			marketingService.updatePictures(map);
 			return JSONObject.toJSONString(new RespMsg<>());

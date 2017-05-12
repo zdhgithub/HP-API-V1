@@ -195,4 +195,10 @@
 		where f_marketing_activity_id = #{mid} and f_marketing_uid = #{uid}
 	</select>
 	
+	<update id="updateStatus" parameterType="java.util.Map">
+		update t_marketing_upload_picture
+		set f_status = #{status}
+		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{uid}
+	</update>
+	
 </mapper>

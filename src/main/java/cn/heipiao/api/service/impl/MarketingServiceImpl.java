@@ -17,7 +17,7 @@ import cn.heipiao.api.pojo.Marketing;
 import cn.heipiao.api.pojo.MarketingPicture;
 import cn.heipiao.api.service.MarketingService;
 
-
+@Transactional
 @Service
 public class MarketingServiceImpl implements MarketingService{
 	
@@ -100,6 +100,7 @@ public class MarketingServiceImpl implements MarketingService{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public LikeUser getOneLikeUser(Map<String, Object> map) {
 		return marketingMapper.getOneLikeUser(map);
 	}
@@ -112,13 +113,16 @@ public class MarketingServiceImpl implements MarketingService{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Integer isJoin(Long uid, Integer mid) {
 		return marketingMapper.isJoin(uid, mid);
 	}
 
 	@Override
+	@Transactional(readOnly = false, rollbackFor = {Exception.class})
 	public void updatePictures(Map<String, Object> map) {
 		marketingMapper.updatePicture(map);
+		marketingMapper.updateStatus(map);
 	}
 
 }

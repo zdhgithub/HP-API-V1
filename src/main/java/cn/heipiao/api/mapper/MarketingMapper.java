@@ -90,4 +90,11 @@ public interface MarketingMapper {
 	 */
 	List<Marketing> getMarketingList(@Param("start") int start, @Param("size") int size);
 	
+	/**
+	 * 修改审核状态
+	 * 
+	 * @param status 状态值
+	 */
+	public void updateStatus(Map<String,Object> map);
+	
 }
