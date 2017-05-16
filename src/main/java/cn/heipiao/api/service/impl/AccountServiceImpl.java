@@ -389,6 +389,8 @@ public class AccountServiceImpl implements AccountService {
 			 * 这里出现过问题：
 			 * 提现后不明原因找不到当前记录，原因是提现时绑定的账号与现在表中的记录不一样
 			 * 按理说在t+0的情况下，程序执行速度肯定会用户解绑后重新绑定要快得多，可就是出现了这个问题
+			 * 
+			 * FIXME 重要：这种情况下，仍然有bug，退回资金的时候，钱是退回至原来的绑定的账号上！！！
 			 */
 			if (bal != null) {
 				if(!isInterval(bal)){
@@ -444,6 +446,8 @@ public class AccountServiceImpl implements AccountService {
 						wo.setPlatformDesc(errCode + "=" + m.get("err_code_des"));
 					}
 				}
+			} else {
+				wo.setStatus(3);
 			}
 			withdrawOrdersMapper.updatePojo(wo);
 			//付款失败退回账户
