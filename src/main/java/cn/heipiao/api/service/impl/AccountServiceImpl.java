@@ -383,57 +383,66 @@ public class AccountServiceImpl implements AccountService {
 			
 			//是否间隔大于15s
 			BindAccountList bal = bindAccountListMapper.selectUniqueAccount(wo.getUid(),wo.getPlatform(),wo.getTradeAccount());
-			if(!isInterval(bal)){
-				return Status.account_freq_limit;
-			}
-			//提现
-			Map<String, String> m = pay.wechatEnterprisePay(wo.getTradeNo(), wo.getTradeAccount(), wo.getRealname(), wo.getActualFee(), "提现", 
-					1);
-				
-			if(m != null && m.get("return_code").equalsIgnoreCase(PayParams.success)){
-				String resultCode = m.get("result_code"); 
-				if(resultCode.equalsIgnoreCase(PayParams.success)){
-					Timestamp t = new Timestamp(ExDateUtils.getCalendar().getTimeInMillis());
+			
+			/**
+			 * 2017.05.16，添加了对bal对象的null判断。
+			 * 这里出现过问题：
+			 * 提现后不明原因找不到当前记录，原因是提现时绑定的账号与现在表中的记录不一样
+			 * 按理说在t+0的情况下，程序执行速度肯定会用户解绑后重新绑定要快得多，可就是出现了这个问题
+			 */
+			if (bal != null) {
+				if(!isInterval(bal)){
+					return Status.account_freq_limit;
+				}
+				//提现
+				Map<String, String> m = pay.wechatEnterprisePay(wo.getTradeNo(), wo.getTradeAccount(), wo.getRealname(), wo.getActualFee(), "提现", 
+						1);
 					
-					wo.setPayTime(t);
-					wo.setPlatformTradeNo(m.get("payment_no"));
-					wo.setStatus(2);
-					withdrawOrdersMapper.updatePojo(wo);
-					//生成交易记录
-					//提现实际金额
-					srgs.generateAccountDeRecord(wo.getUid().intValue(), wo.getTradeNo(), ApiConstant.TradeType.WITHDRAWS
-							, ArithUtil.div(wo.getActualFee().doubleValue(), 100, 2), "提现", "微信", 1,null);
-					//提现手续费金额
-					srgs.generateAccountDeRecord(wo.getUid().intValue(), wo.getTradeNo(), ApiConstant.TradeType.POUNDAGE
-							, ArithUtil.div(wo.getPoundageFee().doubleValue(), 100, 2), "提现手续费", "微信", 1,null);
-					//添加账单
-					accountBillService.addPojo(wo.getUid(), wo.getTradeNo(), 2, 5, 1,ArithUtil.div(wo.getActualFee().doubleValue(), 100, 2) , "提现金额");
-					accountBillService.addPojo(wo.getUid(), wo.getTradeNo(), 2, 5, 1,ArithUtil.div(wo.getPoundageFee().doubleValue(), 100, 2) , "提现手续费");
-					
-					//消息
-					systemMsgService.saveMsg("提现成功", null, "您提现的金额已到账，请您注意查收!", wo.getUid().intValue(), null);
-					
-					return Status.success;
-				} else if(resultCode.equalsIgnoreCase(PayParams.fail)){
-					String errCode = m.get("err_code");
-					//平台金额不足
-					if(errCode.equalsIgnoreCase("NOTENOUGH")){
-						//状态为：1支付中   由清算线程处理
-						wo.setStatus(1);
+				if(m != null && m.get("return_code").equalsIgnoreCase(PayParams.success)){
+					String resultCode = m.get("result_code"); 
+					if(resultCode.equalsIgnoreCase(PayParams.success)){
+						Timestamp t = new Timestamp(ExDateUtils.getCalendar().getTimeInMillis());
+						
+						wo.setPayTime(t);
+						wo.setPlatformTradeNo(m.get("payment_no"));
+						wo.setStatus(2);
 						withdrawOrdersMapper.updatePojo(wo);
-						if(bs != null && bs.length > 0){
-							bs[0] = false;
-						}
+						//生成交易记录
+						//提现实际金额
+						srgs.generateAccountDeRecord(wo.getUid().intValue(), wo.getTradeNo(), ApiConstant.TradeType.WITHDRAWS
+								, ArithUtil.div(wo.getActualFee().doubleValue(), 100, 2), "提现", "微信", 1,null);
+						//提现手续费金额
+						srgs.generateAccountDeRecord(wo.getUid().intValue(), wo.getTradeNo(), ApiConstant.TradeType.POUNDAGE
+								, ArithUtil.div(wo.getPoundageFee().doubleValue(), 100, 2), "提现手续费", "微信", 1,null);
+						//添加账单
+						accountBillService.addPojo(wo.getUid(), wo.getTradeNo(), 2, 5, 1,ArithUtil.div(wo.getActualFee().doubleValue(), 100, 2) , "提现金额");
+						accountBillService.addPojo(wo.getUid(), wo.getTradeNo(), 2, 5, 1,ArithUtil.div(wo.getPoundageFee().doubleValue(), 100, 2) , "提现手续费");
+						
+						//消息
+						systemMsgService.saveMsg("提现成功", null, "您提现的金额已到账，请您注意查收!", wo.getUid().intValue(), null);
+						
 						return Status.success;
-					//姓名校验错误
-					} else if (errCode.equalsIgnoreCase("NAME_MISMATCH")){
-						wo.setStatus(3);
-						wo.setDesc("真实姓名与当前绑定账户的姓名不匹配错误");
-					} else {
-						wo.setStatus(3);
-						wo.setDesc("平台系统维护请您明天重试!,资金已返回到余额中");
+					} else if(resultCode.equalsIgnoreCase(PayParams.fail)){
+						String errCode = m.get("err_code");
+						//平台金额不足
+						if(errCode.equalsIgnoreCase("NOTENOUGH")){
+							//状态为：1支付中   由清算线程处理
+							wo.setStatus(1);
+							withdrawOrdersMapper.updatePojo(wo);
+							if(bs != null && bs.length > 0){
+								bs[0] = false;
+							}
+							return Status.success;
+						//姓名校验错误
+						} else if (errCode.equalsIgnoreCase("NAME_MISMATCH")){
+							wo.setStatus(3);
+							wo.setDesc("真实姓名与当前绑定账户的姓名不匹配错误");
+						} else {
+							wo.setStatus(3);
+							wo.setDesc("平台系统维护请您明天重试!,资金已返回到余额中");
+						}
+						wo.setPlatformDesc(errCode + "=" + m.get("err_code_des"));
 					}
-					wo.setPlatformDesc(errCode + "=" + m.get("err_code_des"));
 				}
 			}
 			withdrawOrdersMapper.updatePojo(wo);
