@@ -16,7 +16,8 @@
 			<totalSizeCap>${log.totalSizeCap}</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
-			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger - %msg%n</pattern>
+			<charset>UTF-8</charset>
 		</encoder>
     </appender>
 	
@@ -32,7 +33,8 @@
 			<totalSizeCap>${log.totalSizeCap}</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
-			<pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger - %msg%n</pattern>
+			<charset>UTF-8</charset>
 		</encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印信息日志 -->
             <level>info</level>
@@ -53,7 +55,8 @@
 			<totalSizeCap>${log.totalSizeCap}</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
-			<pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger - %msg%n</pattern>
+			<charset>UTF-8</charset>
 		</encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印调试日志 -->
             <level>debug</level>
@@ -74,7 +77,8 @@
 			<totalSizeCap>${log.totalSizeCap}</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
-			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger - %msg%n</pattern>
+			<charset>UTF-8</charset>
 		</encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
             <level>error</level>
@@ -85,8 +89,8 @@
 	
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n
-			</pattern>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger - %msg%n</pattern>
+			<charset>UTF-8</charset>
 		</encoder>
 	</appender>    
     
