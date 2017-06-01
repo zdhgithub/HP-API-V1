@@ -60,21 +60,20 @@ public class SmsServiceImpl3 implements SmsService {
 
 		if (statusCode != null) {
 			if (statusCode.indexOf("<Result>0</Result>") > -1) {
-				log.info(param + "\r\n服务器接收成功!");
-
+				log.info(param + "服务器接收成功!");
 			} else {
 				if (statusCode.indexOf(" <Result>1</Result>") > -1) {
-					log.error("报错:1---流水号seq重复!");
+					log.error("流水号seq重复!");
 				} else if (statusCode.indexOf("<Result>-1</Result>") > -1) {
-					log.error("报错:-1--spid、pwd、mobiles、sms不能为空!");
+					log.error("spid、pwd、mobiles、sms不能为空!");
 				} else if (statusCode.indexOf("<Result>-2</Result>>") > -1) {
-					log.error("报错:-2--禁用客户!");
+					log.error("账户被禁用!");
 				} else if (statusCode.indexOf("<Result>-3</Result>") > -1) {
-					log.error("报错:-4--帐号或密码非法!");
+					log.error("短信余额不足!");
 				} else if (statusCode.indexOf("<Result>-4</Result>") > -1) {
-					log.error("报错:-4--帐号或密码非法!");
+					log.error("帐号或密码非法!");
 				} else if (statusCode.indexOf("<Result>-12</Result>") > -1) {
-					log.error("报错:-12-- 其他错误!\r\n");
+					log.error("其他异常!");
 				}
 			}
 		}
