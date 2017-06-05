@@ -152,7 +152,8 @@
 		,f_city,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_city) as f_city_name
 		,f_addr,f_note,f_detail,f_call,f_cost,f_cost_explain,f_status,f_create_time,f_video
 		from t_campaign c left join t_campaign_cfg_type cct on c.f_type=cct.f_id
-		order by f_id desc
+		where f_status > 0 and f_status < 6
+		order by f_begin_time desc
 		limit #{start}, #{size}
 	</select>
 	
