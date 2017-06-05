@@ -147,6 +147,7 @@
 	
 	<!-- 获取活动列表 -->
 	<select id="getCampaignList" resultMap="campaignResultMap">
+		<![CDATA[
 		select c.f_id,c.f_name,f_type,cct.f_name as f_type_name,f_quota,f_begin_time,f_end_time,f_entry_terminal_time,f_bill,f_background
 		,f_province,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_province) as f_province_name
 		,f_city,(SELECT f_region_name from t_sys_cfg_region where f_region_num = c.f_city) as f_city_name
@@ -155,6 +156,7 @@
 		where f_status > 0 and f_status < 6
 		order by f_begin_time desc
 		limit #{start}, #{size}
+		]]>
 	</select>
 	
 	<select id="getCampaignCount" resultType="java.lang.Integer">
