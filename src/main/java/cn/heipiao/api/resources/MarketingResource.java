@@ -68,8 +68,11 @@ public class MarketingResource {
 	}
 	
 	@ApiOperation(value="获取发布图片的列表",response = MarketingPicture.class)
-	@RequestMapping(value="pictures/{marketingId}",method = RequestMethod.GET)
-	public String getPicturesList(@ApiParam(value="营销活动marketingId",required=true)@PathVariable("marketingId")Integer marketingId){
+	@RequestMapping(value="list/{marketingId}/{uid}",method = RequestMethod.GET)
+	public String getPicturesList(
+			@ApiParam(value="营销活动marketingId",required=true)@PathVariable("marketingId")Integer marketingId,
+			@ApiParam(value="用户id", required=true) @PathVariable("uid") Integer uid
+			){
 		try {
 			logger.debug("marketingId:{}",marketingId);
 			if(marketingId==null){
@@ -78,6 +81,7 @@ public class MarketingResource {
 			}
 			Map<String,Object> map = new HashMap<>();
 			map.put("marketingId", marketingId);
+			map.put("uid", uid);
 			map.put("status", 1);
 			List<MarketingPicture> list = marketingService.getPictureList(map);
 			return JSONObject.toJSONString(new RespMsg<>(list));
@@ -219,7 +223,7 @@ public class MarketingResource {
 	}
 	
 	@ApiOperation(value="用户是否点赞",notes="1：表示已点赞，2：表示未点赞")
-	@RequestMapping(value="pictures/{likeUid}/{marketUid}/{marketingId}",method=RequestMethod.GET)
+	@RequestMapping(value="status/{likeUid}/{marketUid}/{marketingId}",method=RequestMethod.GET)
 	public String isLikeUser(@ApiParam("用户id")@PathVariable("likeUid")Long likeUid,
 			@ApiParam("发布图片用户id")@PathVariable("marketUid")Long marketUid,
 			@ApiParam("活动id")@PathVariable("marketingId")Integer marketingId){
@@ -247,7 +251,7 @@ public class MarketingResource {
 	}
 	
 	@ApiOperation(value = "用户是否参加活动", notes = "1：表示已参加， 0：表示未参加")
-	@RequestMapping(value = "{uid}/{mid}", method = RequestMethod.GET)
+	@RequestMapping(value = "status/{uid}/{mid}", method = RequestMethod.GET)
 	public String isJoin(@ApiParam("用户id") @PathVariable("uid") Long uid,
 			@ApiParam("活动id") @PathVariable("mid") Integer mid) {
 		logger.debug("uid:{}, mid:{}", uid, mid);
@@ -268,7 +272,7 @@ public class MarketingResource {
 	}
 	
 	@ApiOperation(value = "营销活动列表",response = Marketing.class)
-	@RequestMapping(value = "list/{start}/{size}",method = RequestMethod.GET)
+	@RequestMapping(value = "listpage/{start}/{size}",method = RequestMethod.GET)
 	public String getList(@ApiParam(value="开始页,首页为1",required=true)@PathVariable("start")Integer start,
 			@ApiParam(value="每页大小",required=true)@PathVariable("size")Integer size){
 		logger.debug("start:{}，size:{}",start,size);

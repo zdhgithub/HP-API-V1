@@ -1,7 +1,5 @@
 package cn.heipiao.api.service.impl;
 
-
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +32,6 @@ public class MarketingServiceImpl implements MarketingService{
 	@Transactional(readOnly=false, rollbackFor = {Exception.class})
 	public void updateMarketing(Marketing marketing) {
 		marketingMapper.updateMarketing(marketing);
-		
 	}
 
 	@Override

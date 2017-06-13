@@ -28,6 +28,7 @@
 		<result column="f_username" property="username" />
 		<result column="f_user_portriat" property="portriat" />
 		<result column="f_user_realname" property="realName" />
+		<result column="ranking" property="ranking" />
 	</resultMap>
 	
 	<resultMap type="LikeUser" id="LikeUserMap">
@@ -151,32 +152,32 @@
 	
 	<!-- 获取用户上传图片组 -->
 	<select id="getMarketingPicture" parameterType="java.util.Map" resultMap="MarketingPictureMap">
-		select u.f_user_nickname,u.f_username,u.f_user_portriat,u.f_user_realname,f_picture,f_picture_desc,f_like_count,m.f_status,f_upload_time,f_refund_reason,f_refund_time,f_status,
-		f_marketing_activity_id,f_marketing_uid
-		from t_marketing_upload_picture m
-		left join t_user u on m.f_marketing_uid = u.f_uid
-		<where>
-			<if test="marketingId != null">
-				 f_marketing_activity_id = #{marketingId} 
-			 </if>
-			<if test="uid != null">
-				and f_marketing_uid = #{uid}
-			</if>
-			<if test="status != null">
-				and f_status = #{status}
-			</if>
-		</where>
-		order by f_like_count
+		set @x=0;
+		select t.* from (
+			select @x:=ifnull(@x,0)+1 as ranking,
+				u.f_user_nickname,u.f_username,u.f_user_portriat,u.f_user_realname,f_picture,f_picture_desc,f_like_count,
+				m.f_status,f_upload_time,f_refund_reason,f_refund_time,f_marketing_activity_id,f_marketing_uid
+			from t_marketing_upload_picture m left join t_user u on m.f_marketing_uid = u.f_uid
+			<where>
+				<if test="marketingId != null">
+					 f_marketing_activity_id = #{marketingId}
+				 </if>
+				<if test="status != null">
+					and f_status = #{status}
+				</if>
+			</where>
+			order by m.f_like_count desc, m.f_upload_time asc
+		) t
+		order by case when t.f_marketing_uid = #{uid} then 0 else 1 end, ranking asc
 	</select>
 		
 	<!-- 获取用户上传图片组 -->
 	<select id="getOneMarketingPicture" parameterType="java.util.Map" resultMap="MarketingPictureMap">
-		select u.f_user_nickname,u.f_username,u.f_user_portriat,u.f_user_realname,f_picture,f_picture_desc,f_like_count,f_status,f_upload_time,f_refund_reason,f_refund_time,f_status,
-		f_marketing_activity_id,f_marketing_uid
-		from t_marketing_upload_picture m
-		left join t_user u on m.f_marketing_uid = u.f_uid
+		select u.f_user_nickname,u.f_username,u.f_user_portriat,u.f_user_realname,f_picture,f_picture_desc,f_like_count,
+		f_status,f_upload_time,f_refund_reason,f_refund_time,f_marketing_activity_id,f_marketing_uid
+		from t_marketing_upload_picture m left join t_user u on m.f_marketing_uid = u.f_uid
 		where f_marketing_activity_id = #{marketingId} and f_marketing_uid = #{uid}
-	</select>	
+	</select>
 	
 	<!-- 获取点赞用户列表 -->
 	<select id="getLikeUser" parameterType="java.util.Map"  resultMap="LikeUserMap">
