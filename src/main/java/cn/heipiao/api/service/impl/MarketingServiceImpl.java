@@ -60,6 +60,7 @@ public class MarketingServiceImpl implements MarketingService{
 			Map<String ,Object> map1 = new HashMap<>();
 			map1.put("marketingId", list.get(i).getMarketingId());
 			map1.put("marketUid", list.get(i).getUid());
+			map1.put("limit", "10");
 			List<LikeUser> list1 = marketingMapper.getLikeUser(map1);
 			list.get(i).setLikeUsuer(list1);
 		}

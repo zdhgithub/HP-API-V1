@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
@@ -71,7 +72,9 @@ public class MarketingResource {
 	@RequestMapping(value="list/{marketingId}/{uid}",method = RequestMethod.GET)
 	public String getPicturesList(
 			@ApiParam(value="营销活动marketingId",required=true)@PathVariable("marketingId")Integer marketingId,
-			@ApiParam(value="用户id", required=true) @PathVariable("uid") Integer uid
+			@ApiParam(value="用户id", required=true) @PathVariable("uid") Integer uid,
+			@ApiParam(value="起始页", required=false) @RequestParam(value = "start", required = false) Integer start,
+			@ApiParam(value="页大小", required=false) @RequestParam(value = "size", required = false) Integer size
 			){
 		try {
 			logger.debug("marketingId:{}",marketingId);
@@ -79,10 +82,17 @@ public class MarketingResource {
 				return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error,
 						RespMessage.getRespMsg(Status.value_is_null_or_error)));
 			}
+			
+			if (start != null && size != null) {
+				start = start - 1 <= 0 ? 0 : (start - 1) * size;
+			}
+			
 			Map<String,Object> map = new HashMap<>();
 			map.put("marketingId", marketingId);
 			map.put("uid", uid);
 			map.put("status", 1);
+			map.put("start", start);
+			map.put("size", size);
 			List<MarketingPicture> list = marketingService.getPictureList(map);
 			return JSONObject.toJSONString(new RespMsg<>(list));
 		} catch (Exception e) {
