@@ -375,7 +375,7 @@ public class ActivityResource {
 			if(start == null || size == null){
 				return JSONObject.toJSONString(new RespMsg<>(Status.value_is_null_or_error, RespMessage.getRespMsg(Status.value_is_null_or_error)));
 			}
-			List<Campaign> list = campaignService.getCampaignList(start, size);
+			List<Campaign> list = campaignService.getCampaignNewList(start, size);
 			
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("data", list);

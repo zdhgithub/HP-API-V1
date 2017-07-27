@@ -43,6 +43,7 @@ public interface CampaignService {
 	 */
 	public List<Campaign> getCampaignList(int start, int size);
 	
+	public List<Campaign> getCampaignNewList(int start, int size);
 	/**
 	 * 获取所有活动参与人
 	 * @param cid 活动id

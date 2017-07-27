@@ -128,6 +128,10 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignMapper.getCampaignList(start, size);
 	}
 	
+	@Override
+	public List<Campaign> getCampaignNewList(int start, int size) {
+		return campaignMapper.getCampaignNewList(start, size);
+	}
 	
 	@Override
 	public CampaignActor getCampaignActor(int cid, int uid) {

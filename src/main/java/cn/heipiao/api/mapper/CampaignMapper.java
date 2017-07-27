@@ -50,6 +50,9 @@ public interface CampaignMapper {
 	 */
 	public List<Campaign> getCampaignList(@Param("start")Integer start, @Param("size")Integer size);
 	
+	
+	public List<Campaign> getCampaignNewList(@Param("start")Integer start, @Param("size")Integer size);
+	
 	/**
 	 * 获取所有活动数量
 	 * @return
